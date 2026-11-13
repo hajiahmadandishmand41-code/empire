@@ -63,7 +63,7 @@ services:
   migrate:
     <<: *backend
     restart: "no"
-    command: ["sh", "-c", "bin/rails db:prepare --trace && bin/rails db:seed --trace"]
+    command: ["sh", "-c", "bin/rails db:prepare && echo EMPIRE_PREPARED && bin/rails db:seed && echo EMPIRE_SEEDED"]
 
   web:
     <<: *backend
