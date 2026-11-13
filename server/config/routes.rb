@@ -30,7 +30,7 @@ Rails.application.routes.draw do
     end
   end
 
-  root to: redirect(status: 302) { '/dashboard' }
+  root to: redirect(status: 302) { Spree::Config.dashboard_url.presence || '/dashboard' }
   mount Spree::Core::Engine, at: '/'
   if Rails.env.local? || (ENV['MISSION_CONTROL_USER'].present? && ENV['MISSION_CONTROL_PASSWORD'].present?)
     mount MissionControl::Jobs::Engine, at: '/jobs'

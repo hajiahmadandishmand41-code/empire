@@ -1,55 +1,55 @@
 # Empire — Agent Instructions
 
-Empire is a Spree Commerce multi-vendor e-commerce platform. This file guides coding agents working on the repository.
+Empire is a Spree Commerce 6.0.4 multi-vendor e-commerce platform. This file guides coding agents working on the repository. `server/AGENTS.md` covers Rails/Spree-CLI specifics.
 
 ## Repository layout
 
 | Directory | Purpose |
 |-----------|---------|
-| `server/` | Spree API backend (Rails app). See `server/AGENTS.md` for Rails-specific rules. |
-| `storefront/` | Next.js + TypeScript customer storefront. |
-| `extensions/` | Empire-specific Rails extensions (RFQ, Afghanistan geo, B2B, local payments/shipping). |
-| `docs/` | Mandatory product documentation (see README for the full list). |
-| `.github/workflows/` | GitHub Actions CI for backend, frontend, and E2E. |
+| `server/` | Spree API backend (Rails) + Empire domain. See `server/AGENTS.md`. |
+| `storefront/` | Next.js + TypeScript customer storefront and Empire staff pages. |
+| `apps/dashboard`, `apps/seller-dashboard` | Spree React admin/seller starters (pnpm per app). |
+| `extensions/` | Documentation only (`extensions/README.md`); no forked gems. |
+| `docs/` | Product documentation; `docs/api/spree-6.0.4/` vendored OpenAPI specs. |
+| `scripts/` | `audit-static.mjs` gate, env bootstrap, CI helpers. |
+| `.github/workflows/` | Backend, Frontend, E2E CI. |
 
 ## The Spree core must NOT be forked
 
-Keep Spree as a versioned dependency (`server/Gemfile`, `~> 6.0`). Implement Empire-specific features as:
+Spree is an exact-pinned dependency (`= 6.0.4` in **both** `server/Gemfile` and `server/Gemfile.lock`; the static audit checks they agree). Implement Empire features as:
 
-- Rails extensions under `extensions/`
-- Database migrations in `server/db/migrate/` (named `spree_<feature>` or `empire_<feature>`)
-- Locale files under `server/config/locales/` (`en.yml`, `fa-AF.yml`, `ps-AF.yml`)
-- Initializers under `server/config/initializers/`
-- Storefront pages/components under `storefront/src/`
+- Migrations in `server/db/migrate/` (`empire_*` / `spree_*`)
+- Models/services in `server/app/{models,services}/empire/`
+- Controllers in `server/app/controllers/api/v3/{store,seller,admin}/empire/`
+- Routes inside `Spree::Core::Engine.add_routes` in `server/config/routes.rb`
+- Initializers in `server/config/initializers/` (register payment methods in `after_initialize`, not `to_prepare`)
+- Locales in `server/config/locales/` (generated from storefront JSON via `node scripts/audit-static.mjs --write`)
+- Storefront pages/components in `storefront/src/`
 
-Do not edit Spree gem source code directly.
+Do not edit Spree gem source. Prefer native Spree capabilities (sellers, commissions, companies, catalogs, price lists) over duplicating them in Empire tables.
 
 ## Environment & toolchain
 
-- Backend runs via Docker Compose and the Spree CLI (`@spree/cli`).
-- Ruby, Rails, PostgreSQL, Redis are NOT required on the host — they run in containers.
-- Frontend runs with Node.js 20+ and npm.
+- Backend runs via Docker Compose / Spree CLI. Ruby, Rails, PostgreSQL are **not** required on the host.
+- Frontend: Node.js 20+ and npm. Dashboards: `cd apps/<app>` then `corepack pnpm …` (pnpm 11.13.1 per app; running pnpm from the repo root resolves the wrong version).
+- The agent sandbox has **no Ruby/PostgreSQL/Docker**: backend/E2E evidence must come from GitHub Actions. Never report a backend test as passing without CI proof.
 
-Never commit secrets to Git. Use `.env.example` and environment variables / secret managers.
+Never commit secrets. Use `.env.example`, `npm run env:bootstrap`, and secret managers.
 
 ## Adding features
 
-1. Generate a migration: `npx spree generate migration <name>` (inside container)
-2. Generate an API resource: `npx spree generate api_resource <name> <attrs>`
-3. Add a gem: `npx spree bundle add <gem>`
-4. Add locale strings: edit `server/config/locales/fa-AF.yml`, `ps-AF.yml`, `en.yml`
-5. Add storefront pages: `storefront/src/app/...` (Next.js App Router)
-6. Run backend tests: `npx spree rspec`
-7. Run frontend: `cd storefront && npm run dev` / `npm run build` / `npm run lint`
+1. Migration: `npx spree generate migration <name>` (in container) or add `server/db/migrate/…`.
+2. Model/service/controller under `empire/`; route in `config/routes.rb`.
+3. Locale strings: edit `storefront/src/locales/{en,fa-AF}.json`, then `node scripts/audit-static.mjs --write`.
+4. Storefront UI under `storefront/src/app/…`.
+5. Tests: RSpec (`server/spec/`), Playwright (`storefront/e2e/`), dashboard contract tests.
+6. Run `node scripts/audit-static.mjs`; run frontend `npm test`/`npm run build`; push to trigger CI.
+7. Update `docs/` and classify the feature (Spree-native / Empire-custom / planned-blocked).
 
-## Mandatory documentation
+## Mandatory documentation & honesty
 
-Every user-facing capability must be recorded in `docs/` and classified as:
-
-1. Spree-ready (enabled & tested)
-2. Empire-custom (implemented & tested)
-3. Planned / blocked (not complete)
+Every user-facing capability must be recorded in `docs/` and classified. Do not claim a feature is implemented or tested unless the code exists and a test actually ran. Keep `docs/KNOWN-LIMITATIONS.md` truthful (e.g. bank transfer, disputes, Pashto are not complete). Record execution evidence in `docs/TESTING.md` / the audit report.
 
 ## Testing policy
 
-No feature is "complete" without: model + migration, validation, access control (Pundit/Ability or Spree roles), API endpoint, storefront or dashboard UI, automated test, and documentation entry. Tests must actually run — do not report a test as passing without executing it.
+No feature is "complete" without model/migration, validation, access control, API endpoint, UI (where applicable), automated test, and documentation. Tests must actually run — local absence is NOT RUN/BLOCKED, not PASS.

@@ -1,26 +1,28 @@
 # Empire Extensions
 
-Empire-specific functionality built **on top of** Spree core (kept as a versioned gem). Extensions are implemented as Rails migrations, models, initializers, locale files and API controllers inside `server/` — not as separate forked gems, so Spree remains upgradable.
+Empire-specific functionality is built **on top of** Spree 6.0.4 (kept as an exact-pinned gem). It lives in the host Rails app (`server/`) as migrations, models, services, initializers, locale files and API controllers — **not** as separate forked gems — so Spree remains upgradable. This directory is documentation only.
 
-## Extension areas
+## What Empire actually adds (non-core)
 
 | Area | What it adds | Where |
 |------|-------------|-------|
-| Afghanistan localization | Provinces (34), districts, Dari/Pashto/English names, AFN, +93 phones | `server/db/migrate/*provinces*`, `server/app/models/empire/`, `server/config/locales/{fa-AF,ps-AF}.yml` |
-| Marketplace | Seller profiles, verification, shop, commission, order split, payouts | `empire_sellers`, `empire_commissions`, `empire_payouts`, `empire_order_splits` |
-| B2B / Wholesale | Companies, company users/roles, PO numbers, volume pricing, MOQ | `empire_companies`, `empire_company_users`, `empire_volume_pricing`, `spree_variants.moq` |
-| RFQ / quotes | Request for quote, seller quotes, accept/reject | `empire_rfqs`, `empire_quotes` |
-| Local payments | Bank transfer + receipt, COD | `empire_bank_transfers` |
-| Disputes | Buyer–seller disputes | `empire_disputes` |
+| Afghanistan geography | 34 provinces + districts (Dari/English) | `server/db/migrate/*empire_provinces*`, `*empire_districts*`, `server/app/models/empire/{province,district}.rb` |
+| RFQ / quotes | Request for quote, seller quotes, buyer accept | `empire_rfqs`, `empire_quotes`, `Empire::AcceptQuote` |
+| Payout review | Review gate before native Spree payout sweep | `empire_payout_requests`, `Empire::ReviewPayoutRequest` |
+| Cash on delivery | Manual-capture offline payment method | `Empire::CashOnDelivery < Spree::PaymentMethod::Check` |
+| Seller application | Public endpoint creating a pending native seller | `api/v3/store/empire/seller_applications` |
+| Localization | Dari/English messages, RTL, AFN | `server/config/locales/`, `storefront/src/locales/`, `storefront/src/lib/` |
+
+Marketplace sellers/commissions/order-splitting/payouts and B2B companies/catalogs/price-lists/MOQ/PO are **native Spree 6.0.4**, not Empire tables. Bank transfer, disputes, and full Pashto are **not implemented** (see `docs/KNOWN-LIMITATIONS.md`).
 
 ## Adding a new Empire feature
 
-1. Create a migration in `server/db/migrate/` named `2026..._create_empire_<feature>.spree.rb` (or `add_...`).
-2. Create a model in `server/app/models/empire/<feature>.rb`.
-3. Add API controller(s) under `server/app/controllers/api/v3/store/empire/` or `api/v3/admin/empire/`.
-4. Add routes in `server/config/routes.rb` inside `Spree::Core::Engine.add_routes`.
-5. Add locale strings to `server/config/locales/{en,fa-AF,ps-AF}.yml`.
-6. Add storefront UI under `storefront/src/app/...`.
-7. Add tests, docs entry, and seed data (tagged Demo).
+1. Migration in `server/db/migrate/` named `…_create_empire_<feature>.rb`.
+2. Model/service in `server/app/{models,services}/empire/<feature>.rb`.
+3. Controller under `server/app/controllers/api/v3/{store,seller,admin}/empire/`.
+4. Route in `server/config/routes.rb` inside `Spree::Core::Engine.add_routes`.
+5. Locale strings in `storefront/src/locales/{en,fa-AF}.json`, then `node scripts/audit-static.mjs --write`.
+6. Storefront UI under `storefront/src/app/…`.
+7. Tests, docs entry (classified), and opt-in demo seed if appropriate.
 
-Do not modify Spree gem source. Do not fork Spree.
+Do not modify or fork Spree gem source.

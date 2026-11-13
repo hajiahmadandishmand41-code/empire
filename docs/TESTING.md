@@ -1,98 +1,71 @@
 # Testing
 
-Empire requires real automated tests — no feature is complete without model, API, authorization and (where applicable) storefront test coverage, and tests must actually execute.
+Empire requires real automated tests. A test is only reported as passing when it actually executed (locally or in GitHub Actions). The latest PASS/FAIL/NOT RUN/BLOCKED evidence is recorded in `docs/AUDIT-REPORT.md` and the PR comment.
 
-## Backend (RSpec)
-
-The backend test suite lives in `server/spec/` and uses RSpec + Factory Bot + Spree Dev Tools.
-
-**To run (requires Ruby, PostgreSQL, Docker — not available in this sandbox):**
+## Static audit (local, no Ruby/Docker needed)
 
 ```bash
-cd server
-# via the Spree CLI (Docker):
-npx spree rspec
-# or directly in the container:
-docker compose exec web bin/rails db:prepare
-docker compose exec web bundle exec rspec
+node scripts/audit-static.mjs          # gate
+node scripts/audit-static.mjs --write  # regenerate server en/fa-AF YAML from storefront JSON
 ```
 
-**CI:** `.github/workflows/backend-ci.yml` runs on Ubuntu with:
-- PostgreSQL 18 service container
-- `ruby/setup-ruby` (Ruby 4.0.9)
-- `bundler-cache`
-- `bin/rails db:prepare`
-- `bundle exec rspec`
-- `brakeman` security scan
-- `bundle-audit` dependency scan
+Checks: storefront locale key parity (140 keys), Dari script / no stray Latin, Pashto draft marker, backend `empire.*` key coverage, YAML parse + unique keys (locales and all workflows), compose build source (`server/Dockerfile`), API contract vs vendored Spree specs (37 core + 14 Empire operations), and exact `= 6.0.4` pins in both `Gemfile` and `Gemfile.lock`.
 
-**Backend test areas:**
-- Models & associations (Spree core + Empire extensions)
-- API endpoints (Store API v3 + Empire API)
-- Permissions / authorization (seller isolation, company scoping, admin)
-- Marketplace: seller registration, verification, order split, commission
-- B2B: company, price list, volume pricing, MOQ, draft order, RFQ, quote
-- Payments: COD, bank transfer + receipt, idempotency
-- Afghanistan: provinces/districts, address validation
+## Backend (RSpec) — CI / Docker only
 
-## Frontend (Next.js)
+Sandbox has no Ruby/PostgreSQL/Docker, so backend specs are **NOT RUN locally**. They run in `.github/workflows/backend-ci.yml` on Ubuntu with PostgreSQL 18 and Ruby 4.0.9:
 
-**Lint:**
+1. `bundle install` (frozen; Gemfile and lock must agree on `= 6.0.4`)
+2. `bin/rails db:create db:migrate` + migration status
+3. `bin/rails db:seed` twice (idempotence)
+4. Runtime boot / Empire extension proof (`scripts/verify-runtime.mjs`)
+5. `bundle exec rspec`
+6. `brakeman` (warnings fail) and `bundle-audit` (advisories fail)
+
+Spec areas: `spec/models/empire/*` (COD, seeds), `spec/services/empire/*` (accept quote, review payout), `spec/requests/empire/security_spec.rb` (auth, seller isolation, company scoping, payout review), plus Spree's agent-tools contract spec.
+
+Run with Docker locally: `npx spree rspec` (or `docker compose -f docker-compose.dev.yml exec web bundle exec rspec`).
+
+## Frontend (storefront)
+
 ```bash
 cd storefront
-npm run lint
+npm ci
+npm run lint        # eslint
+npx tsc --noEmit    # typecheck
+npm run build       # next build (standalone)
+npm test            # lint + tsc
 ```
 
-**Build (production):**
+These run locally and in `frontend-ci.yml` (`storefront` job).
+
+## Dashboards
+
+`apps/dashboard` and `apps/seller-dashboard` (pnpm 11.13.1 per app):
+
 ```bash
-cd storefront
-npm run build
+cd apps/<app>
+corepack pnpm install --frozen-lockfile
+corepack pnpm typecheck && corepack pnpm lint && corepack pnpm test && VITE_BASE_PATH=/<base>/ corepack pnpm build
 ```
 
-**TypeScript:** `tsc --noEmit` runs as part of `next build`.
+`frontend-ci.yml` runs a `dashboards` matrix (typecheck, lint, vitest contract tests, build). Run dashboard `tsc` alone if memory-constrained (it is heavy).
 
-**Frontend test areas:**
-- Home, product, cart, checkout pages render
-- API client connects to Spree Store API
-- RTL/LTR layout switching
-- Mobile responsiveness
+## End-to-End (Playwright) — CI Docker stack
 
-A frontend test runner (Vitest/Jest + Playwright) is **planned** — not yet configured (see KNOWN-LIMITATIONS).
+`storefront/playwright.config.ts` + `storefront/e2e/`:
 
-## End-to-End
+- `storefront.spec.ts`: home, product detail, cart qty/remove, login, full COD checkout (6 browser tests).
+- `marketplace-journey.spec.ts`: live API journey — seller application → staff approval → seller product → staff publish → buyer COD checkout → staff capture/fulfil → seller balance → payout request → staff approve/complete → B2B company/catalog/tiered price/MOQ/PO → RFQ → quote → accept.
 
-E2E covers the full buyer → seller → admin lifecycle:
+`.github/workflows/e2e-ci.yml` has two jobs:
+- `browser`: builds `docker-compose.dev.yml`, waits for backend/storefront, runs `scripts/verify-runtime.mjs`, installs Chromium, runs Playwright.
+- `production-image`: builds `docker-compose.yml`, smoke-tests HTTP + runtime, asserts COD/geography exist and demo data did **not** leak.
 
-1. Admin verifies a seller.
-2. Seller registers a product.
-3. Admin publishes the product.
-4. Buyer finds the product.
-5. Buyer adds to cart.
-6. Buyer places the order.
-7. Buyer chooses COD or bank transfer.
-8. Order appears in the seller dashboard.
-9. System calculates the seller commission.
-10. Admin reviews and settles the seller payout.
+Both capture `migrate.log` and surface failure details via `scripts/annotate-log.mjs`; artifacts include compose logs and Playwright reports.
 
-**B2B E2E:**
-1. Company registers.
-2. Company admin invites a buyer.
-3. Catalog + company-specific price assigned.
-4. Buyer sees volume pricing.
-5. Buyer sends an RFQ.
-6. Seller sends a quote.
-7. Company accepts the quote.
-8. Commercial order is created.
-
-**Status:** E2E test tooling (Playwright/Cypress) is **not yet installed**. The workflows are documented here and in `docs/ARCHITECTURE.md`; implement in CI when the runner supports a full browser stack.
+Run locally with Docker: `npm run test:e2e` (expects backend on `API_BASE_URL` and storefront on `E2E_BASE_URL`).
 
 ## Test data
 
-Seed data (`server/db/seeds/empire_seed.rb`) is tagged "Demo" and must not be confused with production data. No default admin account with a fixed insecure password is created; the admin account is created through a secure, documented process using environment variables.
-
-## Gaps
-
-- Backend specs cannot run in this sandbox (no Ruby/PostgreSQL/Docker).
-- Frontend unit/integration tests not yet configured.
-- E2E tests not yet implemented.
-See `docs/KNOWN-LIMITATIONS.md`.
+`server/db/seeds/empire_seed.rb`: 34 provinces + districts, COD, publishable key, and **opt-in** demo seller/product/company/RFQ (`EMPIRE_SEED_DEMO=true`, dev/CI only). Demo identities are dev-only (`admin@empire.test`, `demo.seller@empire.test`, `demo.buyer@empire.test`); production never seeds them. The first admin is created from `ADMIN_EMAIL`/`ADMIN_PASSWORD` env vars.

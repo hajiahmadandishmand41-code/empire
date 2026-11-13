@@ -1,91 +1,54 @@
 # Deployment
 
-Empire has two deployable parts: the **backend** (Rails + Spree + PostgreSQL) and the **storefront** (Next.js). No production deployment has been performed — this document describes how to deploy.
+Two deployable parts: **backend** (Rails + Spree + PostgreSQL) and **storefront** (Next.js). **No production deployment has been performed.** This document describes how to deploy; it is not evidence that deployment happened.
 
-## Backend (Railway or Docker-compatible host)
-
-The backend runs in Docker Compose locally and can be deployed to Railway or any Docker-compatible host.
-
-### Local (Docker Compose)
+## Local / CI stack (Docker Compose)
 
 ```bash
-cp .env.example .env
-# Edit .env: SECRET_KEY_BASE, encryption keys, SPREE_HOST, mail/SMTP, object storage
-docker compose up -d
-npx spree db:prepare
-npx spree seed
+npm ci
+npm run env:bootstrap          # creates .env with random local secrets (refuses to overwrite)
+docker compose -f docker-compose.dev.yml up -d --build
 ```
 
-- `docker-compose.yml` — quick-start: prebuilt Spree image + PostgreSQL + Mailpit.
-- `docker-compose.dev.yml` — development: bind-mounts `server/` for live editing.
+- `docker-compose.dev.yml` builds `server/Dockerfile` (target `dev`), bind-mounts `server/`, runs migrate + seed (demo enabled), PostgreSQL 18, Mailpit, and the storefront. Demo accounts are enabled **only** here (`EMPIRE_SEED_DEMO=true`).
+- `docker-compose.yml` is the production-image stack: same Dockerfile/Gemfile.lock, production target, **no demo seed**, HTTPS defaults. CI's `production-image` job asserts demo data did not leak.
+- Both stacks build from `server/Dockerfile` (checked by `scripts/audit-static.mjs`); neither uses a prebuilt stock Spree image that would ignore local code.
 
-### Railway
+The Spree CLI (`npx spree …`) wraps these compose files for humans; CI calls `docker compose` directly with explicit `-f` files.
 
-1. Connect the GitHub repo to Railway.
-2. Add a PostgreSQL service.
-3. Deploy the `server/` directory as a Docker service (build from `server/Dockerfile`).
-4. Set environment variables in Railway (from `.env.example`, real values).
-5. Run `npx spree db:prepare` and `npx spree seed` as deployment jobs.
+## Backend on a Docker host
 
-### Production checklist
+1. Build `server/Dockerfile` (production target).
+2. Provide a managed PostgreSQL 18 (`DATABASE_URL` or `DATABASE_HOST/PORT/USERNAME/PASSWORD/NAME`).
+3. Set real secrets: `SECRET_KEY_BASE`, the three `ACTIVE_RECORD_ENCRYPTION_*` keys, `SPREE_HOST`, `SPREE_PUBLISHABLE_KEY`, `ADMIN_EMAIL`/`ADMIN_PASSWORD` (first admin), `MISSION_CONTROL_USER/PASSWORD`.
+4. Run migrations and seed as deployment jobs (`bin/rails db:migrate`, `bin/rails db:seed` inside the image). Do **not** set `EMPIRE_SEED_DEMO` in production.
+5. `RAILS_FORCE_SSL=true`, `RAILS_ASSUME_SSL=true`. The runtime initializer refuses to boot production with missing/short secrets.
 
-- [ ] `SECRET_KEY_BASE` generated with `bin/rails secret`
-- [ ] Active Record encryption keys generated and backed up (never change after data encrypted)
-- [ ] `DATABASE_URL` points to managed PostgreSQL
-- [ ] `RAILS_FORCE_SSL=true`
-- [ ] `SPREE_HOST` set to the real domain
-- [ ] SMTP credentials for email
-- [ ] Object-storage credentials (S3/R2) for ActiveStorage
-- [ ] Stripe or local PSP credentials (after legal review)
-- [ ] `MISSION_CONTROL_USER/PASSWORD` for the job dashboard
-- [ ] Database backup schedule configured
-
-## Storefront (Vercel or Next.js-compatible host)
+## Storefront on a Next.js host
 
 ```bash
 cd storefront
-npm install
-npm run build
+npm ci
+npm run build      # standalone output
 ```
 
-### Vercel
+- Set `API_INTERNAL_URL` to the backend's internal URL (server-side rewrite target; never exposed to the browser).
+- Set `NEXT_PUBLIC_SPREE_PUBLISHABLE_KEY` to the store's publishable key (public, not a secret).
+- Browser requests stay relative (`/api/*`); `next.config.ts` rewrites them to the backend. Do not point browser code at `localhost`.
+- Alternatively build `storefront/Dockerfile` and run the standalone server on port 3001.
 
-1. Import the `storefront/` directory (or the whole repo with root directory `storefront`) into Vercel.
-2. Set environment variables:
-   - `NEXT_PUBLIC_API_URL` — backend URL (e.g. `https://api.empire.example.com`)
-   - `NEXT_PUBLIC_STORE_URL` — storefront URL
-   - `NEXT_PUBLIC_DEFAULT_LOCALE=fa-AF`
-   - `NEXT_PUBLIC_DEFAULT_CURRENCY=AFN`
-3. Deploy. Vercet builds on every push to the branch.
+## Production checklist
 
-### Docker (alternative)
+- [ ] Real `SECRET_KEY_BASE` and encryption keys generated, backed up, never rotated after data is encrypted
+- [ ] Managed PostgreSQL + backup/restore tested
+- [ ] `RAILS_FORCE_SSL` / `RAILS_ASSUME_SSL` true; real `SPREE_HOST`
+- [ ] CORS allows the storefront origin (`server/config/initializers/cors.rb`)
+- [ ] SMTP, object storage, optional Meilisearch/CDN configured if used
+- [ ] Payment gateway only after legal review + sandbox proof
+- [ ] No demo seed / demo credentials in production
 
-Build a standalone Next.js image:
-
-```bash
-cd storefront
-docker build -t empire-storefront .
-docker run -p 3001:3001 \
-  -e NEXT_PUBLIC_API_URL=https://api.empire.example.com \
-  empire-storefront
-```
-
-## Backend & storefront connection
-
-The storefront calls the backend Store API at `NEXT_PUBLIC_API_URL`. Ensure CORS (`rack-cors`, configured in `server/config/initializers/cors.rb`) allows the storefront origin.
-
-## Secrets in production
-
-Use the host's secret store (Railway variables, Vercel environment variables, AWS Secrets Manager, HashiCorp Vault). Never commit `.env`.
-
-## Database backup & recovery
-
-- Managed PostgreSQL providers (Railway, AWS RDS) offer automated backups and point-in-time recovery.
-- For self-hosted PostgreSQL: schedule `pg_dump` to object storage; test restore regularly.
-- Back up Active Record encryption keys separately from the database — losing them makes encrypted data unreadable.
-
-## What is NOT done yet
+## What is NOT done
 
 - No production deployment performed.
-- No real payment gateway or carrier API connected.
-- Backup automation not implemented (documented only).
+- No real payment gateway or carrier connected.
+- Backup automation documented only.

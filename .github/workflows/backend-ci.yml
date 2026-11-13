@@ -31,7 +31,7 @@ jobs:
       SECRET_KEY_BASE: ci-only-secret-key-base-0123456789abcdef0123456789abcdef
       ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY: ci-only-primary-key-0123456789abcdef
       ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY: ci-only-deterministic-key-0123456789abcdef
-      ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT: ci-only-salt-0123456789abcdef
+      ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT: ci-only-salt-0123456789abcdef0123456789abcdef
       ADMIN_EMAIL: admin@empire.test
       ADMIN_PASSWORD: DemoAdmin123!
       EMPIRE_SEED_DEMO: 'true'
@@ -59,7 +59,12 @@ jobs:
         run: |
           bash ../scripts/ci-run.sh bin/rails runner 'puts({ruby: RUBY_VERSION, rails: Rails.version, spree: Spree.version, database: ActiveRecord::Base.connection.select_value("SELECT current_database()"), provinces: Empire::Province.count, cod: Empire::CashOnDelivery.count, routes: Rails.application.routes.routes.size}.to_json)'
       - name: RSpec
-        run: bash ../scripts/ci-run.sh bundle exec rspec --format progress --format RspecJunitFormatter --out tmp/rspec.xml
+        run: |
+          set -euo pipefail
+          bundle exec rspec --format progress --format RspecJunitFormatter --out tmp/rspec.xml 2>&1 | tee tmp/rspec.log
+      - name: Surface RSpec failure details
+        if: failure()
+        run: node ../scripts/annotate-log.mjs tmp/rspec.log "RSpec failed"
       - name: Brakeman (warnings fail the job)
         run: bash ../scripts/ci-run.sh bundle exec brakeman --no-pager -q
       - name: Bundle Audit (advisories fail the job)
@@ -70,5 +75,6 @@ jobs:
           name: backend-results
           path: |
             server/tmp/rspec.xml
+            server/tmp/rspec.log
             server/log/test.log
           if-no-files-found: warn

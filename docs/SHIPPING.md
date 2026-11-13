@@ -1,42 +1,26 @@
 # Shipping & Delivery
 
-Empire supports city and inter-city delivery within Afghanistan and cross-border shipment for international markets.
-
-## Shipping methods
-
-| Method | Coverage | Rate basis |
-|--------|----------|------------|
-| City delivery | Within a city (e.g. Kabul) | Flat or weight-based |
-| Inter-city delivery | Between provinces | Region-based |
-| Cross-border | International markets | Carrier/region-based |
-
-Spree shipping methods and zones are used natively. Empire adds region/weight-based rules where the core doesn't cover them.
-
-## Delivery lifecycle
-
-1. Order placed → shipment created (Spree).
-2. Seller marks shipment `ready`.
-3. Carrier picks up → shipment `shipped`, tracking number recorded.
-4. Customer receives → shipment `delivered`, delivery confirmation.
-5. Customer may file a "not delivered" or "damaged" claim → `empire_disputes`.
+Shipping uses **native Spree 6.0.4**: shipping methods, zones, delivery rates, fulfillments and delivery confirmation. Empire does not add a custom shipping-rules engine or carrier integration.
 
 ## Rates
 
-- Without a live carrier API connection, rates are **not displayed as real-time quotes**.
-- Admins define manual rules: region, weight, or fixed rates in the Admin Dashboard.
-- When a carrier API is integrated, rates are fetched in real time.
+- Rates are defined by operators in the Admin Dashboard / Admin API (flat-rate, weight/region-based Spree calculators). The seed provisions Spree's default `Standard` and `International Shipping` flat-rate methods when an admin is created.
+- No live carrier API is connected, so rates are **not** real-time carrier quotes.
+- At checkout the cart's fulfillments expose `delivery_rates`; the buyer selects one via `PATCH /api/v3/store/carts/:id/fulfillments/:id` (`selected_delivery_rate_id`).
 
-## Tracking
+## Delivery lifecycle (native)
 
-- Each shipment carries a tracking number.
-- Customers can track orders from their account page.
-- Delivery confirmation is recorded.
+1. Order placed → Spree creates fulfillments.
+2. Staff/seller fulfils: `PATCH /api/v3/{admin,seller}/orders/:order_id/fulfillments/:id/fulfill`.
+3. Admin can mark delivered: `PATCH /api/v3/admin/orders/:order_id/fulfillments/:id/mark_delivered` (`delivered_at`, `notify_customer`).
+4. Tracking numbers / labels use Spree's native fulfillment delivery/label endpoints.
+5. Seller earnings are credited on fulfilment (see `docs/MARKETPLACE.md`).
 
-## Returns & claims
+## Returns
 
-- Return requests flow through Spree returns/refunds.
-- Damage/non-delivery claims are recorded as `empire_disputes` and reviewed by admin.
+- Returns/refunds flow through Spree's native returns and refunds.
+- A dedicated buyer–seller **disputes/claims** workflow is **not implemented** (no `empire_disputes` table). Earlier documentation claiming otherwise was inaccurate.
 
-## Future carrier API integration
+## Future carrier integration
 
-An extensible adapter pattern is reserved for connecting carrier companies (DHL, FedEx, Afghan Post, private couriers). No carrier credentials are stored in Git.
+Connecting DHL/FedEx/Afghan Post or private couriers would require a carrier adapter, credentials, and real-time rate/label/tracking integration. None is present; no carrier credentials are stored in Git.

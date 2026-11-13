@@ -1,75 +1,72 @@
 # Empire Architecture
 
-Empire is a multi-vendor e-commerce platform built on **Spree Commerce** (official open-source e-commerce framework for Ruby on Rails). Spree core is kept as a versioned, upgradable gem (`~> 6.0`). Empire-specific features are implemented through Rails migrations, models, initializers, locale files, and API controllers — **not by forking Spree**.
+Empire is a multi-vendor e-commerce platform built on **Spree Commerce 6.0.4** (official gems, exact-pinned in `server/Gemfile` and `server/Gemfile.lock`). Spree is **not forked**. Empire-specific behaviour lives in the host Rails app (`server/`) as migrations, models, services, controllers, initializers and locale files, plus a custom Next.js storefront.
 
 ## System overview
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                     Storefront (Next.js 16)                     │
-│             TypeScript · Tailwind · RTL/LTR · i18n              │
-│         http://localhost:3001  (Vercel / Next.js host)          │
-└────────────────┬────────────────────────────────────────────────┘
-                 │ HTTPS / JSON (Spree Store API v3)
-┌────────────────▼────────────────────────────────────────────────┐
-│                     Backend (Rails 8 + Spree 6)                 │
-│  Store API · Admin API · Seller API · Background jobs · Emails  │
-│         http://localhost:3000  (Railway / Docker host)          │
-└────────────────┬────────────────────────────────────────────────┘
-                 │ PostgreSQL
-┌────────────────▼────────────────────────────────────────────────┐
-│  PostgreSQL 18  (primary DB: products, orders, users, Empire    │
-│  extensions: provinces, districts, sellers, commissions, RFQ…)  │
-└─────────────────────────────────────────────────────────────────┘
+Storefront (Next.js 16, storefront/)          Admin/Seller dashboards (apps/)
+  /  /products  /cart  /checkout  /account      /dashboard  /sellers
+  /seller  /admin  (Empire staff pages)         (Spree React starters, built by CI)
+        │ relative /api/* rewrites                     │ Admin/Seller API v3
+        ▼                                              ▼
+Backend (Rails 8.1 + Spree 6.0.4, server/)  ──  PostgreSQL 18
+  Store API v3  /api/v3/store      (publishable pk_ key, customer JWT, guest cart token)
+  Admin API v3  /api/v3/admin      (secret sk_ key or admin JWT)
+  Seller API v3 /api/v3/seller     (seller JWT + X-Spree-Seller-Id)
+  Empire extensions under /api/v3/{store,seller,admin}/empire/*
+  Solid Queue / Solid Cache / Solid Cable (PostgreSQL-backed), ActiveStorage, Mailpit (dev)
 ```
+
+The storefront never calls `localhost` from the browser. `storefront/next.config.ts` rewrites `/api/*`, `/rails/*`, `/dashboard*`, `/sellers*` to `API_INTERNAL_URL` (server-side only). In Docker Compose that is `http://web:3000`.
 
 ## Components
 
 | Component | Responsibility | Technology |
 |-----------|----------------|------------|
-| Backend (`server/`) | Spree API (store + admin), background jobs (Solid Queue), caching (Solid Cache), Action Cable (Solid Cable), ActiveStorage | Ruby 4.0.9, Rails 8.1, Spree 6.0, PostgreSQL |
-| Storefront (`storefront/`) | Customer UI: products, cart, checkout, account, seller dashboard | Next.js 16, React 19, TypeScript, Tailwind |
-| Dashboard (Spree) | Admin dashboard served by backend at `/dashboard` | Spree dashboard gem |
-| Seller panel | Marketplace seller dashboard | Spree + Empire extensions |
-| Database | All persistent data | PostgreSQL 18 |
-| Jobs / Cache / Cable | Background jobs, page caching, WebSocket fallback | Solid Queue / Solid Cache / Solid Cable (all PostgreSQL-backed) |
-| Mailpit | Email capture in development | Mailpit container |
+| `server/` | Spree API backend + Empire domain (RFQ, quotes, payout review, COD, provinces/districts) | Ruby 4.0.9, Rails ~> 8.1.2, Spree = 6.0.4, PostgreSQL 18 |
+| `storefront/` | Customer UI + Empire seller/admin staff pages (payout review, RFQ) | Next.js 16.4.6, React 19.3, TypeScript, Tailwind 4 |
+| `apps/dashboard`, `apps/seller-dashboard` | Spree 6.0.4 React admin/seller starters, built and contract-tested in CI | Vite, React, TypeScript, Biome, Vitest |
+| `extensions/` | Documentation only (`extensions/README.md`); no forked gems | Markdown |
+| `docs/api/spree-6.0.4/` | Vendored official Store/Admin/Seller OpenAPI specs + source commit | YAML |
+| `docs/api/api-contract.json` | Machine-checked list of core + Empire operations used by Empire | JSON |
+| `scripts/audit-static.mjs` | Static gate: locale parity, Dari script, Pashto draft, backend key coverage, YAML/unique keys, compose build source, API contract vs specs, Gemfile/lock pins | Node |
+| Docker Compose | `docker-compose.dev.yml` (bind mounts, demo seed, Mailpit) and `docker-compose.yml` (production image, no demo) | Docker |
 
-## Data flow
+## Data flow (real Spree 6.0.4 endpoints)
 
-1. Customer browses products → Storefront calls `GET /api/v3/store/products` (Spree Store API).
-2. Customer adds to cart → `POST /api/v3/store/orders/line_items`.
-3. Customer checks out → checkout flow via Spree Store API; payment methods include COD and bank transfer (Empire extensions).
-4. Order created in `spree_orders`; Empire splits multi-vendor orders into `empire_order_splits` (one per seller) and creates `empire_commissions`.
-5. Seller views own orders/splits via Empire seller API; requests payout → `empire_payouts`.
-6. Admin verifies sellers, approves payouts, manages markets via Empire admin API.
+1. Browse: `GET /api/v3/store/products`, `GET /api/v3/store/products/:id?expand=variants,seller`.
+2. Cart: `POST /api/v3/store/carts`, then `POST /api/v3/store/carts/:id/items` (variant_id, quantity). Guest carts use `X-Spree-Token`; authenticated carts use customer JWT (`aud: store_api`).
+3. Checkout: `PATCH /api/v3/store/carts/:id` (addresses), `PATCH …/fulfillments/:id` (`selected_delivery_rate_id`), `POST …/payments` (`payment_method_id`), `POST …/complete`.
+4. Multi-vendor carts complete into a Spree **order group** (one order per seller); single-seller carts complete into one order. Commissions and seller transfers are native Spree marketplace features, not Empire tables.
+5. Seller sees only their orders/products/balances via Seller API (`X-Spree-Seller-Id`). Earnings accrue on fulfilment (`SellerTransfers::Create`); commission is recorded at placement (`Commissions::CommissionOrder`).
+6. Seller requests payout review (`POST /api/v3/seller/empire/payout_requests`). Staff approves/rejects (`PATCH /api/v3/admin/empire/payout_requests/:id/approve|reject`), which runs Spree's `seller_payout_sweep_workflow`; staff then completes the native payout (`PATCH /api/v3/admin/seller_payouts/:id/complete`).
 
-## Empire extensions (custom, non-core)
+## Empire-custom domain (non-core)
 
-| Extension | Purpose | Location |
-|-----------|---------|----------|
-| Afghanistan geography | Provinces (34) + districts, localized Dari/Pashto/English | `server/db/migrate/*provinces*`, `server/app/models/empire/province.rb` |
-| Marketplace | Seller registration, verification, shop profile | `empire_sellers`, `server/app/models/empire/seller.rb` |
-| Commissions & payouts | Per-seller commission, order split, seller payout | `empire_commissions`, `empire_payouts`, `empire_order_splits` |
-| RFQ / quotes | Request for quote, seller quotes, negotiation | `empire_rfqs`, `empire_quotes` |
-| B2B / companies | Company accounts, buyers, roles, price lists | `empire_companies`, `empire_company_users`, `empire_volume_pricing` |
-| Local payments | Bank transfer with receipt, COD | `empire_bank_transfers` |
-| Disputes | Buyer–seller disputes | `empire_disputes` |
+| Area | Tables / models | Notes |
+|------|-----------------|-------|
+| Afghanistan geography | `empire_provinces`, `empire_districts` | 34 provinces + districts seeded; Dari/English names |
+| RFQ / quotes | `empire_rfqs`, `empire_quotes` | Buyer requests, seller quotes, buyer accepts; scoped to store/company |
+| Payout review | `empire_payout_requests` | Review gate in front of native Spree seller payouts; records reviewer + native payout id |
+| Cash on delivery | `Empire::CashOnDelivery < Spree::PaymentMethod::Check` | Registered in `after_initialize`; manual capture, never auto-paid |
+| Seller application | `POST /api/v3/store/empire/seller_applications` | Creates pending native Spree seller + seller-only team membership; staff approves via native Admin API |
+
+Marketplace sellers, commissions, order splitting, companies, catalogs, price lists, volume pricing, MOQ and PO numbers are **native Spree 6.0.4** capabilities. Empire does not duplicate them in custom tables.
 
 ## Security model
 
-- Role-based access control via Spree roles (`admin`, plus Empire roles).
-- Sellers scoped to their own orders, products, commissions, payouts (no cross-seller data leakage).
-- Company buyers scoped to their company.
-- All sensitive values (SECRET_KEY_BASE, encryption keys, API keys) via environment variables / secret manager — never in Git.
-- Active Record encryption for webhook signing keys, gateway customer IDs, OAuth tokens.
+- Spree roles/permissions (`server/config/initializers/empire.rb` registers Empire permission scopes). Admin/Seller/Store APIs enforce authentication and scoping server-side.
+- Seller API is rooted in `current_seller`; another seller's id is a 404. Company buyers are scoped by native company memberships.
+- Secrets (`SECRET_KEY_BASE`, encryption keys, DB password, API keys) come from environment/secret manager. `server/config/initializers/empire_runtime.rb` fails closed in production if required secrets are missing/short.
+- Active Record encryption configured for sensitive Spree fields when the three encryption keys are set.
 
 ## Deployment targets
 
-- Backend + PostgreSQL + Redis: Railway or any Docker-compatible host (`docker-compose.yml`).
-- Storefront: Vercel or any Next.js-compatible host.
-- CI: GitHub Actions (`backend-ci.yml`, `frontend-ci.yml`).
+- Backend + PostgreSQL: any Docker host (`docker-compose.yml`, `server/Dockerfile`). No Redis required (Solid stack).
+- Storefront: any Next.js host or `storefront/Dockerfile` (standalone output).
+- CI: GitHub Actions `backend-ci.yml`, `frontend-ci.yml`, `e2e-ci.yml`.
 
-## Why no local Ruby/PostgreSQL in this sandbox
+## Local execution constraints
 
-The execution environment has Node.js/npm but no Ruby, Rails, PostgreSQL, Redis, or Docker, and apt/rubygems.org are unreachable. Therefore backend specs cannot be executed here. CI is configured to run them on GitHub Actions (ruby/setup-ruby + PostgreSQL service). See `docs/KNOWN-LIMITATIONS.md`.
+The agent sandbox has Node/npm but **no Ruby, PostgreSQL or Docker**. Backend and E2E evidence therefore comes from GitHub Actions, not local runs. See `docs/TESTING.md` and `docs/KNOWN-LIMITATIONS.md`.

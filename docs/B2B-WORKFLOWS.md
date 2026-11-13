@@ -1,55 +1,33 @@
 # B2B / Wholesale Workflows
 
-Empire supports company (B2B) accounts with wholesale pricing, volume tiers, MOQ, purchase orders, draft orders, approval workflows and RFQ. Company features are **Empire-custom** extensions built on Spree core.
+Company accounts, catalogs, price lists, volume pricing, MOQ and PO numbers are **native Spree 6.0.4** features. Empire adds **RFQ / quotes** on top. There are no `empire_companies` / `empire_volume_pricing` tables.
 
-## Company accounts
+## Company accounts (native)
 
-1. A company registers with name, registration number, tax ID, industry, addresses (billing & shipping).
-2. Company users are invited and assigned roles:
-   - `buyer` — can place orders
-   - `company_admin` — manages company, catalog, approvers
-   - `order_approver` — can approve orders
-3. Multiple buyers can belong to one company.
+- `POST /api/v3/admin/companies` creates a company (kind, `po_number_required`, etc.).
+- `POST /api/v3/admin/companies/:id/memberships` adds buyers (`customer_id`). Memberships/roles are managed by Spree; buyers are scoped to their company.
+- Store API exposes `account/companies` and `companies/:id` for the signed-in customer.
 
-Tables: `empire_companies`, `empire_company_users`, `empire_company_users.role`.
+## Catalogs, pricing, MOQ (native)
 
-## Wholesale pricing
+- `POST /api/v3/admin/catalogs` with `assignments` (`assignable_type: company`, `assignable_id`), `minimum_order_quantity`, `order_multiple`, and an inline `price_list` (`price_adjustment_percentage`, `price_adjustment_tiers`).
+- `POST /api/v3/admin/catalogs/:id/products` curates the assortment; `PUT …/quantity_rules` sets per-product MOQ/order multiples.
+- `POST /api/v3/admin/prices` with `min_quantity` + `price_list_id` creates tiered prices. Anything above quantity 1 requires a price list.
+- A B2B cart carries `company_id` and optional `po_number`; quantity rules are enforced server-side (below-MOQ adds are rejected).
 
-- **Volume pricing** (`empire_volume_pricing`): per variant, per company (or global), with `min_quantity`, optional `max_quantity`, price, currency, validity window (`starts_at`/`expires_at`).
-- **MOQ** (`spree_variants.moq`): minimum order quantity per variant (default 1).
-- **Wholesale price** (`spree_variants.wholesale_price`): negotiated price for B2B buyers.
-- Pricing can vary by company, market and sales channel, with start/end validity.
+## RFQ / quotes (Empire-custom)
 
-## Purchase orders & draft orders
+Tables: `empire_rfqs`, `empire_quotes`. Models validate store/company/variant/seller references and company membership.
 
-- A B2B order carries an optional `po_number` (customer purchase order number).
-- Orders can be created as **draft** (Spree order states: cart → draft) and submitted for approval.
-- **Approval workflow**: an `order_approver` user reviews and approves before the order is finalized.
-- Approved draft orders become regular Spree orders.
+1. **Buyer creates RFQ**: `POST /api/v3/store/empire/rfqs` (title, requested_quantity, optional company_id/variant_id/seller_id, budget_min/max, currency, expires_at). Status `open`.
+2. **Seller quotes**: `POST /api/v3/seller/empire/quotes` (rfq_id, amount, notes). RFQ moves to `quoted`; quotes are scoped to the seller's store.
+3. **Buyer accepts**: `POST /api/v3/store/empire/rfqs/:id/quotes/:quote_id/accept` (`Empire::AcceptQuote`). RFQ becomes `accepted`; the chosen quote is accepted and competing quotes are rejected. Acceptance is locked against concurrent reviews.
+4. Admin can list RFQs: `GET /api/v3/admin/empire/rfqs`.
 
-## RFQ (Request for Quote)
-
-RFQ enables price negotiation for wholesale/bulk goods:
-
-1. **Buyer creates RFQ** (`POST /api/v3/store/empire/rfqs`): title, description, budget min/max, currency, expiry, optional company.
-2. **Seller sends quote** (`Empire::Quote`): amount, currency, notes, status pending.
-3. **Buyer accepts or rejects** the quote:
-   - Accept → RFQ status `accepted`, other quotes auto-rejected.
-   - Reject → quote status `rejected`.
-4. Accepted quote can be converted into a real (wholesale) order.
-
-Tables: `empire_rfqs`, `empire_quotes`. Endpoints: store RFQ API; admin can list all RFQs.
-
-## B2B checkout flow
-
-1. Company buyer browses the company catalog with company-specific volume prices.
-2. Buyer sees MOQ and wholesale price per variant.
-3. Buyer enters PO number (optional) and submits order as draft.
-4. Company approver reviews and approves.
-5. Order is finalized; inventory reserved; commission/split calculated if marketplace items are involved.
+An accepted quote is a commercial agreement record; converting it into an order uses the normal Spree cart/checkout flow with the agreed company catalog/pricing. There is no separate "draft order approval" engine in Empire; Spree order states and company PO requirements apply.
 
 ## Security
 
-- Company data is scoped to the company; buyers of company A cannot see company B's orders or price lists.
-- Order approval requires the `order_approver` role within the company.
-- Server-side enforcement; UI-only hiding is not a control.
+- Company data is scoped by native memberships; a buyer of company A cannot read company B's orders/catalogs.
+- RFQ readability: owner customer or a customer standing for the RFQ's company (`Rfq#readable_by?`).
+- Seller quotes/payout requests require the seller JWT + `X-Spree-Seller-Id`; staff review requires an admin JWT/secret key.

@@ -1,50 +1,33 @@
 # Payments
 
-Empire supports multiple payment methods. **No payment gateway is activated without a real API connection and legal review.** Until then, methods are shown as "disabled / needs configuration".
+Empire enables **Cash on Delivery (COD)** on Spree 6.0.4's payment-method framework. No online gateway is activated without real credentials and legal review.
 
 ## Payment methods
 
 | Method | Description | Status |
 |--------|-------------|--------|
-| Cash on Delivery (COD) | Pay cash when the order is delivered | Enabled (demo) |
-| Bank transfer with receipt | Transfer to a merchant bank account; upload receipt for admin verification | Enabled (demo) |
-| Stripe / Stripe Connect | Online card payments | Disabled (needs legal review + live gateway) |
-| Local gateway adapter | Extensible adapter for local PSPs | Planned |
+| Cash on Delivery (COD) | Pay cash on delivery; manual capture | Implemented (`Empire::CashOnDelivery`) |
+| Stripe / Stripe Connect | Online card payments | Gem present (`spree_stripe`); **not enabled** — needs legal review + live credentials |
+| Bank transfer with receipt | Upload receipt, admin verification | **Not implemented** (no `empire_bank_transfers` table or endpoint) |
+| Local PSP adapter | Afghan/local gateway | Planned — no provider contract |
 
-## Cash on Delivery (COD)
+## Cash on Delivery
 
-- Customer selects COD at checkout; no upfront payment.
-- Order is created and sent to the seller; payment collected on delivery.
-- No API credentials required; safe to enable for the Afghanistan market.
-
-## Bank transfer with receipt
-
-1. Customer selects bank transfer; enters bank name, account number, holder, branch, amount, reference number.
-2. Customer uploads a payment receipt (ActiveStorage).
-3. A `empire_bank_transfers` record is created with `status = pending`.
-4. Admin verifies the receipt against the bank statement and marks `verified` or `rejected` (with reason).
-5. Order is released only after verification.
-
-Endpoint: `POST /api/v3/store/empire/bank_transfers`.
+- `Empire::CashOnDelivery < Spree::PaymentMethod::Check` reuses Spree's offline Check implementation; provider key `empire_cash_on_delivery`.
+- Registered in `Rails.application.config.after_initialize` (after Spree core populates `Spree.payment_methods`), matching the pattern used by Spree provider gems. Registering in `to_prepare` fails because the registry is still nil.
+- Seeded as an active payment method for the Afghanistan store.
+- Checkout: `POST /api/v3/store/carts/:id/payments` with the COD `payment_method_id`, then `POST …/complete`. The order is **not** reported paid merely because COD was selected; capture is manual.
+- Staff captures when cash is collected: `PATCH /api/v3/admin/orders/:order_id/payments/:id/capture`.
 
 ## Security rules
 
-- **No API keys or bank credentials in Git.** All secrets via environment variables (`STRIPE_SECRET_KEY`, etc.) or secret manager.
-- **Idempotency:** payment callbacks/webhooks are keyed by a unique reference number (`empire_bank_transfers.reference_number` unique) to prevent double-charging or duplicate orders.
-- **Status tracking:** every payment has a defined, traceable status (pending → verified/paid → rejected).
-- **No repeat charges:** the same reference number cannot create two transfers for one order.
-- **Admin review:** receipts can be inspected and verified/rejected by an administrator.
-- **Seller payouts** keep a financial/audit history (`empire_payouts` with requested/approved/paid/rejected states and `approved_by`).
-
-## Disabled by default
-
-Stripe is listed in the Spree `Gemfile` (`spree_stripe`) but `Empire.config.stripe_enabled = false`. It is only enabled after:
-1. Legal review confirms Stripe/Stripe Connect can operate in the target market.
-2. Live gateway credentials are provided via environment variables.
-3. A test transaction succeeds in sandbox.
+- No API keys or bank credentials in Git; secrets via environment/secret manager.
+- COD has no gateway credentials and cannot double-charge.
+- Payment state transitions follow Spree's native payment workflow; Empire does not invent parallel payment ledgers.
+- Seller payouts use the native Spree ledger with an Empire review gate (see `docs/MARKETPLACE.md`).
 
 ## What still needs external integration
 
-- A real local PSP (e.g. Afghan payment gateway) — adapter implementation + credentials.
-- International card processing — Stripe/Stripe Connect (pending legal review).
-- Webhook endpoints from the gateway (idempotent, signature-verified).
+- Stripe/Stripe Connect: legal clearance for the target market, live keys, sandbox transaction proof.
+- A real local PSP: adapter implementation + credentials + signature-verified, idempotent webhooks.
+- Bank-transfer receipt verification: would require a new model, upload endpoint, and admin verification workflow (currently absent).

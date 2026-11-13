@@ -1,66 +1,51 @@
 # Security
 
-Security is part of the architecture, not an afterthought.
-
 ## Access control
 
-- Role-based access control via Spree roles (`admin`, `customer`) plus Empire roles (`seller`, `company_admin`, `order_approver`, `buyer`).
-- Sellers access only their own orders, products, commissions, payouts — enforced in models and API controllers, not only in the UI.
-- Company buyers access only their company's orders/catalog.
-- Admin has full access.
-- `Empire::Ability.permissions(user)` centralizes permission logic.
+- Spree 6.0.4 roles/permissions. Empire registers extra permission scopes in `server/config/initializers/empire.rb` (`rfqs`, `quotes`, `payout_requests`).
+- Store API: publishable `pk_` key (`X-Spree-Api-Key`), customer JWT (`aud: store_api`), guest cart token (`X-Spree-Token`).
+- Admin API: secret `sk_` key or admin JWT. Seller API: seller JWT **plus** `X-Spree-Seller-Id`; the store is derived from the seller and foreign seller ids are 404.
+- Seller application creates a seller-only team membership; it never grants store staff roles, approval, or payouts.
+- Company buyers are scoped by native company memberships; RFQ readability checks owner or company standing (`Rfq#readable_by?`).
+- Payout review requires a staff reviewer (`Empire::ReviewPayoutRequest` raises unless the reviewer is a `Spree.admin_user_class`).
 
 ## Server-side validation
 
-- All API endpoints validate input server-side (ActiveRecord validations + strong parameters).
-- Client-side validation in the storefront is UX only — never a security control.
+- ActiveRecord validations + strong parameters on every Empire endpoint. Client-side validation is UX only.
+- Quote acceptance and payout review run inside transactions with row locks to prevent double-accept / double-review (`RecordNotUnique` / already-reviewed guards).
 
 ## Secrets management
 
-- `SECRET_KEY_BASE`, Active Record encryption keys, database credentials, API keys (Stripe, carrier, SMTP) come from environment variables or a secret manager.
-- `.env` is gitignored; `.env.example` documents required variables.
-- No secrets committed to Git.
+- `SECRET_KEY_BASE`, Active Record encryption keys, DB password, API keys come from environment/secret manager. `.env` is gitignored; `.env.example` documents variables; `scripts/bootstrap-env.sh` generates random local secrets and refuses to overwrite an existing `.env`.
+- `server/config/initializers/empire_runtime.rb` **fails closed in production** if required secrets are missing or shorter than 32 chars (asset builds with `SECRET_KEY_BASE_DUMMY` are exempt).
+- No secrets committed to Git. CI uses clearly-labelled `ci-only-*` values.
 
-## Encryption
+## Encryption & transport
 
-- Active Record encryption encrypts webhook signing keys, gateway customer IDs, and OAuth tokens at rest (when the three encryption keys are set).
-- TLS enforced in production (`RAILS_FORCE_SSL`).
+- Active Record encryption configured for sensitive Spree fields when the three encryption keys are set.
+- Production defaults to HTTPS (`RAILS_FORCE_SSL`, `RAILS_ASSUME_SSL`); dev/CI disable them only for local HTTP smoke tests.
+- Content Security Policy initializer present; parameter filtering configured.
 
-## CSRF / session / tokens
+## Tokens / sessions
 
-- Rails CSRF protection for session-based requests.
-- API authentication via Spree API keys (publishable/secret).
-- Secure, HTTP-only session cookies.
+- Spree JWT auth with audience separation (store vs admin/seller). Admin/seller refresh and logout read the HttpOnly refresh cookie only (not a body token).
+- Guest carts are claimed with `X-Spree-Token`; address-book writes require the account owner.
 
-## Injection protection
+## Injection / uploads
 
-- Parameterized queries via ActiveRecord — no raw SQL with user input.
-- Strong parameters prevent mass-assignment.
-- Content Security Policy header configured.
+- Parameterized ActiveRecord queries; strong parameters prevent mass assignment.
+- Uploads use ActiveStorage; production should set content-type/size limits and object storage.
 
-## File uploads
+## Audit trail
 
-- Uploaded files (receipts, seller documents, product images) via ActiveStorage.
-- Content-type and size limits recommended in production.
-- Stored outside web root or on S3-compatible object storage.
-
-## Audit log
-
-- Sensitive admin and financial operations (seller verify/reject/suspend, payout approve/reject, bank transfer verify) record the acting admin user (`approved_by`, `verified_by`, `resolved_by`).
-- `empire_payouts`, `empire_bank_transfers`, `empire_disputes` keep timestamps and actor references.
-
-## Idempotency
-
-- Bank transfer reference numbers are unique — prevents duplicate transfers/double charges.
-- Payment callbacks keyed by unique reference.
+- `empire_payout_requests` records `reviewed_by`, `reviewed_at`, `rejection_reason`, and the native `payout_id`.
+- Quote acceptance records the accepted quote and rejects competitors atomically.
+- Native Spree ledgers (commissions, transfers, payouts) remain the financial source of truth.
 
 ## Dependency scanning
 
-- `bundler-audit` and `brakeman` included in the Gemfile and CI for vulnerability scanning.
+- `brakeman` and `bundler-audit` run in `backend-ci.yml` (warnings/advisories fail the job). Execution status is in `docs/TESTING.md`.
 
 ## What needs external setup
 
-- Real payment gateway credentials (after legal review).
-- SMTP credentials for email delivery.
-- Object-storage credentials (S3/R2) for file uploads.
-- Secret manager (Railway variables, Vercel env, or equivalent) for production.
+- Real payment gateway credentials (after legal review), SMTP, object storage, and a production secret manager. None is contacted by default.

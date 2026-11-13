@@ -1,61 +1,43 @@
 # Marketplace (Multi-vendor)
 
-Empire's marketplace capability connects sellers, manufacturers, wholesalers, importers and exporters with buyers in a single bazaar. The marketplace logic builds on Spree's multi-vendor support plus Empire-specific extensions.
+Empire uses **Spree 6.0.4's native marketplace**: sellers, seller approval, commission rates, multi-vendor order splitting, seller transfers and seller payouts are core features. Empire adds a public seller-application endpoint and a payout **review** gate; it does not duplicate sellers/commissions/payouts in custom tables.
 
-## Seller registration & profile
+## Seller registration & approval
 
-1. A customer registers a normal Spree user account.
-2. The user requests a seller profile (`POST /api/v3/store/empire/sellers` — shop name, description, business registration number, tax ID, identity/registration/tax documents).
-3. The profile is stored in `empire_sellers` with `verification_status = pending`.
-4. Documents are attached via ActiveStorage (file storage configurable via `.env`).
-
-## Seller verification (admin-controlled)
-
-- Admin reviews seller profiles in the Admin Dashboard / Admin API.
-- Admin can: verify (set `verified`), reject (with reason), suspend.
-- Endpoints: `PATCH /api/v3/admin/empire/sellers/:id/verify`, `/reject`, `/suspend`.
-- Until verified, the seller's shop shows a "pending verification" badge and products are not promoted.
+1. Applicant calls `POST /api/v3/store/empire/seller_applications` with email, password, shop name, optional registration number.
+2. Empire creates a pending native `Spree::Seller` (via `Spree.seller_create_workflow`) and a seller-only team membership (`seller.add_user`). No store staff role, approval, or payout is granted.
+3. Staff approves through the native Admin API: `PATCH /api/v3/admin/sellers/:id/approve` (optionally `override_requirements`). Suspension/rejection use native seller admin endpoints.
+4. Seller signs in at `POST /api/v3/seller/auth/login`; subsequent Seller API calls require the seller JWT **and** `X-Spree-Seller-Id`.
 
 ## Data isolation
 
-- A seller can only view **their own** orders, order splits, commissions, payouts and products.
-- No seller can access another seller's customers, revenue, inventory or documents.
-- Access control is enforced server-side (Spree roles + `Empire::Ability`); hiding buttons in the UI is not sufficient.
+- Seller API is rooted in `current_seller`; another seller's id is a 404. Sellers see only their own products, orders, stock locations, balances and payouts.
+- Store staff roles are never granted by the application endpoint.
+- Enforcement is server-side (Spree permissions + controller scoping), not UI-only.
 
-## Commission & revenue split
+## Commission & revenue split (native)
 
-- Commission rate is configurable per seller (`empire_sellers.commission_rate`, default 10%).
-- On each completed order, Empire creates an `empire_commission` record:
-  - `order_total` — order total
-  - `commission_rate` — seller's rate
-  - `commission_amount` — seller's share
-  - `platform_share` — order_total − commission_amount
-  - `seller_share` — commission_amount
-- Multi-vendor carts are split into `empire_order_splits` — one per seller — with subtotal, commission and seller payable.
+- Commission rates are native `Spree::CommissionRate` records (seed creates a disabled 0% `marketplace-default`; operators configure real rates).
+- At order placement, `Spree::Commissions::CommissionOrder` records commission lines.
+- Multi-vendor carts complete into a Spree **order group** with one order per seller; single-seller carts complete into one order.
+- On fulfilment (`order.fulfilled`), `Spree::SellerTransfers::Create` credits the seller's balance (requires fulfillments and `fully_fulfilled?`).
 
-## Seller payouts
+## Seller payouts (native ledger + Empire review gate)
 
-- A verified seller requests a payout (`POST /api/v3/store/empire/payouts`).
-- Payout status: requested → approved → paid (or rejected).
-- Admin approves/rejects payouts via `PATCH /api/v3/admin/empire/payouts/:id/approve` or `/reject`.
-- Payout records keep `net_amount`, `commission_deducted`, `currency`, `payment_reference` for audit.
+1. Seller checks balance: `GET /api/v3/seller/balances`; payout history: `GET /api/v3/seller/payouts`.
+2. Seller requests review: `POST /api/v3/seller/empire/payout_requests` (currency must match a positive balance; creates `empire_payout_requests` with status `requested`). This is a review request, **not** money movement.
+3. Staff approves/rejects: `PATCH /api/v3/admin/empire/payout_requests/:id/approve|reject`. Approval runs `Spree.seller_payout_sweep_workflow`, which claims completed unsettled transfers and creates a native pending `Spree::SellerPayout`; the request stores `payout_id`, `reviewed_by`, `reviewed_at`. Rejection records a reason.
+4. Staff completes the native payout: `PATCH /api/v3/admin/seller_payouts/:id/complete`. The balance falls only after the native `seller_payout_complete_workflow`.
 
-## Seller dashboard (storefront)
+## Seller surfaces
 
-- `/seller` — overview: sales today, new orders, active products, pending commission.
-- Seller products: add/edit own products (via Spree API scoped to seller).
-- Seller orders: view orders containing own products.
-- Seller income & commission: commission statement.
-- Seller payouts: request payout, view payout history.
-- Seller settings: shop profile.
+- Spree seller dashboard: `apps/seller-dashboard` (served at `/sellers`), built and contract-tested in CI.
+- Empire staff pages in the storefront: `/seller/payout-requests` (request + history) and `/admin/payout-requests` (approve/reject), using `storefront/src/lib/staff-api.ts` (admin/seller JWT with HttpOnly-cookie refresh).
 
-## What uses Spree core vs Empire custom
+## Source split
 
 | Capability | Source |
 |------------|--------|
-| Multi-vendor order concepts | Spree core (orders, line items, shipments) |
-| Seller registration | Spree user + Empire `empire_sellers` |
-| Seller verification | Empire admin API |
-| Commission per seller | Empire `empire_commissions` |
-| Order split per seller | Empire `empire_order_splits` |
-| Payout requests | Empire `empire_payouts` |
+| Sellers, approval, commission, order split, transfers, payouts | Spree 6.0.4 core |
+| Public seller application | Empire (`store/empire/seller_applications`) |
+| Payout review request + staff decision | Empire (`empire_payout_requests`, `Empire::ReviewPayoutRequest`) |
