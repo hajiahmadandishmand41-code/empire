@@ -8,7 +8,7 @@ on:
 permissions:
   contents: read
 jobs:
-  lint-and-build:
+  storefront:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     defaults:
@@ -33,3 +33,35 @@ jobs:
         run: bash ../scripts/ci-run.sh npm run lint
       - name: Production build
         run: bash ../scripts/ci-run.sh npm run build
+  dashboards:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: dashboard
+            base: /dashboard/
+          - app: seller-dashboard
+            base: /sellers/
+    defaults:
+      run:
+        working-directory: apps/${{ matrix.app }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: corepack enable
+      - name: Install locked dependencies
+        run: bash ../../scripts/ci-run.sh corepack pnpm install --frozen-lockfile
+      - name: TypeScript
+        run: bash ../../scripts/ci-run.sh corepack pnpm typecheck
+      - name: Lint
+        run: bash ../../scripts/ci-run.sh corepack pnpm lint
+      - name: Real contract tests
+        run: bash ../../scripts/ci-run.sh corepack pnpm test
+      - name: Production build
+        run: bash ../../scripts/ci-run.sh corepack pnpm build
+        env:
+          VITE_BASE_PATH: ${{ matrix.base }}

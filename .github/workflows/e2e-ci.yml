@@ -52,13 +52,19 @@ jobs:
         run: bash scripts/ci-run.sh npm --prefix storefront run test:e2e
       - name: Collect container logs
         if: always()
-        run: docker compose -f docker-compose.dev.yml logs --no-color > compose-e2e.log
+        run: |
+          docker compose -f docker-compose.dev.yml logs --no-color > compose-e2e.log || true
+          docker compose -f docker-compose.dev.yml logs --no-color migrate > migrate.log 2>&1 || true
+      - name: Surface migration failure details
+        if: failure()
+        run: node scripts/annotate-log.mjs migrate.log "Migration container failed"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: e2e-results
           path: |
             compose-e2e.log
+            migrate.log
             storefront/test-results/
             storefront/playwright-report/
           if-no-files-found: warn
@@ -85,12 +91,19 @@ jobs:
           docker compose -f docker-compose.yml exec -T web bin/rails runner 'raise "missing COD" unless Empire::CashOnDelivery.exists?; raise "missing geography" unless Empire::Province.count == 34; raise "demo leaked" if Spree::Customer.exists?(email: "demo.buyer@empire.test"); puts "production image runtime OK"'
       - name: Collect container logs
         if: always()
-        run: docker compose -f docker-compose.yml logs --no-color > compose-production.log
+        run: |
+          docker compose -f docker-compose.yml logs --no-color > compose-production.log || true
+          docker compose -f docker-compose.yml logs --no-color migrate > migrate.log 2>&1 || true
+      - name: Surface migration failure details
+        if: failure()
+        run: node scripts/annotate-log.mjs migrate.log "Migration container failed"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: production-image-results
-          path: compose-production.log
+          path: |
+            compose-production.log
+            migrate.log
           if-no-files-found: warn
       - name: Destroy isolated test stack
         if: always()
