@@ -12,19 +12,25 @@ module Api
           end
 
           def create
-            rfq = ::Empire::Rfq.where(store: current_store).where(status: :open)
-                               .where(seller_id: [nil, current_seller.id]).find(params[:rfq_id])
-            quote = ::Empire::Quote.new(rfq: rfq, seller: current_seller,
-                                        amount: params[:amount], notes: params[:notes])
+            quote = nil
             ActiveRecord::Base.transaction do
-              quote.save!
-              rfq.lock!
-              raise ActiveRecord::RecordInvalid.new(quote), I18n.t('empire.quote_unavailable') unless rfq.open? && !rfq.expired?
-              rfq.update!(status: :quoted)
+              # Lock the parent before validating the quote. Several sellers may
+              # quote the same open RFQ, but acceptance closes it atomically.
+              rfq = ::Empire::Rfq.where(store: current_store).where(status: %i[open quoted])
+                                 .where(seller_id: [nil, current_seller.id]).lock.find(params[:rfq_id])
+              if rfq.expired?
+                return render_error(code: 'quote_unavailable', message: I18n.t('empire.quote_unavailable'), status: :unprocessable_content)
+              end
+
+              quote = ::Empire::Quote.create!(rfq: rfq, seller: current_seller,
+                                              amount: params[:amount], notes: params[:notes])
+              rfq.update!(status: :quoted) if rfq.open?
             end
             render json: serialize(quote), status: :created
           rescue ActiveRecord::RecordInvalid => e
             render_validation_error(e.record.errors)
+          rescue ActiveRecord::RecordNotUnique
+            render_error(code: 'quote_unavailable', message: I18n.t('empire.quote_unavailable'), status: :unprocessable_content)
           end
 
           private

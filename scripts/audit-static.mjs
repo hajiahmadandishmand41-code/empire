@@ -35,6 +35,21 @@ for (const [locale, messages] of [['en', en], ['fa-AF', fa]]) {
 }
 const psDoc = YAML.parseDocument(read('server/config/locales/ps-AF.yml'), { uniqueKeys: true });
 if (psDoc.errors.length || psDoc.toJS()['ps-AF'].translation_status !== 'draft') fail('Pashto YAML must be valid and Draft');
+const backendKeys = new Set();
+for (const file of walk('server/app').filter((f) => f.endsWith('.rb'))) {
+  for (const match of read(file).matchAll(/I18n\.t\(['"]empire\.([a-z_]+)['"]/g)) backendKeys.add(match[1]);
+}
+for (const locale of ['en', 'fa-AF']) {
+  const file = `server/config/locales/empire-backend.${locale}.yml`;
+  const doc = YAML.parseDocument(read(file), { uniqueKeys: true });
+  if (doc.errors.length) fail(`${file}: ${doc.errors.map((e) => e.message).join('; ')}`);
+  const messages = doc.toJS()[locale].empire;
+  for (const key of backendKeys) if (typeof messages[key] !== 'string' || !messages[key].trim()) fail(`${file} missing backend message empire.${key}`);
+}
+for (const file of walk('.github/workflows').filter((f) => f.endsWith('.yml'))) {
+  const doc = YAML.parseDocument(read(file), { uniqueKeys: true });
+  if (doc.errors.length) fail(`${file}: ${doc.errors.map((e) => e.message).join('; ')}`);
+}
 const forbidden = /TODO-PS|Mannyjad|Manny|د Before|م진|امپراتور|\bpicture\b/i;
 for (const file of [...uiFiles, ...walk('server/app').filter((f) => f.endsWith('.rb')), ...walk('server/db/seeds').filter((f) => f.endsWith('.rb'))]) {
   if (forbidden.test(read(file))) fail(`Corrupted text remains in ${file}`);
@@ -56,5 +71,9 @@ for (const [api, method, operationPath] of contract.core) {
 }
 if (read('docs/api/spree-6.0.4/SOURCE-COMMIT.txt').trim() !== contract.source_commit) fail('API source commit mismatch');
 const lock = read('server/Gemfile.lock');
+const dependencies = lock.split(/^DEPENDENCIES$/m)[1]?.split(/^[A-Z][A-Z ]+$/m)[0] || '';
 for (const gem of ['spree', 'spree_core', 'spree_api']) if (!new RegExp(`    ${gem} \\(6\\.0\\.4\\)`).test(lock)) fail(`${gem} is not locked to 6.0.4`);
+for (const gem of ['spree', 'spree_emails', 'spree_dashboard', 'spree_easypost', 'spree_meilisearch', 'spree_stripe', 'spree_opentelemetry', 'spree_mcp']) {
+  if (!new RegExp(`^  ${gem} \\(= 6\\.0\\.4\\)$`, 'm').test(dependencies)) fail(`${gem} Gemfile.lock dependency is not pinned exactly; frozen bundle install will fail`);
+}
 console.log(JSON.stringify({ status: 'PASS', translation_keys: keys.length, frontend_keys_checked: used.size, pashto: 'Draft (not offered)', core_operations_checked: contract.core.length, empire_operations: contract.empire.length, compose_builds: 'Empire server/Dockerfile', spree: contract.spree_version }));

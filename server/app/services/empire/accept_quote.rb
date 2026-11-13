@@ -6,8 +6,10 @@ module Empire
       ActiveRecord::Base.transaction do
         rfq.lock!
         quote.lock!
-        raise ActiveRecord::RecordInvalid.new(quote), I18n.t('empire.quote_unavailable') unless
-          quote.rfq_id == rfq.id && quote.pending? && %w[open quoted].include?(rfq.status) && !rfq.expired?
+        unless quote.rfq_id == rfq.id && quote.pending? && %w[open quoted].include?(rfq.status) && !rfq.expired?
+          quote.errors.add(:base, I18n.t('empire.quote_unavailable'))
+          raise ActiveRecord::RecordInvalid.new(quote)
+        end
 
         quote.update!(status: :accepted, responded_at: Time.current)
         rfq.quotes.where.not(id: quote.id).where(status: :pending).find_each do |other|

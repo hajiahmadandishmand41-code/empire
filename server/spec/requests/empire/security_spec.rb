@@ -13,6 +13,11 @@ RSpec.describe 'Empire backend authorization', type: :request do
   let(:rate) { create(:commission_rate, store: empire_store, value: 10) }
   let(:payout_request) { create(:empire_payout_request, seller: seller) }
 
+  def earn_for(target_seller)
+    create(:seller_transfer, seller: target_seller, store: empire_store, currency: 'AFN', amount: '1080.00', status: 'completed',
+           order: create(:completed_order_with_totals, store: empire_store, seller: target_seller, currency: 'AFN'))
+  end
+
   it 'rejects an anonymous customer JWT path and an anonymous admin path' do
     get '/api/v3/store/customers/me', headers: { 'X-Spree-Api-Key' => publishable_key.token }
     expect_status!(401)
@@ -56,6 +61,7 @@ RSpec.describe 'Empire backend authorization', type: :request do
   end
 
   it 'lets a seller request settlement but never review it' do
+    earn_for(seller)
     post '/api/v3/seller/empire/payout_requests', params: { note: 'Please review', status: 'approved' }.to_json,
          headers: seller_headers(seller_user, seller)
     expect_status!(201)
@@ -70,11 +76,13 @@ RSpec.describe 'Empire backend authorization', type: :request do
     limited = create(:admin_user, :without_admin_role)
     empire_store.add_user(limited, create(:role, name: 'Read only', resource: empire_store, permissions: %w[read_orders]))
     request = Empire::PayoutRequest.create!(seller: seller, currency: 'AFN')
+    earn_for(seller)
     patch "/api/v3/admin/empire/payout_requests/#{request.id}/approve", headers: admin_headers(limited)
     expect_status!(403)
     patch "/api/v3/admin/empire/payout_requests/#{request.id}/approve", headers: admin_headers(admin)
-    expect_status!(422) # authorized, but this seller has no payable ledger balance
-    expect(request.reload.status).to eq('requested')
+    expect_status!(200)
+    expect(request.reload.status).to eq('approved')
+    expect(request.payout).to be_present
   end
 
   it 'isolates company records and company RFQs' do

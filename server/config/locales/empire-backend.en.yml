@@ -1,0 +1,7 @@
+en:
+  empire:
+    application_invalid: The application could not be saved. Check the shop name, email and password.
+    quote_unavailable: This quotation request is no longer open for quotes.
+    request_already_reviewed: This payout request has already been reviewed.
+    no_payable_balance: There is no payable balance available for settlement.
+    payout_request_invalid: A valid open payout request could not be created. Check the balance and existing requests.

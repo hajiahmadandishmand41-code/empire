@@ -859,15 +859,15 @@ DEPENDENCIES
   solid_cable
   solid_cache
   solid_queue
-  spree (~> 6.0)
-  spree_dashboard (~> 6.0)
+  spree (= 6.0.4)
+  spree_dashboard (= 6.0.4)
   spree_dev_tools (>= 1.0.0.beta1)
-  spree_easypost (~> 6.0)
-  spree_emails (~> 6.0)
-  spree_mcp (~> 6.0)
-  spree_meilisearch (~> 6.0)
-  spree_opentelemetry (~> 6.0)
-  spree_stripe (~> 6.0)
+  spree_easypost (= 6.0.4)
+  spree_emails (= 6.0.4)
+  spree_mcp (= 6.0.4)
+  spree_meilisearch (= 6.0.4)
+  spree_opentelemetry (= 6.0.4)
+  spree_stripe (= 6.0.4)
   thruster
   tzinfo-data
   web-console

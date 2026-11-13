@@ -12,7 +12,8 @@ module Api
           end
 
           def create
-            unless current_seller.approved? && current_seller.balances.any? { |balance| balance.balance.positive? }
+            payable = current_seller.balances.any? { |balance| balance.currency == current_store.default_currency && balance.balance.positive? }
+            unless current_seller.approved? && payable
               return render_error(code: 'no_payable_balance', message: I18n.t('empire.no_payable_balance'), status: :unprocessable_content)
             end
 

@@ -19,7 +19,7 @@ module Empire
     def seller_may_quote
       return if rfq.nil? || seller.nil?
       return if seller.approved? && seller.store_id == rfq.store_id &&
-                (rfq.seller_id.nil? || rfq.seller_id == seller.id) && rfq.open? && !rfq.expired?
+                (rfq.seller_id.nil? || rfq.seller_id == seller.id) && %w[open quoted].include?(rfq.status) && !rfq.expired?
 
       errors.add(:base, I18n.t('empire.quote_unavailable'))
     end
