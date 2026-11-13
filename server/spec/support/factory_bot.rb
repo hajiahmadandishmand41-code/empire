@@ -1,7 +1,9 @@
 require 'factory_bot'
 require 'rspec/rails'
 
-FactoryBot.find_definitions
+# Spree's testing support may already have loaded the host app factories via
+# factory_bot_rails; loading them twice raises DuplicateDefinitionError.
+FactoryBot.find_definitions unless FactoryBot.factories.registered?(:empire_rfq)
 
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
