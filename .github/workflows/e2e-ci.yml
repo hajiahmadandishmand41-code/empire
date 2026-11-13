@@ -1,0 +1,24 @@
+name: E2E CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Note E2E status
+        run: |
+          echo "E2E test tooling (Playwright/Cypress) is not yet installed."
+          echo "E2E workflows are documented in docs/TESTING.md and docs/KNOWN-LIMITATIONS.md."
+          echo "Implement E2E tests when the runner supports a full browser stack."
+          exit 0

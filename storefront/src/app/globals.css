@@ -1,0 +1,79 @@
+/* Empire Storefront — Global styles with RTL/LTR support */
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900 antialiased;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans Arabic", "Noto Sans", sans-serif;
+}
+
+/* Direction utilities */
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+[dir="rtl"] body {
+  text-align: right;
+}
+[dir="ltr"] {
+  direction: ltr;
+  text-align: left;
+}
+
+/* Ensure numbers/Latin text stay LTR inside RTL blocks */
+[dir="rtl"] .ltr {
+  direction: ltr;
+  text-align: left;
+  display: inline-block;
+}
+
+/* Focus styles for accessibility */
+:focus-visible {
+  @apply outline-none ring-2 ring-emerald-600 ring-offset-2 rounded;
+}
+
+/* Skeleton / loading placeholders */
+.skeleton {
+  @apply bg-gray-200 rounded animate-pulse;
+}
+
+/* Custom scrollbar (subtle) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400;
+}
+
+/* Brand colors: emerald (green), slate (charcoal), white */
+:root {
+  --empire-emerald: 16 185 129;   /* #10b981 */
+  --empire-slate: 30 41 59;        /* #1f2937 */
+  --empire-white: 255 255 255;
+}
+
+.text-emerald-brand {
+  color: rgb(var(--empire-emerald));
+}
+.bg-emerald-brand {
+  background-color: rgb(var(--empire-emerald));
+}
+.border-emerald-brand {
+  border-color: rgb(var(--empire-emerald));
+}
+.text-slate-brand {
+  color: rgb(var(--empire-slate));
+}
+.bg-slate-brand {
+  background-color: rgb(var(--empire-slate));
+}
