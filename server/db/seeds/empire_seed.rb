@@ -26,7 +26,7 @@ module EmpireSeed
   def load!
     store = Spree::Store.default || raise('Spree store seed did not create a default store')
     store.update!(name: 'Empire', default_currency: 'AFN', supported_currencies: 'AFN',
-                  default_locale: 'fa-AF', supported_locales: 'en,fa-AF', default_country_code: 'AF')
+                  default_locale: 'fa', supported_locales: 'en,fa', default_country_code: 'AF')
     seed_geography
     seed_cod(store)
     seed_publishable_key(store)

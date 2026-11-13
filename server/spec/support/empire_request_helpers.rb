@@ -6,7 +6,7 @@ module EmpireRequestHelpers
   def empire_store
     @empire_store ||= begin
       store = Spree::Store.default || create(:store, default: true)
-      store.update!(default_currency: 'AFN', supported_currencies: 'AFN', default_locale: 'fa-AF', supported_locales: 'en,fa-AF')
+      store.update!(default_currency: 'AFN', supported_currencies: 'AFN', default_locale: 'fa', supported_locales: 'en,fa')
       store
     end
   end

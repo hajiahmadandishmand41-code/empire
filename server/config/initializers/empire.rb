@@ -15,7 +15,10 @@ Rails.application.config.after_initialize do
   Spree.payment_methods << Empire::CashOnDelivery unless Spree.payment_methods.include?(Empire::CashOnDelivery)
 end
 
+# Spree 6.0.4's canonical content locale for Dari/Persian is `fa`
+# (Spree::Locales::ALL). Empire's storefront UI locale is `fa-AF`; keep both
+# I18n locales available so store content and Empire messages resolve safely.
 Rails.application.config.i18n.default_locale = :'fa-AF'
-Rails.application.config.i18n.available_locales = %i[en fa-AF]
-Rails.application.config.i18n.fallbacks = { 'fa-AF': [:en], en: [:en] }
+Rails.application.config.i18n.available_locales = %i[en fa fa-AF]
+Rails.application.config.i18n.fallbacks = { 'fa-AF': %i[fa en], fa: %i[fa-AF en], en: [:en] }
 Rails.application.config.time_zone = 'Asia/Kabul'
