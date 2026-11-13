@@ -1,6 +1,11 @@
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
+  # Honour RAILS_LOG_LEVEL / RAILS_LOG_TO_STDOUT so container migrations and
+  # seeds do not drown in debug SQL (and CI can surface the real error).
+  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "debug").to_sym
+  config.logger = ActiveSupport::TaggedLogging.logger(STDOUT) if ENV["RAILS_LOG_TO_STDOUT"] == "true"
+
   # When SMTP_HOST is set deliver via SMTP.
   # Otherwise use Letter Opener to preview emails in the browser.
   if ENV["SMTP_HOST"].present?
