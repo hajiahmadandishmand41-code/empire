@@ -9,7 +9,9 @@ Spree.permissions.register_scope(:quotes, group: :customers, audiences: %i[store
 Spree.permissions.register_scope(:payout_requests, group: :sellers,
                                  resources: -> { [Empire::PayoutRequest] })
 
-Rails.application.config.to_prepare do
+# Core populates the payment-method registry in its own after_initialize.
+# Append in a later after_initialize, as the Spree provider gems do.
+Rails.application.config.after_initialize do
   Spree.payment_methods << Empire::CashOnDelivery unless Spree.payment_methods.include?(Empire::CashOnDelivery)
 end
 

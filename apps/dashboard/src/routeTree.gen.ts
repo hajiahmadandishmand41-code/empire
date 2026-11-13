@@ -8,119 +8,117 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './../../dashboard/src/routes/__root'
-import { Route as authenticatedRouteImport } from './../../dashboard/src/routes/_authenticated'
-import { Route as forgotPasswordRouteImport } from './../../dashboard/src/routes/forgot-password'
-import { Route as loginRouteImport } from './../../dashboard/src/routes/login'
-import { Route as resetPasswordRouteImport } from './../../dashboard/src/routes/reset-password'
-import { Route as setupRouteImport } from './../../dashboard/src/routes/setup'
-import { Route as authenticatedIndexRouteImport } from './../../dashboard/src/routes/_authenticated/index'
-import { Route as authenticatedStoreIdRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId'
-import { Route as acceptInvitationDotinvitationIdRouteImport } from './../../dashboard/src/routes/accept-invitation.$invitationId'
-import { Route as IndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/index'
-import { Route as SplatRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/$'
-import { Route as ClaimsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/claims'
-import { Route as ExchangesRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/exchanges'
-import { Route as GettingStartedRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/getting-started'
-import { Route as ReturnsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/returns'
-import { Route as SettingsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings'
-import { Route as BrandsDotindexRouteImport } from './../../dashboard-plugin-example/src/routes/brands.index'
-import { Route as BrandsDotbrandIdRouteImport } from './../../dashboard-plugin-example/src/routes/brands.$brandId'
-import { Route as CompaniesIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/companies/index'
-import { Route as CompaniesCompanyIdRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/companies/$companyId'
-import { Route as CustomersIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/customers/index'
-import { Route as CustomersCustomerIdRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/customers/$customerId'
-import { Route as InventoryIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/inventory/index'
-import { Route as LoyaltyGiftCardsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/loyalty/gift-cards'
-import { Route as LoyaltyStoreCreditsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/loyalty/store-credits'
-import { Route as OauthAuthorizeRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/oauth/authorize'
-import { Route as OrdersIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/orders/index'
-import { Route as OrdersDraftsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/orders/drafts'
-import { Route as OrdersNewRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/orders/new'
-import { Route as ProductsIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/products/index'
-import { Route as ProductsProductIdRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/products/$productId'
-import { Route as ProductsMediaRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/products/media'
-import { Route as ProductsNewRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/products/new'
-import { Route as ProductsOptionsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/products/options'
-import { Route as ProductsTranslationsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/products/translations'
-import { Route as PromotionsIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/promotions/index'
-import { Route as PromotionsPromotionIdRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/promotions/$promotionId'
-import { Route as PromotionsGiftCardsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/promotions/gift-cards'
-import { Route as PromotionsNewRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/promotions/new'
-import { Route as PurchaseOrdersIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/purchase-orders/index'
-import { Route as PurchaseOrdersNewRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/purchase-orders/new'
-import { Route as ReportsIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/reports/index'
-import { Route as ReportsReportIdRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/reports/$reportId'
-import { Route as ReportsNewRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/reports/new'
-import { Route as SellersIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/sellers/index'
-import { Route as SellersSellerIdRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/sellers/$sellerId'
-import { Route as SellersCommissionRatesRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/sellers/commission-rates'
-import { Route as SellersTransfersRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/sellers/transfers'
-import { Route as SettingsIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/index'
-import { Route as SettingsAiAgentsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/ai-agents'
-import { Route as SettingsAllowedOriginsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/allowed-origins'
-import { Route as SettingsApiKeysRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/api-keys'
-import { Route as SettingsChannelsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/channels'
-import { Route as SettingsCommissionRatesRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/commission-rates'
-import { Route as SettingsCustomFieldDefinitionsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/custom-field-definitions'
-import { Route as SettingsIntegrationsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/integrations'
-import { Route as SettingsMaintenanceTasksRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/maintenance-tasks'
-import { Route as SettingsMarketplaceRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/marketplace'
-import { Route as SettingsMarketsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/markets'
-import { Route as SettingsOauthClientsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/oauth-clients'
-import { Route as SettingsPackageTypesRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/package-types'
-import { Route as SettingsPaymentMethodsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/payment-methods'
-import { Route as SettingsPayoutsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/payouts'
-import { Route as SettingsPoliciesRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/policies'
-import { Route as SettingsProductTypesRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/product-types'
-import { Route as SettingsReasonsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/reasons'
-import { Route as SettingsRolesRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/roles'
-import { Route as SettingsSellerRequirementsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/seller-requirements'
-import { Route as SettingsStaffRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/staff'
-import { Route as SettingsStockLocationsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/stock-locations'
-import { Route as SettingsStoreRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/store'
-import { Route as SettingsStorefrontRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/storefront'
-import { Route as SettingsSystemInfoRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/system-info'
-import { Route as SettingsTaxesRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/taxes'
-import { Route as SuppliersIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/suppliers/index'
-import { Route as SuppliersSupplierIdRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/suppliers/$supplierId'
-import { Route as TransfersIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/transfers/index'
-import { Route as TransfersNewRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/transfers/new'
-import { Route as CustomersGroupsIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/customers/groups/index'
-import { Route as CustomersGroupsGroupIdRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/customers/groups/$groupId'
-import { Route as OrdersOrderIdIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/orders/$orderId/index'
-import { Route as OrdersOrderIdEditRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/orders/$orderId/edit'
-import { Route as ProductsCatalogsIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/products/catalogs/index'
-import { Route as ProductsCatalogsCatalogIdRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/products/catalogs/$catalogId'
-import { Route as ProductsCategoriesIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/products/categories/index'
-import { Route as ProductsCategoriesCategoryIdRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/products/categories/$categoryId'
-import { Route as ProductsCategoriesNewRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/products/categories/new'
-import { Route as ProductsCollectionsIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/products/collections/index'
-import { Route as ProductsCollectionsCollectionIdRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/products/collections/$collectionId'
-import { Route as ProductsCollectionsNewRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/products/collections/new'
-import { Route as ProductsPriceListsIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/products/price-lists/index'
-import { Route as ProductsPriceListsNewRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/products/price-lists/new'
-import { Route as PurchaseOrdersPurchaseOrderIdIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/purchase-orders/$purchaseOrderId/index'
-import { Route as PurchaseOrdersPurchaseOrderIdEditRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/purchase-orders/$purchaseOrderId/edit'
-import { Route as SellersPayoutsIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/sellers/payouts/index'
-import { Route as SellersPayoutsPayoutIdRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/sellers/payouts/$payoutId'
-import { Route as SettingsDeliveryProfilesIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/delivery-profiles/index'
-import { Route as SettingsEmailsIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/emails/index'
-import { Route as SettingsImportsIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/imports/index'
-import { Route as SettingsTaxesIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/taxes/index'
-import { Route as SettingsTaxesCategoriesRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/taxes/categories'
-import { Route as SettingsTaxesExemptionReasonsRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/taxes/exemption-reasons'
-import { Route as SettingsTaxesRatesRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/taxes/rates'
-import { Route as SettingsWebhooksIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/webhooks/index'
-import { Route as SettingsWebhooksWebhookEndpointIdRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/webhooks/$webhookEndpointId'
-import { Route as TransfersTransferIdIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/transfers/$transferId/index'
-import { Route as TransfersTransferIdEditRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/transfers/$transferId/edit'
-import { Route as ProductsPriceListsPriceListIdIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/products/price-lists/$priceListId/index'
-import { Route as SettingsDeliveryProfilesProfileIdIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/delivery-profiles/$profileId/index'
-import { Route as SettingsEmailsTemplatesIndexRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/emails/templates/index'
-import { Route as SettingsEmailsTemplatesTemplateIdRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/emails/templates/$templateId'
-import { Route as SettingsDeliveryProfilesProfileIdMethodsMethodIdRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/delivery-profiles/$profileId/methods/$methodId'
-import { Route as SettingsDeliveryProfilesProfileIdMethodsNewRouteImport } from './../../dashboard/src/routes/_authenticated/$storeId/settings/delivery-profiles/$profileId/methods/new'
+import { Route as rootRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/__root'
+import { Route as authenticatedRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated'
+import { Route as forgotPasswordRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/forgot-password'
+import { Route as loginRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/login'
+import { Route as resetPasswordRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/reset-password'
+import { Route as setupRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/setup'
+import { Route as authenticatedIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/index'
+import { Route as authenticatedStoreIdRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId'
+import { Route as acceptInvitationDotinvitationIdRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/accept-invitation.$invitationId'
+import { Route as IndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/index'
+import { Route as SplatRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/$'
+import { Route as ClaimsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/claims'
+import { Route as ExchangesRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/exchanges'
+import { Route as GettingStartedRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/getting-started'
+import { Route as ReturnsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/returns'
+import { Route as SettingsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings'
+import { Route as CompaniesIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/companies/index'
+import { Route as CompaniesCompanyIdRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/companies/$companyId'
+import { Route as CustomersIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/customers/index'
+import { Route as CustomersCustomerIdRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/customers/$customerId'
+import { Route as InventoryIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/inventory/index'
+import { Route as LoyaltyGiftCardsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/loyalty/gift-cards'
+import { Route as LoyaltyStoreCreditsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/loyalty/store-credits'
+import { Route as OauthAuthorizeRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/oauth/authorize'
+import { Route as OrdersIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/orders/index'
+import { Route as OrdersDraftsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/orders/drafts'
+import { Route as OrdersNewRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/orders/new'
+import { Route as ProductsIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/products/index'
+import { Route as ProductsProductIdRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/products/$productId'
+import { Route as ProductsMediaRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/products/media'
+import { Route as ProductsNewRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/products/new'
+import { Route as ProductsOptionsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/products/options'
+import { Route as ProductsTranslationsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/products/translations'
+import { Route as PromotionsIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/promotions/index'
+import { Route as PromotionsPromotionIdRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/promotions/$promotionId'
+import { Route as PromotionsGiftCardsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/promotions/gift-cards'
+import { Route as PromotionsNewRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/promotions/new'
+import { Route as PurchaseOrdersIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/purchase-orders/index'
+import { Route as PurchaseOrdersNewRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/purchase-orders/new'
+import { Route as ReportsIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/reports/index'
+import { Route as ReportsReportIdRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/reports/$reportId'
+import { Route as ReportsNewRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/reports/new'
+import { Route as SellersIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/sellers/index'
+import { Route as SellersSellerIdRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/sellers/$sellerId'
+import { Route as SellersCommissionRatesRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/sellers/commission-rates'
+import { Route as SellersTransfersRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/sellers/transfers'
+import { Route as SettingsIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/index'
+import { Route as SettingsAiAgentsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/ai-agents'
+import { Route as SettingsAllowedOriginsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/allowed-origins'
+import { Route as SettingsApiKeysRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/api-keys'
+import { Route as SettingsChannelsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/channels'
+import { Route as SettingsCommissionRatesRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/commission-rates'
+import { Route as SettingsCustomFieldDefinitionsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/custom-field-definitions'
+import { Route as SettingsIntegrationsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/integrations'
+import { Route as SettingsMaintenanceTasksRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/maintenance-tasks'
+import { Route as SettingsMarketplaceRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/marketplace'
+import { Route as SettingsMarketsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/markets'
+import { Route as SettingsOauthClientsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/oauth-clients'
+import { Route as SettingsPackageTypesRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/package-types'
+import { Route as SettingsPaymentMethodsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/payment-methods'
+import { Route as SettingsPayoutsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/payouts'
+import { Route as SettingsPoliciesRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/policies'
+import { Route as SettingsProductTypesRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/product-types'
+import { Route as SettingsReasonsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/reasons'
+import { Route as SettingsRolesRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/roles'
+import { Route as SettingsSellerRequirementsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/seller-requirements'
+import { Route as SettingsStaffRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/staff'
+import { Route as SettingsStockLocationsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/stock-locations'
+import { Route as SettingsStoreRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/store'
+import { Route as SettingsStorefrontRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/storefront'
+import { Route as SettingsSystemInfoRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/system-info'
+import { Route as SettingsTaxesRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/taxes'
+import { Route as SuppliersIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/suppliers/index'
+import { Route as SuppliersSupplierIdRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/suppliers/$supplierId'
+import { Route as TransfersIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/transfers/index'
+import { Route as TransfersNewRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/transfers/new'
+import { Route as CustomersGroupsIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/customers/groups/index'
+import { Route as CustomersGroupsGroupIdRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/customers/groups/$groupId'
+import { Route as OrdersOrderIdIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/orders/$orderId/index'
+import { Route as OrdersOrderIdEditRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/orders/$orderId/edit'
+import { Route as ProductsCatalogsIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/products/catalogs/index'
+import { Route as ProductsCatalogsCatalogIdRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/products/catalogs/$catalogId'
+import { Route as ProductsCategoriesIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/products/categories/index'
+import { Route as ProductsCategoriesCategoryIdRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/products/categories/$categoryId'
+import { Route as ProductsCategoriesNewRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/products/categories/new'
+import { Route as ProductsCollectionsIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/products/collections/index'
+import { Route as ProductsCollectionsCollectionIdRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/products/collections/$collectionId'
+import { Route as ProductsCollectionsNewRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/products/collections/new'
+import { Route as ProductsPriceListsIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/products/price-lists/index'
+import { Route as ProductsPriceListsNewRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/products/price-lists/new'
+import { Route as PurchaseOrdersPurchaseOrderIdIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/purchase-orders/$purchaseOrderId/index'
+import { Route as PurchaseOrdersPurchaseOrderIdEditRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/purchase-orders/$purchaseOrderId/edit'
+import { Route as SellersPayoutsIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/sellers/payouts/index'
+import { Route as SellersPayoutsPayoutIdRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/sellers/payouts/$payoutId'
+import { Route as SettingsDeliveryProfilesIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/delivery-profiles/index'
+import { Route as SettingsEmailsIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/emails/index'
+import { Route as SettingsImportsIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/imports/index'
+import { Route as SettingsTaxesIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/taxes/index'
+import { Route as SettingsTaxesCategoriesRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/taxes/categories'
+import { Route as SettingsTaxesExemptionReasonsRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/taxes/exemption-reasons'
+import { Route as SettingsTaxesRatesRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/taxes/rates'
+import { Route as SettingsWebhooksIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/webhooks/index'
+import { Route as SettingsWebhooksWebhookEndpointIdRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/webhooks/$webhookEndpointId'
+import { Route as TransfersTransferIdIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/transfers/$transferId/index'
+import { Route as TransfersTransferIdEditRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/transfers/$transferId/edit'
+import { Route as ProductsPriceListsPriceListIdIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/products/price-lists/$priceListId/index'
+import { Route as SettingsDeliveryProfilesProfileIdIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/delivery-profiles/$profileId/index'
+import { Route as SettingsEmailsTemplatesIndexRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/emails/templates/index'
+import { Route as SettingsEmailsTemplatesTemplateIdRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/emails/templates/$templateId'
+import { Route as SettingsDeliveryProfilesProfileIdMethodsMethodIdRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/delivery-profiles/$profileId/methods/$methodId'
+import { Route as SettingsDeliveryProfilesProfileIdMethodsNewRouteImport } from './../node_modules/.pnpm/@spree+dashboard@6.0.4_304501eb6992b73d51cd8eb950b24fc8/node_modules/@spree/dashboard/src/routes/_authenticated/$storeId/settings/delivery-profiles/$profileId/methods/new'
 
 const authenticatedRoute = authenticatedRouteImport.update({
   id: '/_authenticated',
@@ -195,16 +193,6 @@ const ReturnsRoute = ReturnsRouteImport.update({
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
-  getParentRoute: () => authenticatedStoreIdRoute,
-} as any)
-const BrandsDotindexRoute = BrandsDotindexRouteImport.update({
-  id: '/brands/',
-  path: '/brands/',
-  getParentRoute: () => authenticatedStoreIdRoute,
-} as any)
-const BrandsDotbrandIdRoute = BrandsDotbrandIdRouteImport.update({
-  id: '/brands/$brandId',
-  path: '/brands/$brandId',
   getParentRoute: () => authenticatedStoreIdRoute,
 } as any)
 const CompaniesIndexRoute = CompaniesIndexRouteImport.update({
@@ -717,7 +705,6 @@ export interface FileRoutesByFullPath {
   '/$storeId/returns': typeof ReturnsRoute
   '/$storeId/settings': typeof SettingsRouteWithChildren
   '/$storeId/': typeof IndexRoute
-  '/$storeId/brands/$brandId': typeof BrandsDotbrandIdRoute
   '/$storeId/companies/$companyId': typeof CompaniesCompanyIdRoute
   '/$storeId/customers/$customerId': typeof CustomersCustomerIdRoute
   '/$storeId/loyalty/gift-cards': typeof LoyaltyGiftCardsRoute
@@ -766,7 +753,6 @@ export interface FileRoutesByFullPath {
   '/$storeId/settings/taxes': typeof SettingsTaxesRouteWithChildren
   '/$storeId/suppliers/$supplierId': typeof SuppliersSupplierIdRoute
   '/$storeId/transfers/new': typeof TransfersNewRoute
-  '/$storeId/brands/': typeof BrandsDotindexRoute
   '/$storeId/companies/': typeof CompaniesIndexRoute
   '/$storeId/customers/': typeof CustomersIndexRoute
   '/$storeId/inventory/': typeof InventoryIndexRoute
@@ -828,7 +814,6 @@ export interface FileRoutesByTo {
   '/$storeId/getting-started': typeof GettingStartedRoute
   '/$storeId/returns': typeof ReturnsRoute
   '/$storeId': typeof IndexRoute
-  '/$storeId/brands/$brandId': typeof BrandsDotbrandIdRoute
   '/$storeId/companies/$companyId': typeof CompaniesCompanyIdRoute
   '/$storeId/customers/$customerId': typeof CustomersCustomerIdRoute
   '/$storeId/loyalty/gift-cards': typeof LoyaltyGiftCardsRoute
@@ -876,7 +861,6 @@ export interface FileRoutesByTo {
   '/$storeId/settings/system-info': typeof SettingsSystemInfoRoute
   '/$storeId/suppliers/$supplierId': typeof SuppliersSupplierIdRoute
   '/$storeId/transfers/new': typeof TransfersNewRoute
-  '/$storeId/brands': typeof BrandsDotindexRoute
   '/$storeId/companies': typeof CompaniesIndexRoute
   '/$storeId/customers': typeof CustomersIndexRoute
   '/$storeId/inventory': typeof InventoryIndexRoute
@@ -942,7 +926,6 @@ export interface FileRoutesById {
   '/_authenticated/$storeId/returns': typeof ReturnsRoute
   '/_authenticated/$storeId/settings': typeof SettingsRouteWithChildren
   '/_authenticated/$storeId/': typeof IndexRoute
-  '/_authenticated/$storeId/brands/$brandId': typeof BrandsDotbrandIdRoute
   '/_authenticated/$storeId/companies/$companyId': typeof CompaniesCompanyIdRoute
   '/_authenticated/$storeId/customers/$customerId': typeof CustomersCustomerIdRoute
   '/_authenticated/$storeId/loyalty/gift-cards': typeof LoyaltyGiftCardsRoute
@@ -991,7 +974,6 @@ export interface FileRoutesById {
   '/_authenticated/$storeId/settings/taxes': typeof SettingsTaxesRouteWithChildren
   '/_authenticated/$storeId/suppliers/$supplierId': typeof SuppliersSupplierIdRoute
   '/_authenticated/$storeId/transfers/new': typeof TransfersNewRoute
-  '/_authenticated/$storeId/brands/': typeof BrandsDotindexRoute
   '/_authenticated/$storeId/companies/': typeof CompaniesIndexRoute
   '/_authenticated/$storeId/customers/': typeof CustomersIndexRoute
   '/_authenticated/$storeId/inventory/': typeof InventoryIndexRoute
@@ -1057,7 +1039,6 @@ export interface FileRouteTypes {
     | '/$storeId/returns'
     | '/$storeId/settings'
     | '/$storeId/'
-    | '/$storeId/brands/$brandId'
     | '/$storeId/companies/$companyId'
     | '/$storeId/customers/$customerId'
     | '/$storeId/loyalty/gift-cards'
@@ -1106,7 +1087,6 @@ export interface FileRouteTypes {
     | '/$storeId/settings/taxes'
     | '/$storeId/suppliers/$supplierId'
     | '/$storeId/transfers/new'
-    | '/$storeId/brands/'
     | '/$storeId/companies/'
     | '/$storeId/customers/'
     | '/$storeId/inventory/'
@@ -1168,7 +1148,6 @@ export interface FileRouteTypes {
     | '/$storeId/getting-started'
     | '/$storeId/returns'
     | '/$storeId'
-    | '/$storeId/brands/$brandId'
     | '/$storeId/companies/$companyId'
     | '/$storeId/customers/$customerId'
     | '/$storeId/loyalty/gift-cards'
@@ -1216,7 +1195,6 @@ export interface FileRouteTypes {
     | '/$storeId/settings/system-info'
     | '/$storeId/suppliers/$supplierId'
     | '/$storeId/transfers/new'
-    | '/$storeId/brands'
     | '/$storeId/companies'
     | '/$storeId/customers'
     | '/$storeId/inventory'
@@ -1281,7 +1259,6 @@ export interface FileRouteTypes {
     | '/_authenticated/$storeId/returns'
     | '/_authenticated/$storeId/settings'
     | '/_authenticated/$storeId/'
-    | '/_authenticated/$storeId/brands/$brandId'
     | '/_authenticated/$storeId/companies/$companyId'
     | '/_authenticated/$storeId/customers/$customerId'
     | '/_authenticated/$storeId/loyalty/gift-cards'
@@ -1330,7 +1307,6 @@ export interface FileRouteTypes {
     | '/_authenticated/$storeId/settings/taxes'
     | '/_authenticated/$storeId/suppliers/$supplierId'
     | '/_authenticated/$storeId/transfers/new'
-    | '/_authenticated/$storeId/brands/'
     | '/_authenticated/$storeId/companies/'
     | '/_authenticated/$storeId/customers/'
     | '/_authenticated/$storeId/inventory/'
@@ -1494,20 +1470,6 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/$storeId/settings'
       preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof authenticatedStoreIdRoute
-    }
-    '/_authenticated/$storeId/brands/': {
-      id: '/_authenticated/$storeId/brands/'
-      path: '/brands'
-      fullPath: '/$storeId/brands/'
-      preLoaderRoute: typeof BrandsDotindexRouteImport
-      parentRoute: typeof authenticatedStoreIdRoute
-    }
-    '/_authenticated/$storeId/brands/$brandId': {
-      id: '/_authenticated/$storeId/brands/$brandId'
-      path: '/brands/$brandId'
-      fullPath: '/$storeId/brands/$brandId'
-      preLoaderRoute: typeof BrandsDotbrandIdRouteImport
       parentRoute: typeof authenticatedStoreIdRoute
     }
     '/_authenticated/$storeId/companies/': {
@@ -2291,7 +2253,6 @@ interface authenticatedStoreIdRouteChildren {
   ReturnsRoute: typeof ReturnsRoute
   SettingsRoute: typeof SettingsRouteWithChildren
   IndexRoute: typeof IndexRoute
-  BrandsDotbrandIdRoute: typeof BrandsDotbrandIdRoute
   CompaniesCompanyIdRoute: typeof CompaniesCompanyIdRoute
   CustomersCustomerIdRoute: typeof CustomersCustomerIdRoute
   LoyaltyGiftCardsRoute: typeof LoyaltyGiftCardsRoute
@@ -2315,7 +2276,6 @@ interface authenticatedStoreIdRouteChildren {
   SellersTransfersRoute: typeof SellersTransfersRoute
   SuppliersSupplierIdRoute: typeof SuppliersSupplierIdRoute
   TransfersNewRoute: typeof TransfersNewRoute
-  BrandsDotindexRoute: typeof BrandsDotindexRoute
   CompaniesIndexRoute: typeof CompaniesIndexRoute
   CustomersIndexRoute: typeof CustomersIndexRoute
   InventoryIndexRoute: typeof InventoryIndexRoute
@@ -2358,7 +2318,6 @@ const authenticatedStoreIdRouteChildren: authenticatedStoreIdRouteChildren = {
   ReturnsRoute: ReturnsRoute,
   SettingsRoute: SettingsRouteWithChildren,
   IndexRoute: IndexRoute,
-  BrandsDotbrandIdRoute: BrandsDotbrandIdRoute,
   CompaniesCompanyIdRoute: CompaniesCompanyIdRoute,
   CustomersCustomerIdRoute: CustomersCustomerIdRoute,
   LoyaltyGiftCardsRoute: LoyaltyGiftCardsRoute,
@@ -2382,7 +2341,6 @@ const authenticatedStoreIdRouteChildren: authenticatedStoreIdRouteChildren = {
   SellersTransfersRoute: SellersTransfersRoute,
   SuppliersSupplierIdRoute: SuppliersSupplierIdRoute,
   TransfersNewRoute: TransfersNewRoute,
-  BrandsDotindexRoute: BrandsDotindexRoute,
   CompaniesIndexRoute: CompaniesIndexRoute,
   CustomersIndexRoute: CustomersIndexRoute,
   InventoryIndexRoute: InventoryIndexRoute,

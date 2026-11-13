@@ -9,7 +9,9 @@ status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 && "${GITHUB_ACTIONS:-}" == "true" ]]; then
   # GitHub caps annotation messages at 4 KB; keep the actual final error,
   # not the beginning of a much longer tail that GitHub would truncate.
-  tail_text=$(tail -c 3000 "$log")
+  head_text=$(grep -m 4 -E 'Error|error:|aborted!|failed|FAIL|Could not|Missing' "$log" | head -c 900 || true)
+  tail_text=$(tail -c 2000 "$log")
+  tail_text="${head_text}"$'\n'"…${tail_text}"
   tail_text=${tail_text//'%'/'%25'}
   tail_text=${tail_text//$'\r'/'%0D'}
   tail_text=${tail_text//$'\n'/'%0A'}

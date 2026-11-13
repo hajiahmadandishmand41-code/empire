@@ -121,5 +121,22 @@
   "order_status_placed": "Placed",
   "order_status_completed": "Completed",
   "order_status_canceled": "Canceled",
-  "order_status_draft": "Draft"
+  "order_status_draft": "Draft",
+  "admin_login": "Admin sign-in",
+  "seller_login": "Seller sign-in",
+  "payout_review": "Payout request review",
+  "payout_requests": "Payout requests",
+  "no_payout_requests": "There are no payout requests yet.",
+  "approve": "Approve",
+  "reject": "Reject",
+  "rejection_reason": "Reason for rejection",
+  "balances": "Balances",
+  "no_balance": "No earned balance yet.",
+  "payout_note": "Note for the reviewer (optional)",
+  "request_payout": "Request payout review",
+  "payout_status_requested": "Awaiting review",
+  "payout_status_approved": "Approved for settlement",
+  "payout_status_rejected": "Rejected",
+  "payout_review_link": "Review payout requests",
+  "payout_request_link": "Request a payout review"
 }

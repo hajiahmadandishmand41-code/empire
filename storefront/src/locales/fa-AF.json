@@ -121,5 +121,22 @@
   "order_status_placed": "ثبت‌شده",
   "order_status_completed": "تکمیل‌شده",
   "order_status_canceled": "لغوشده",
-  "order_status_draft": "پیش‌نویس"
+  "order_status_draft": "پیش‌نویس",
+  "admin_login": "ورود مدیر",
+  "seller_login": "ورود فروشنده",
+  "payout_review": "بررسی درخواست‌های پرداخت",
+  "payout_requests": "درخواست‌های پرداخت",
+  "no_payout_requests": "هنوز درخواست پرداختی وجود ندارد.",
+  "approve": "تأیید",
+  "reject": "رد کردن",
+  "rejection_reason": "دلیل رد کردن",
+  "balances": "موجودی‌ها",
+  "no_balance": "هنوز موجودی کسب‌شده‌ای وجود ندارد.",
+  "payout_note": "یادداشت برای بررسی‌کننده (اختیاری)",
+  "request_payout": "درخواست بررسی پرداخت",
+  "payout_status_requested": "در انتظار بررسی",
+  "payout_status_approved": "تأییدشده برای تسویه",
+  "payout_status_rejected": "ردشده",
+  "payout_review_link": "بررسی درخواست‌های پرداخت",
+  "payout_request_link": "درخواست بررسی پرداخت"
 }
