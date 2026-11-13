@@ -91,6 +91,9 @@ services:
 
   migrate:
     <<: *backend
+    # Bind-mounted source is owned by the host user; run the one-shot
+    # migration/seed as root so schema.rb/log writes cannot fail on ownership.
+    user: "0:0"
     restart: "no"
     command: ["sh", "-c", "bin/rails db:migrate && echo EMPIRE_PREPARED && bin/rails db:seed && echo EMPIRE_SEEDED"]
 

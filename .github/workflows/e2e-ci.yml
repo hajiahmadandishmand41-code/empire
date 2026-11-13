@@ -59,7 +59,7 @@ jobs:
         if: failure()
         run: |
           node scripts/annotate-log.mjs migrate.log "Migration container failed" 12000
-          grep -nE "EMPIRE_PREPARED|EMPIRE_SEEDED|rake aborted|ActiveRecord::[A-Za-z]+Error|I18n::|NoMethodError|ArgumentError|RecordInvalid|Missing permission|Empire seeds|NameError|RuntimeError" migrate.log | grep -vE "CREATE|SELECT|INSERT|ALTER|DROP|ms\)" | tail -60 > migrate-errors.log || true
+          grep -nE "EMPIRE_PREPARED|EMPIRE_SEEDED|rake aborted|ActiveRecord::[A-Za-z]+Error|I18n::|NoMethodError|ArgumentError|RecordInvalid|Missing permission|Empire seeds|NameError|RuntimeError|Permission|EACCES|schema.rb|aborted" migrate.log | grep -vE "CREATE|SELECT|INSERT|ALTER|DROP|ms\)" | tail -60 > migrate-errors.log || true
           node scripts/annotate-log.mjs migrate-errors.log "Migration/seed error lines" 12000
       - uses: actions/upload-artifact@v4
         if: always()
@@ -101,7 +101,7 @@ jobs:
         if: failure()
         run: |
           node scripts/annotate-log.mjs migrate.log "Migration container failed" 12000
-          grep -nE "EMPIRE_PREPARED|EMPIRE_SEEDED|rake aborted|ActiveRecord::[A-Za-z]+Error|I18n::|NoMethodError|ArgumentError|RecordInvalid|Missing permission|Empire seeds|NameError|RuntimeError" migrate.log | grep -vE "CREATE|SELECT|INSERT|ALTER|DROP|ms\)" | tail -60 > migrate-errors.log || true
+          grep -nE "EMPIRE_PREPARED|EMPIRE_SEEDED|rake aborted|ActiveRecord::[A-Za-z]+Error|I18n::|NoMethodError|ArgumentError|RecordInvalid|Missing permission|Empire seeds|NameError|RuntimeError|Permission|EACCES|schema.rb|aborted" migrate.log | grep -vE "CREATE|SELECT|INSERT|ALTER|DROP|ms\)" | tail -60 > migrate-errors.log || true
           node scripts/annotate-log.mjs migrate-errors.log "Migration/seed error lines" 12000
       - uses: actions/upload-artifact@v4
         if: always()
