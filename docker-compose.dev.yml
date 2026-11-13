@@ -50,6 +50,7 @@ x-backend: &backend
     - bundle_cache:/usr/local/bundle
     - storage_data:/rails/storage
     - tmp_cache:/rails/tmp
+    - log_data:/rails/log
   tmpfs:
     - /rails/public/assets
   depends_on:
@@ -91,7 +92,7 @@ services:
   migrate:
     <<: *backend
     restart: "no"
-    command: ["sh", "-c", "bin/rails db:prepare && echo EMPIRE_PREPARED && bin/rails db:seed && echo EMPIRE_SEEDED"]
+    command: ["sh", "-c", "bin/rails db:migrate && echo EMPIRE_PREPARED && bin/rails db:seed && echo EMPIRE_SEEDED"]
 
   web:
     <<: *backend
@@ -132,3 +133,4 @@ volumes:
   storage_data:
   bundle_cache:
   tmp_cache:
+  log_data:
