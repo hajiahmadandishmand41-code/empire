@@ -11,7 +11,7 @@ FactoryBot.define do
 
   factory :empire_quote, class: 'Empire::Quote' do
     association :rfq, factory: :empire_rfq
-    association :seller, factory: [:seller, :approved], store: rfq.store
+    seller { association(:seller, :approved, store: rfq.store) }
     amount { '950.00' }
     currency { 'AFN' }
   end
