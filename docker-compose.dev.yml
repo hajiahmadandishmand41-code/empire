@@ -90,7 +90,7 @@ services:
   migrate:
     <<: *backend
     restart: "no"
-    command: ["sh", "-c", "bin/rails db:prepare && bin/rails db:seed"]
+    command: ["sh", "-c", "bin/rails db:prepare --trace && bin/rails db:seed --trace"]
 
   web:
     <<: *backend

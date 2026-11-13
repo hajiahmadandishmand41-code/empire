@@ -1,29 +1,30 @@
 Rails.application.routes.draw do
-  Spree::Core::Engine.add_routes do
-    namespace :api, defaults: { format: 'json' } do
-      namespace :v3 do
-        namespace :store do
-          namespace :empire do
-            resources :provinces, only: %i[index show]
-            resources :seller_applications, only: :create
-            resources :rfqs, only: %i[index show create] do
-              post 'quotes/:quote_id/accept', action: :accept, on: :member
-            end
+  # Empire's own API controllers live in the host app (Api::V3::*), not under
+  # the Spree engine namespace, so they are drawn here rather than inside
+  # Spree::Core::Engine.add_routes (which would resolve Spree::Api::V3::*).
+  namespace :api, defaults: { format: 'json' } do
+    namespace :v3 do
+      namespace :store do
+        namespace :empire do
+          resources :provinces, only: %i[index show]
+          resources :seller_applications, only: :create
+          resources :rfqs, only: %i[index show create] do
+            post 'quotes/:quote_id/accept', action: :accept, on: :member
           end
         end
-        namespace :seller do
-          namespace :empire do
-            resources :quotes, only: %i[index create]
-            resources :payout_requests, only: %i[index create]
-          end
+      end
+      namespace :seller do
+        namespace :empire do
+          resources :quotes, only: %i[index create]
+          resources :payout_requests, only: %i[index create]
         end
-        namespace :admin do
-          namespace :empire do
-            resources :rfqs, only: :index
-            resources :payout_requests, only: :index do
-              patch :approve, on: :member
-              patch :reject, on: :member
-            end
+      end
+      namespace :admin do
+        namespace :empire do
+          resources :rfqs, only: :index
+          resources :payout_requests, only: :index do
+            patch :approve, on: :member
+            patch :reject, on: :member
           end
         end
       end

@@ -3,7 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe Empire::ReviewPayoutRequest, type: :service do
-  let(:store) { Spree::Store.default || create(:store, default: true) }
+  let(:store) do
+    (Spree::Store.default || create(:store, default: true)).tap do |record|
+      record.update!(name: 'Empire', default_currency: 'AFN', supported_currencies: 'AFN',
+                     default_locale: 'fa', supported_locales: 'en,fa', default_country_code: 'AF')
+    end
+  end
   let(:seller) { create(:seller, :approved, store: store) }
   let(:reviewer) { create(:admin_user) }
   let(:request) { create(:empire_payout_request, seller: seller, currency: 'AFN') }

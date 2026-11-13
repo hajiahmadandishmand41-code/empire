@@ -28,23 +28,23 @@ RSpec.describe 'Empire backend authorization', type: :request do
   end
 
   it 'does not accept a buyer token on the admin API' do
-    get '/api/v3/admin/orders', headers: admin_headers(buyer)
+    get '/api/v3/admin/orders', headers: store_headers(buyer)
     expect_status!(401)
-    get '/api/v3/admin/empire/payout_requests', headers: admin_headers(buyer)
+    get '/api/v3/admin/empire/payout_requests', headers: store_headers(buyer)
     expect_status!(401)
   end
 
   it 'does not accept a seller token on the admin API' do
-    get '/api/v3/admin/commission_rates', headers: admin_headers(seller_user)
+    get '/api/v3/admin/commission_rates', headers: seller_headers(seller_user, seller)
     expect_status!(401)
     patch "/api/v3/admin/sellers/#{other_seller.prefixed_id}/approve", params: { override_requirements: true }.to_json,
-          headers: admin_headers(seller_user)
+          headers: seller_headers(seller_user, seller)
     expect_status!(401)
   end
 
   it "hides another seller's order" do
-    mine = create(:completed_order_with_totals, store: empire_store, seller: seller)
-    theirs = create(:completed_order_with_totals, store: empire_store, seller: other_seller)
+    mine = create(:completed_order_with_totals, store: empire_store, seller: seller, currency: 'AFN')
+    theirs = create(:completed_order_with_totals, store: empire_store, seller: other_seller, currency: 'AFN')
     get '/api/v3/seller/orders', headers: seller_headers(seller_user, seller)
     expect_status!(200)
     expect(body_json['data'].map { |row| row['id'] }).to include(mine.prefixed_id).and exclude(theirs.prefixed_id)
@@ -89,7 +89,7 @@ RSpec.describe 'Empire backend authorization', type: :request do
     create(:company_membership, company: company, customer: buyer)
     get '/api/v3/store/account/companies', headers: store_headers(buyer)
     expect_status!(200)
-    expect(body_json['data'].map { |row| row['id'] }).to eq([company.prefixed_id])
+    expect(body_json['data'].map { |row| row['company_id'] }).to eq([company.prefixed_id])
     get "/api/v3/store/companies/#{other_company.prefixed_id}", headers: store_headers(buyer)
     expect_status!(404)
     post '/api/v3/store/empire/rfqs', params: { title: 'Cross-tenant attempt', requested_quantity: 1,

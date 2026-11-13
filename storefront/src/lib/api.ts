@@ -146,7 +146,11 @@ export async function getAccount(): Promise<Customer> { return request(`${STORE}
 export async function listOrders(): Promise<{ data: Order[] }> { return request(`${STORE}/customers/me/orders`); }
 export async function listAddresses(): Promise<{ data: Address[] }> { return request(`${STORE}/customers/me/addresses`); }
 export async function createAddress(address: Address): Promise<Address> { return request(`${STORE}/customers/me/addresses`, { method: "POST", body: address }); }
-export async function listCompanies(): Promise<{ data: Company[] }> { return request(`${STORE}/account/companies`); }
+export async function listCompanies(): Promise<{ data: Company[] }> {
+  // Spree returns the buyer's company memberships, each with the company nested.
+  const result = await request<{ data: { company: Company }[] }>(`${STORE}/account/companies`);
+  return { data: result.data.map((membership) => membership.company) };
+}
 export async function listProvinces(): Promise<{ data: Province[] }> { return request(`${STORE}/empire/provinces`); }
 export async function listRfqs(): Promise<{ data: Rfq[] }> { return request(`${STORE}/empire/rfqs`); }
 export async function getRfq(id: number): Promise<Rfq> { return request(`${STORE}/empire/rfqs/${id}`); }
