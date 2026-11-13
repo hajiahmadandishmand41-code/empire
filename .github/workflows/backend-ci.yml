@@ -56,7 +56,8 @@ jobs:
       - name: Verify seed idempotence
         run: bash ../scripts/ci-run.sh bin/rails db:seed
       - name: Runtime boot and Empire extension proof
-        run: bash ../scripts/ci-run.sh bin/rails runner 'puts({ruby: RUBY_VERSION, rails: Rails.version, spree: Spree.version, database: ActiveRecord::Base.connection.select_value("SELECT current_database()"), provinces: Empire::Province.count, cod: Empire::CashOnDelivery.count, routes: Rails.application.routes.routes.size}.to_json)'
+        run: |
+          bash ../scripts/ci-run.sh bin/rails runner 'puts({ruby: RUBY_VERSION, rails: Rails.version, spree: Spree.version, database: ActiveRecord::Base.connection.select_value("SELECT current_database()"), provinces: Empire::Province.count, cod: Empire::CashOnDelivery.count, routes: Rails.application.routes.routes.size}.to_json)'
       - name: RSpec
         run: bash ../scripts/ci-run.sh bundle exec rspec --format progress --format RspecJunitFormatter --out tmp/rspec.xml
       - name: Brakeman (warnings fail the job)

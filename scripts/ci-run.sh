@@ -7,7 +7,9 @@ log=$(mktemp "${RUNNER_TEMP:-/tmp}/empire-ci/command-XXXXXX.log")
 "$@" 2>&1 | tee "$log"
 status=${PIPESTATUS[0]}
 if [[ "$status" -ne 0 && "${GITHUB_ACTIONS:-}" == "true" ]]; then
-  tail_text=$(tail -c 12000 "$log")
+  # GitHub caps annotation messages at 4 KB; keep the actual final error,
+  # not the beginning of a much longer tail that GitHub would truncate.
+  tail_text=$(tail -c 3000 "$log")
   tail_text=${tail_text//'%'/'%25'}
   tail_text=${tail_text//$'\r'/'%0D'}
   tail_text=${tail_text//$'\n'/'%0A'}
