@@ -1,0 +1,133 @@
+# Development/CI stack. Same server/Dockerfile and Gemfile.lock as production;
+# only the target, environment, source mounts and demo services differ.
+name: empire-dev
+x-backend: &backend
+  build:
+    context: .
+    dockerfile: server/Dockerfile
+    target: dev
+  image: empire-backend:dev
+  env_file:
+    - path: .env
+      required: false
+  environment:
+    RAILS_ENV: development
+    DATABASE_HOST: postgres
+    DATABASE_PORT: "5432"
+    DATABASE_USERNAME: empire
+    DATABASE_PASSWORD: ${POSTGRES_PASSWORD:?run npm run env:bootstrap}
+    DATABASE_NAME: empire_development
+    DATABASE_NAME_TEST: empire_test
+    SECRET_KEY_BASE: ${SECRET_KEY_BASE:?run npm run env:bootstrap}
+    ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY: ${ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY:?missing encryption key}
+    ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY: ${ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY:?missing encryption key}
+    ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT: ${ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT:?missing encryption salt}
+    RAILS_FORCE_SSL: "false"
+    RAILS_ASSUME_SSL: "false"
+    RAILS_LOG_TO_STDOUT: "true"
+    SPREE_HOST: ${SPREE_HOST:-localhost:3000}
+    SOLID_QUEUE_IN_PUMA: "true"
+    JOB_THREADS: ${JOB_THREADS:-10}
+    BOOTSNAP_CACHE_DIR: /rails/tmp/cache/bootsnap
+    STORE_COUNTRY: AF
+    STORE_LOCALE: fa-AF
+    STORE_CURRENCY: AFN
+    SPREE_PUBLISHABLE_KEY: ${SPREE_PUBLISHABLE_KEY:?run npm run env:bootstrap}
+    EMPIRE_SEED_DEMO: "true"
+    ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@empire.test}
+    ADMIN_PASSWORD: ${ADMIN_PASSWORD:?run npm run env:bootstrap}
+    DEMO_SELLER_EMAIL: ${DEMO_SELLER_EMAIL:-demo.seller@empire.test}
+    DEMO_SELLER_PASSWORD: ${DEMO_SELLER_PASSWORD:-DemoSeller123!}
+    DEMO_BUYER_EMAIL: ${DEMO_BUYER_EMAIL:-demo.buyer@empire.test}
+    DEMO_BUYER_PASSWORD: ${DEMO_BUYER_PASSWORD:-DemoBuyer123!}
+    MISSION_CONTROL_USER: ${MISSION_CONTROL_USER:-empire}
+    MISSION_CONTROL_PASSWORD: ${MISSION_CONTROL_PASSWORD:?run npm run env:bootstrap}
+    SMTP_HOST: mailpit
+    SMTP_PORT: "1025"
+  volumes:
+    - ./server:/rails
+    - bundle_cache:/usr/local/bundle
+    - storage_data:/rails/storage
+    - tmp_cache:/rails/tmp
+  tmpfs:
+    - /rails/public/assets
+  depends_on:
+    postgres:
+      condition: service_healthy
+    mailpit:
+      condition: service_started
+  restart: unless-stopped
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: empire
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?run npm run env:bootstrap}
+      POSTGRES_DB: empire_development
+      PGDATA: /var/lib/postgresql/18/docker
+    ports:
+      - "127.0.0.1:${SPREE_DB_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:latest
+    environment:
+      MP_MAX_MESSAGES: "500"
+      MP_SMTP_AUTH_ACCEPT_ANY: "true"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "true"
+    ports:
+      - "127.0.0.1:${MAILPIT_UI_PORT:-8025}:8025"
+    restart: unless-stopped
+
+  migrate:
+    <<: *backend
+    restart: "no"
+    command: ["sh", "-c", "bin/rails db:prepare && bin/rails db:seed"]
+
+  web:
+    <<: *backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - "${SPREE_PORT:-3000}:3000"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3000/up"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+
+  storefront:
+    build:
+      context: ./storefront
+      args:
+        NEXT_PUBLIC_SPREE_PUBLISHABLE_KEY: ${SPREE_PUBLISHABLE_KEY:?run npm run env:bootstrap}
+    environment:
+      API_INTERNAL_URL: http://web:3000
+      PORT: "3001"
+      HOSTNAME: "0.0.0.0"
+    depends_on:
+      web:
+        condition: service_healthy
+    ports:
+      - "${STOREFRONT_PORT:-3001}:3001"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  storage_data:
+  bundle_cache:
+  tmp_cache:

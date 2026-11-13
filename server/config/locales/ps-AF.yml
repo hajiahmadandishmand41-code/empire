@@ -1,0 +1,6 @@
+# No machine-guessed Pashto is shipped. A qualified reviewer must populate
+# empire.* and change translation_status before this locale is offered in UI.
+ps-AF:
+  translation_status: draft
+  reviewed_by: null
+  empire: {}

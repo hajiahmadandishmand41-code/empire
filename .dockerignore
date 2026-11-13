@@ -1,0 +1,16 @@
+**/node_modules
+**/.git
+**/.next
+**/dist
+**/coverage
+**/tmp
+**/log
+**/storage
+**/.env
+**/.env.*
+**/test-results
+**/playwright-report
+.spree
+.git
+docs
+storefront/e2e

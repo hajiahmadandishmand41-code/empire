@@ -1,0 +1,35 @@
+name: Frontend CI
+on:
+  push:
+    branches: [main, 'arena/*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: storefront
+    env:
+      NEXT_PUBLIC_SPREE_PUBLISHABLE_KEY: pk_empire_ci_publishable_0123456789
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: storefront/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: Translation, dependency and API static audit
+        run: bash ../scripts/ci-run.sh node ../scripts/audit-static.mjs
+      - name: TypeScript
+        run: bash ../scripts/ci-run.sh npx tsc --noEmit
+      - name: Lint
+        run: bash ../scripts/ci-run.sh npm run lint
+      - name: Production build
+        run: bash ../scripts/ci-run.sh npm run build

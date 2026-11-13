@@ -1,0 +1,129 @@
+en:
+  empire:
+    brand: Empire
+    home: Home
+    products: Products
+    cart: Cart
+    account: My account
+    login: Sign in
+    register: Create account
+    logout: Sign out
+    language: Language
+    tagline: Empire — online marketplace
+    hero_title: Shop with confidence on Empire
+    hero_body: Retail and wholesale shopping, verified sellers and company accounts.
+      Prices, stock and orders come directly from the store.
+    shop_now: Browse products
+    request_quote: Request a quote
+    featured_products: Featured products
+    view_all: View all
+    loading: Loading…
+    no_products: No products are available yet.
+    backend_error: The store server is unavailable. Please try again.
+    retry: Try again
+    search: Search products
+    product_details: Product details
+    add_to_cart: Add to cart
+    added_to_cart: Added to cart
+    in_stock: In stock
+    out_of_stock: Out of stock
+    quantity: Quantity
+    price: Price
+    seller: Seller
+    description: Description
+    product_not_found: Product not found
+    back: Back
+    your_cart: Your cart
+    cart_empty: Your cart is empty
+    cart_empty_message: You have not added any products yet.
+    continue_shopping: Continue shopping
+    subtotal: Subtotal
+    shipping: Delivery
+    tax: Tax
+    total: Total
+    proceed_to_checkout: Proceed to checkout
+    remove_item: Remove item
+    update_quantity: Update quantity
+    increase_quantity: Increase quantity
+    decrease_quantity: Decrease quantity
+    action_error: The action could not be completed. Please try again.
+    sign_in: Sign in to your account
+    email: Email
+    password: Password
+    password_confirm: Confirm password
+    first_name: First name
+    last_name: Last name
+    phone: Phone number
+    no_account: Do not have an account?
+    already_have_account: Already have an account?
+    my_orders: My orders
+    addresses: Addresses
+    save: Save
+    cancel: Cancel
+    shipping_address: Delivery address
+    billing_address: Billing address
+    same_billing: Use the delivery address for billing
+    city: City
+    province: Province
+    district: District
+    address_line: Street address
+    postal_code: Postal code
+    country: Country
+    phone_label: Contact phone (+93)
+    payment_method: Payment method
+    cash_on_delivery: Cash on delivery
+    place_order: Place order
+    order_placed: Your order was placed successfully
+    order_number: Order number
+    order_summary: Order summary
+    checkout: Checkout
+    delivery_method: Delivery option
+    select_delivery: Select a delivery option
+    no_payment_methods: No payment method is currently available.
+    company: Company
+    po_number: Purchase order number
+    optional: Optional
+    personal_purchase: Personal purchase
+    seller_dashboard: Seller dashboard
+    become_seller: Become a seller
+    shop_name: Shop name
+    registration_number: Business registration number
+    application_submitted: Your application was submitted for review. Sign in to the
+      seller panel to follow its status.
+    seller_panel: Open seller panel
+    admin_dashboard: Admin dashboard
+    admin_panel: Open admin dashboard
+    rfq: Request for quotation
+    rfq_title: Request title
+    rfq_description: Tell sellers what you need
+    requested_quantity: Requested quantity
+    budget_min: Minimum budget
+    budget_max: Maximum budget
+    submit: Submit
+    no_rfqs: You have not submitted a quotation request yet.
+    quotes: Quotes
+    quote_amount: Quoted amount
+    accept_quote: Accept quote
+    status: Status
+    company_account: Company account
+    no_companies: You are not a member of a company yet.
+    rights: All rights reserved.
+    draft_notice: Pashto translation is awaiting review and is not offered as a
+      finished language.
+    minimum_quantity: Minimum order quantity
+    order_multiple: Order multiple
+    profile: Profile
+    no_orders: You have no orders yet.
+    no_addresses: No saved address yet.
+    add_address: Add address
+    address_saved: Address saved
+    welcome: Welcome
+    guest_checkout: Continue as a guest
+    login_or_guest: Sign in, create an account, or continue as a guest.
+    configuration_error: The storefront is not configured. Ask the operator to set
+      the public store key.
+    order_status_pending: Pending
+    order_status_placed: Placed
+    order_status_completed: Completed
+    order_status_canceled: Canceled
+    order_status_draft: Draft

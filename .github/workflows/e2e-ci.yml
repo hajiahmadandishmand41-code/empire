@@ -1,0 +1,97 @@
+name: E2E CI
+on:
+  push:
+    branches: [main, 'arena/*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  POSTGRES_PASSWORD: ci-only-postgres-password
+  SECRET_KEY_BASE: ci-only-secret-key-base-0123456789abcdef0123456789abcdef
+  ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY: ci-only-primary-key-0123456789abcdef
+  ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY: ci-only-deterministic-key-0123456789abcdef
+  ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT: ci-only-salt-0123456789abcdef
+  MISSION_CONTROL_PASSWORD: ci-only-jobs-password
+  SPREE_PUBLISHABLE_KEY: pk_empire_ci_publishable_0123456789
+  ADMIN_EMAIL: admin@empire.test
+  ADMIN_PASSWORD: DemoAdmin123!
+  DEMO_BUYER_EMAIL: demo.buyer@empire.test
+  DEMO_BUYER_PASSWORD: DemoBuyer123!
+  DEMO_SELLER_EMAIL: demo.seller@empire.test
+  DEMO_SELLER_PASSWORD: DemoSeller123!
+  RAILS_FORCE_SSL: 'false'
+  RAILS_ASSUME_SSL: 'false'
+  E2E_BASE_URL: http://127.0.0.1:3001
+  API_BASE_URL: http://127.0.0.1:3000
+jobs:
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --no-audit --no-fund
+      - run: npm ci --no-audit --no-fund
+        working-directory: storefront
+      - name: Validate and build the development Docker stack
+        run: |
+          bash scripts/ci-run.sh docker compose -f docker-compose.dev.yml config --quiet
+          bash scripts/ci-run.sh docker compose -f docker-compose.dev.yml up -d --build
+      - name: Require live backend and storefront
+        run: |
+          bash scripts/wait-for-http.sh http://127.0.0.1:3000/up 300
+          bash scripts/wait-for-http.sh http://127.0.0.1:3001/ 180
+          bash scripts/ci-run.sh node scripts/verify-runtime.mjs
+      - name: Install Playwright browser
+        run: bash scripts/ci-run.sh npx --prefix storefront playwright install --with-deps chromium
+      - name: Real browser tests (no Backend means failure)
+        run: bash scripts/ci-run.sh npm --prefix storefront run test:e2e
+      - name: Collect container logs
+        if: always()
+        run: docker compose -f docker-compose.dev.yml logs --no-color > compose-e2e.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-results
+          path: |
+            compose-e2e.log
+            storefront/test-results/
+            storefront/playwright-report/
+          if-no-files-found: warn
+      - name: Destroy isolated test stack
+        if: always()
+        run: docker compose -f docker-compose.dev.yml down -v --remove-orphans
+  production-image:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate and build the deployable image
+        run: |
+          bash scripts/ci-run.sh docker compose -f docker-compose.yml config --quiet
+          bash scripts/ci-run.sh docker compose -f docker-compose.yml up -d --build
+      - name: Migration, seed and HTTP smoke
+        run: |
+          bash scripts/wait-for-http.sh http://127.0.0.1:3000/up 300
+          bash scripts/wait-for-http.sh http://127.0.0.1:3001/ 180
+          bash scripts/ci-run.sh node scripts/verify-runtime.mjs --production
+          docker compose -f docker-compose.yml exec -T web bin/rails runner 'raise "missing COD" unless Empire::CashOnDelivery.exists?; raise "missing geography" unless Empire::Province.count == 34; raise "demo leaked" if Spree::Customer.exists?(email: "demo.buyer@empire.test"); puts "production image runtime OK"'
+      - name: Collect container logs
+        if: always()
+        run: docker compose -f docker-compose.yml logs --no-color > compose-production.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: production-image-results
+          path: compose-production.log
+          if-no-files-found: warn
+      - name: Destroy isolated test stack
+        if: always()
+        run: docker compose -f docker-compose.yml down -v --remove-orphans

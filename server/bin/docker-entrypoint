@@ -1,0 +1,3 @@
+#!/bin/bash -e
+# Migrations are a one-shot Compose service, never a race between web replicas.
+exec "$@"

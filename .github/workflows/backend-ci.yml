@@ -1,0 +1,73 @@
+name: Backend CI
+on:
+  push:
+    branches: [main, 'arena/*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: server
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd="pg_isready -U postgres" --health-interval=5s
+          --health-timeout=5s --health-retries=12
+    env:
+      RAILS_ENV: test
+      DATABASE_HOST: localhost
+      DATABASE_USERNAME: postgres
+      DATABASE_NAME_TEST: empire_test
+      SECRET_KEY_BASE: ci-only-secret-key-base-0123456789abcdef0123456789abcdef
+      ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY: ci-only-primary-key-0123456789abcdef
+      ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY: ci-only-deterministic-key-0123456789abcdef
+      ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT: ci-only-salt-0123456789abcdef
+      ADMIN_EMAIL: admin@empire.test
+      ADMIN_PASSWORD: DemoAdmin123!
+      EMPIRE_SEED_DEMO: 'true'
+      SPREE_PUBLISHABLE_KEY: pk_empire_ci_publishable_0123456789
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install native dependencies
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libvips-tools
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0.9'
+          working-directory: server
+          bundler-cache: true
+      - name: Locked dependency check
+        run: bash ../scripts/ci-run.sh bundle check
+      - name: Create database and run every migration
+        run: bash ../scripts/ci-run.sh bin/rails db:create db:migrate
+      - name: Migration status
+        run: bash ../scripts/ci-run.sh bin/rails db:migrate:status
+      - name: Seed reference and demo data
+        run: bash ../scripts/ci-run.sh bin/rails db:seed
+      - name: Verify seed idempotence
+        run: bash ../scripts/ci-run.sh bin/rails db:seed
+      - name: Runtime boot and Empire extension proof
+        run: bash ../scripts/ci-run.sh bin/rails runner 'puts({ruby: RUBY_VERSION, rails: Rails.version, spree: Spree.version, database: ActiveRecord::Base.connection.select_value("SELECT current_database()"), provinces: Empire::Province.count, cod: Empire::CashOnDelivery.count, routes: Rails.application.routes.routes.size}.to_json)'
+      - name: RSpec
+        run: bash ../scripts/ci-run.sh bundle exec rspec --format progress --format RspecJunitFormatter --out tmp/rspec.xml
+      - name: Brakeman (warnings fail the job)
+        run: bash ../scripts/ci-run.sh bundle exec brakeman --no-pager -q
+      - name: Bundle Audit (advisories fail the job)
+        run: bash ../scripts/ci-run.sh bundle exec bundle-audit check --update
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-results
+          path: |
+            server/tmp/rspec.xml
+            server/log/test.log
+          if-no-files-found: warn

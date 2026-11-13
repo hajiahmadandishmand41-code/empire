@@ -1,0 +1,40 @@
+{
+  "name": "empire",
+  "private": true,
+  "description": "Empire — Spree Commerce multi-vendor e-commerce platform (B2B/B2C/marketplace/wholesale/retail/cross-border) with Afghanistan localization",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hajiahmadandishmand41-code/empire.git"
+  },
+  "scripts": {
+    "dev": "COMPOSE_FILE=docker-compose.dev.yml spree dev --no-open",
+    "stop": "spree stop",
+    "down": "docker compose down",
+    "upgrade": "spree upgrade",
+    "eject": "spree eject",
+    "logs": "spree logs",
+    "logs:worker": "spree logs worker",
+    "seed": "spree seed",
+    "load-sample-data": "spree sample-data",
+    "console": "spree console",
+    "api": "spree api",
+    "auth": "spree auth",
+    "api-key": "spree api-key",
+    "frontend:dev": "cd storefront && npm run dev",
+    "frontend:build": "cd storefront && npm run build",
+    "frontend:lint": "cd storefront && npm run lint",
+    "frontend:test": "cd storefront && npm test",
+    "test:backend": "npx spree rspec",
+    "test:all": "npm run frontend:lint && npm run frontend:build && npm run test:backend",
+    "env:bootstrap": "bash scripts/bootstrap-env.sh",
+    "audit:static": "node scripts/audit-static.mjs",
+    "test:e2e": "npm --prefix storefront run test:e2e"
+  },
+  "dependencies": {
+    "@spree/cli": "3.7.0",
+    "@spree/docs": "0.1.426"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
