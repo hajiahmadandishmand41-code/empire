@@ -47,13 +47,16 @@ RSpec.describe 'Empire backend authorization', type: :request do
     theirs = create(:completed_order_with_totals, store: empire_store, seller: other_seller, currency: 'AFN')
     get '/api/v3/seller/orders', headers: seller_headers(seller_user, seller)
     expect_status!(200)
-    expect(body_json['data'].map { |row| row['id'] }).to include(mine.prefixed_id).and exclude(theirs.prefixed_id)
+    ids = body_json['data'].map { |row| row['id'] }
+    expect(ids).to include(mine.prefixed_id)
+    expect(ids).not_to include(theirs.prefixed_id)
     get "/api/v3/seller/orders/#{theirs.prefixed_id}", headers: seller_headers(seller_user, seller)
     expect_status!(404)
   end
 
   it 'has no seller commission write and ignores commission fields on profile writes' do
-    expect(patch: "/api/v3/seller/commission_rates/#{rate.id}").not_to be_routable
+    expect { Rails.application.routes.recognize_path("/api/v3/seller/commission_rates/#{rate.id}", method: :patch) }.
+      to raise_error(ActionController::RoutingError)
     patch '/api/v3/seller/profile', params: { name: 'Updated shop', commission_rate: 0 }.to_json,
           headers: seller_headers(seller_user, seller)
     expect_status!(200)

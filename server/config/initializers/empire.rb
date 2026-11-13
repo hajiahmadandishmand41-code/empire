@@ -6,7 +6,7 @@
 Spree.permissions.register_scope(:rfqs, group: :customers, resources: -> { [Empire::Rfq] })
 Spree.permissions.register_scope(:quotes, group: :customers, audiences: %i[store seller],
                                  resources: -> { [Empire::Quote] })
-Spree.permissions.register_scope(:payout_requests, group: :sellers,
+Spree.permissions.register_scope(:payout_requests, group: :sellers, audiences: %i[store seller],
                                  resources: -> { [Empire::PayoutRequest] })
 
 # Core populates the payment-method registry in its own after_initialize.

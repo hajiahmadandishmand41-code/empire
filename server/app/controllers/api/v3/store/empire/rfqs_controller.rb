@@ -44,9 +44,10 @@ module Api
           end
 
           def assign_reference(rfq, name, scope)
-            return if params[name].blank?
+            value = params["#{name}_id"].presence || params[name].presence
+            return if value.blank?
 
-            rfq.public_send("#{name}=", scope.find_by_prefix_id!(params[name]))
+            rfq.public_send("#{name}=", scope.find_by_prefix_id!(value))
           end
 
           def rfq_params
