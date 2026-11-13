@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreateEmpireQuotes < SpreeExtension::Migration[7.0]
+class CreateEmpireQuotes < ActiveRecord::Migration[8.1]
   def change
     create_table :empire_quotes do |t|
       t.references :empire_rfq, null: false, foreign_key: true

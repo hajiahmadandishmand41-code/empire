@@ -6,14 +6,14 @@ module Api
       module Empire
         class RfqsController < BaseController
           def index
-            rfqs = current_user.rfqs.order(created_at: :desc)
+            rfqs = spree_current_user.rfqs.order(created_at: :desc)
             render json: rfqs.map { |r|
               { id: r.id, title: r.title, status: r.status, currency: r.currency, created_at: r.created_at }
             }
           end
 
           def create
-            rfq = current_user.rfqs.build(rfq_params)
+            rfq = spree_current_user.rfqs.build(rfq_params)
             if rfq.save
               render json: { id: rfq.id, status: rfq.status }, status: :created
             else

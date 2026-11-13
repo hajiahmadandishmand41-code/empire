@@ -6,13 +6,15 @@ module Api
       module Empire
         # Base controller for Empire admin API endpoints. Requires admin role.
         class BaseController < ApplicationController
-          before_action :authenticate_user!
+          include Spree::Core::ControllerHelpers::Auth
+
+          before_action :authenticate_spree_user!
           before_action :require_admin!
 
           private
 
           def require_admin!
-            render json: { error: "admin access required" }, status: :forbidden unless current_user&.has_spree_role?("admin")
+            render json: { error: "admin access required" }, status: :forbidden unless spree_current_user&.has_spree_role?("admin")
           end
         end
       end

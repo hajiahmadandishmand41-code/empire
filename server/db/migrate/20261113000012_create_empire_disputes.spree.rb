@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreateEmpireDisputes < SpreeExtension::Migration[7.0]
+class CreateEmpireDisputes < ActiveRecord::Migration[8.1]
   def change
     create_table :empire_disputes do |t|
       t.references :order, null: false, foreign_key: { to_table: :spree_orders }

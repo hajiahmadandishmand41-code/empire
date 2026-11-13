@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreateEmpireCompanyUsers < SpreeExtension::Migration[7.0]
+class CreateEmpireCompanyUsers < ActiveRecord::Migration[8.1]
   def change
     create_table :empire_company_users do |t|
       t.references :user, null: false, foreign_key: { to_table: :spree_users }

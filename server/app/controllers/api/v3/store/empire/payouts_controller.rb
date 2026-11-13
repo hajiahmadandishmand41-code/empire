@@ -6,7 +6,7 @@ module Api
       module Empire
         class PayoutsController < BaseController
           def index
-            seller = current_user.empire_seller
+            seller = spree_current_user.empire_seller
             render json: { error: "no seller profile" }, status: :not_found and return unless seller
 
             payouts = seller.payouts.order(created_at: :desc)
@@ -16,7 +16,7 @@ module Api
           end
 
           def create
-            seller = current_user.empire_seller
+            seller = spree_current_user.empire_seller
             render json: { error: "no seller profile" }, status: :not_found and return unless seller
 
             payout = seller.payouts.build

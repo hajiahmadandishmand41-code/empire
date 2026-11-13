@@ -5,9 +5,12 @@ module Api
     module Store
       module Empire
         # Base controller for Empire storefront API endpoints.
-        # Requires a authenticated Spree customer user.
+        # Uses Spree's built-in authentication helpers (session / API key).
         class BaseController < ApplicationController
-          before_action :authenticate_user!
+          include Spree::Core::ControllerHelpers::Auth
+          include Spree::Core::ControllerHelpers::Store
+
+          before_action :authenticate_spree_user!
 
           private
 
@@ -16,11 +19,11 @@ module Api
           end
 
           def require_seller!
-            render json: { error: "seller account required" }, status: :forbidden unless current_user&.seller?
+            render json: { error: "seller account required" }, status: :forbidden unless spree_current_user&.seller?
           end
 
           def require_company_member!
-            render json: { error: "company membership required" }, status: :forbidden unless current_user&.empire_company_users&.any?
+            render json: { error: "company membership required" }, status: :forbidden unless spree_current_user&.empire_company_users&.any?
           end
         end
       end

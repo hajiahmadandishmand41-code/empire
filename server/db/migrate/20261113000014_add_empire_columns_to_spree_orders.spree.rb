@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class AddEmpireColumnsToSpreeOrders < SpreeExtension::Migration[7.0]
+class AddEmpireColumnsToSpreeOrders < ActiveRecord::Migration[8.1]
   def change
     add_column :spree_orders, :po_number, :string
     add_column :spree_orders, :empire_company_id, :integer

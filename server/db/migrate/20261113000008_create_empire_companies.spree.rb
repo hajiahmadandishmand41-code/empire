@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreateEmpireCompanies < SpreeExtension::Migration[7.0]
+class CreateEmpireCompanies < ActiveRecord::Migration[8.1]
   def change
     create_table :empire_companies do |t|
       t.string :name, null: false

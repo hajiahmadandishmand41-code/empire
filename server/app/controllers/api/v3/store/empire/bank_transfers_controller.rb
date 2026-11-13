@@ -6,7 +6,7 @@ module Api
       module Empire
         class BankTransfersController < BaseController
           def create
-            bt = current_user.bank_transfers.build(bank_transfer_params)
+            bt = spree_current_user.bank_transfers.build(bank_transfer_params)
             if bt.save
               render json: { id: bt.id, status: bt.status }, status: :created
             else

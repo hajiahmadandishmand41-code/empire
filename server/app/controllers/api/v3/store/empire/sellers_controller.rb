@@ -6,7 +6,7 @@ module Api
       module Empire
         class SellersController < BaseController
           def me
-            seller = current_user.empire_seller
+            seller = spree_current_user.empire_seller
             render json: { error: "no seller profile" }, status: :not_found and return unless seller
 
             render json: {
@@ -20,7 +20,7 @@ module Api
           end
 
           def update_profile
-            seller = current_user.empire_seller
+            seller = spree_current_user.empire_seller
             render json: { error: "no seller profile" }, status: :not_found and return unless seller
 
             if seller.update(shop_profile_params)

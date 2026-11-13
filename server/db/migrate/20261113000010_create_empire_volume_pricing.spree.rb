@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreateEmpireVolumePricing < SpreeExtension::Migration[7.0]
+class CreateEmpireVolumePricing < ActiveRecord::Migration[8.1]
   def change
     create_table :empire_volume_pricing do |t|
       t.references :variant, null: false, foreign_key: { to_table: :spree_variants }

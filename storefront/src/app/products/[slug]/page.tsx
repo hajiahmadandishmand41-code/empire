@@ -1,4 +1,5 @@
 import { ProductDetail } from "./ProductDetail";
+
 export const dynamic = "force-dynamic";
 
 export default async function ProductPage({
@@ -8,9 +9,10 @@ export default async function ProductPage({
 }) {
   const { slug } = await params;
 
-  // Fetch the real product from the Spree Store API; fall back to a
-  // placeholder when the backend is not reachable (e.g. this sandbox).
+  // Fetch the real product from the Spree Store API. No fake-data fallback:
+  // if the backend is unreachable, ProductDetail renders a clear error.
   let product: Record<string, unknown> | null = null;
+  let apiError: string | null = null;
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
     const res = await fetch(`${apiUrl}/api/v3/store/products/${slug}`, {
@@ -19,21 +21,12 @@ export default async function ProductPage({
     if (res.ok) {
       const data = await res.json();
       product = data.data || data;
+    } else {
+      apiError = `محصول یافت نشد (کد ${res.status})`;
     }
   } catch {
-    // backend not reachable — placeholder used below
+    apiError = "اتصال به سرور فروشگاه برقرار نشد. لطفاً بعداً دوباره سعی کنید.";
   }
 
-  const fallback = {
-    name: "نمونه محصول",
-    price: 750000,
-    description: "این یک توضیحات نمونه محصول است که از پایگاه داده Spree بارگذاری می‌شود.",
-    brand: "برند نمونه",
-    seller: "فروشنده تست",
-    inStock: true,
-    sku: "SMP-001",
-    moq: 1,
-  };
-
-  return <ProductDetail product={product ?? fallback} />;
+  return <ProductDetail product={product} apiError={apiError} />;
 }

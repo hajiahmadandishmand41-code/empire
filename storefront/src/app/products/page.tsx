@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/lib/i18n";
-import { formatPrice } from "@/lib/currency";
+import { listProducts } from "@/lib/api";
 import type { JsonMap } from "@/lib/api";
 
 export default function ProductsPage() {
@@ -18,17 +18,14 @@ export default function ProductsPage() {
     slug: string;
   }>>([]);
   const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    let cancelled = false;
+    (async () => {
       try {
-        const apiUrl =
-          process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-        const res = await fetch(`${apiUrl}/api/v3/store/products?per_page=20`, {
-          cache: "no-store",
-        });
-        if (res.ok) {
-          const data = await res.json();
+        const data = await listProducts({ per_page: 20 });
+        if (!cancelled) {
           setProducts(
             ((data.data as JsonMap[] | undefined) ?? []).map((p: JsonMap) => ({
               id: Number(p.id),
@@ -39,23 +36,22 @@ export default function ProductsPage() {
             }))
           );
         }
-      } catch {
-        // API not reachable in this environment — fall back to placeholders
-        setProducts([]);
+      } catch (err) {
+        if (!cancelled) {
+          setApiError(
+            (err as Error)?.message ||
+              "اتصال به سرور فروشگاه برقرار نشد. لطفاً بعداً دوباره سعی کنید."
+          );
+          setProducts([]);
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
+    })();
+    return () => {
+      cancelled = true;
     };
-    fetchProducts();
   }, []);
-
-  const fallback = [
-    { id: 1, name: "نمونه محصول۱", price: 450000, inStock: true, slug: "sample-1" },
-    { id: 2, name: "نمونه محصول۲", price: 1200000, inStock: true, slug: "sample-2" },
-    { id: 3, name: "نمونه محصول۳", price: 750000, inStock: false, slug: "sample-3" },
-  ];
-
-  const list = products.length > 0 ? products : fallback;
 
   return (
     <div className="space-y-6">
@@ -63,17 +59,35 @@ export default function ProductsPage() {
         <h1 className="text-2xl font-bold text-slate-brand">{t("products")}</h1>
       </div>
 
+      {apiError && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+          <div className="flex items-start gap-3">
+            <svg className="w-5 h-5 text-amber-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+              <div className="font-medium text-amber-800">
+                خطای اتصال به سرور فروشگاه
+              </div>
+              <div className="text-sm text-amber-700 mt-1">{apiError}</div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {loading ? (
         <div className="h-64 flex items-center justify-center text-gray-500">
           {t("loading")}
         </div>
-      ) : list.length === 0 ? (
+      ) : products.length === 0 ? (
         <div className="text-center py-12 text-gray-500">
-          <p>{t("not_found")}</p>
+          <p>
+            محصولی یافت نشد. {apiError || "سرور فروشگاه در دسترس نیست."}
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-          {list.map((p) => (
+          {products.map((p) => (
             <article
               key={p.id}
               className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col hover:shadow-md transition"
@@ -89,7 +103,7 @@ export default function ProductsPage() {
               <div className="mt-auto flex items-baseline gap-2">
                 {p.price != null && (
                   <span className="text-emerald-600 font-bold text-lg ltr">
-                    {formatPrice(p.price)}
+                    {p.price} AFN
                   </span>
                 )}
               </div>

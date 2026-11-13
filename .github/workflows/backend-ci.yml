@@ -59,7 +59,7 @@ jobs:
         run: bundle exec rspec
 
       - name: Brakeman security scan
-        run: bundle exec brakeman --no-pager -q || true
+        run: bundle exec brakeman --no-pager -q
 
       - name: Bundle audit
-        run: bundle exec bundle-audit check --update || true
+        run: bundle exec bundle-audit check --update

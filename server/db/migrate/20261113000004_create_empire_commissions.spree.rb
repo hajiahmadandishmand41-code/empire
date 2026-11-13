@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreateEmpireCommissions < SpreeExtension::Migration[7.0]
+class CreateEmpireCommissions < ActiveRecord::Migration[8.1]
   def change
     create_table :empire_commissions do |t|
       t.references :empire_seller, null: false, foreign_key: true

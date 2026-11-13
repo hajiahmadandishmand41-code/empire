@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreateEmpirePayouts < SpreeExtension::Migration[7.0]
+class CreateEmpirePayouts < ActiveRecord::Migration[8.1]
   def change
     create_table :empire_payouts do |t|
       t.references :empire_seller, null: false, foreign_key: true

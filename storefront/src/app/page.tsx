@@ -1,26 +1,62 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/lib/i18n";
-import { formatPrice } from "@/lib/currency";
+import { listProducts } from "@/lib/api";
+import type { JsonMap } from "@/lib/api";
 
 export default function Home() {
   const [locale] = useState<"fa-AF" | "ps-AF" | "en">("fa-AF");
   const t = useTranslation(locale);
+  const [products, setProducts] = useState<Array<{
+    id: number;
+    name: string;
+    price: number | null;
+    inStock: boolean;
+    slug: string;
+  }>>([]);
+  const [loading, setLoading] = useState(true);
+  const [apiError, setApiError] = useState<string | null>(null);
 
-  // Placeholder featured products — in production these come from the Spree API
-  const featured = [
-    { id: 1, name: "نمونه محصول ofreció", price: 450000, image: "/placeholder.svg", inStock: true },
-    { id: 2, name: "محصول ویژه دوم", price: 1200000, image: "/placeholder.svg", inStock: true },
-    { id: 3, name: "کالا پرفروش", price: 750000, image: "/placeholder.svg", inStock: false },
-  ];
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await listProducts({ per_page: 4 });
+        if (!cancelled) {
+          setProducts(
+            ((data.data as JsonMap[] | undefined) ?? []).map((p: JsonMap) => ({
+              id: Number(p.id),
+              name: String(p.name),
+              price: p.price != null ? Number(p.price) : null,
+              inStock: Boolean(p.available ?? true),
+              slug: String(p.slug),
+            }))
+          );
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setApiError(
+            (err as Error)?.message ||
+              "اتصال به سرور فروشگاه برقرار نشد. لطفاً بعداً دوباره سعی کنید."
+          );
+          setProducts([]);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const categories = [
-    { name: t("categories"), count: 12 },
-    { name: t("brands"), count: 8 },
-    { name: t("best_sellers"), count: 15 },
-    { name: t("wholesale_offers"), count: 6 },
+    { name: t("categories"), count: 0 },
+    { name: t("brands"), count: 0 },
+    { name: t("best_sellers"), count: 0 },
+    { name: t("wholesale_offers"), count: 0 },
   ];
 
   return (
@@ -52,40 +88,70 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured products */}
+      {/* API error state */}
+      {apiError && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+          <div className="flex items-start gap-3">
+            <svg className="w-5 h-5 text-amber-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+              <div className="font-medium text-amber-800">
+                خطای اتصال به سرور فروشگاه
+              </div>
+              <div className="text-sm text-amber-700 mt-1">{apiError}</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Featured products (real API data) */}
       <section>
         <div className="flex justify-between items-end mb-6">
-          <h2 className="text-xl font-bold text-slate-brand">{t("featured_products")}</h2>
+          <h2 className="text-xl font-bold text-slate-brand">
+            {t("featured_products")}
+          </h2>
           <Link href="/products" className="text-sm text-emerald-600 hover:underline">
             مشاهده همه →
           </Link>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-          {featured.map((p) => (
-            <article
-              key={p.id}
-              className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col hover:shadow-md transition group"
-            >
-              <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
-                <span className="text-gray-400 text-sm">{p.image}</span>
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{p.name}</h3>
-              <div className="mt-auto flex items-baseline gap-2">
-                <span className="text-emerald-600 font-bold text-lg ltr">
-                  {formatPrice(p.price)}
-                </span>
-                {!p.inStock && (
-                  <span className="text-xs bg-red-50 text-red-700 px-2 py-1 rounded">
-                    {t("out_of_stock")}
-                  </span>
-                )}
-              </div>
-              <button className="mt-3 w-full py-2 bg-slate-brand text-white text-sm rounded-lg hover:bg-slate-700 transition disabled:opacity-50" disabled={!p.inStock}>
-                {t("add_to_cart")}
-              </button>
-            </article>
-          ))}
-        </div>
+        {loading ? (
+          <div className="h-64 flex items-center justify-center text-gray-500">
+            {t("loading")}
+          </div>
+        ) : products.length === 0 ? (
+          <div className="text-center py-12 text-gray-500">
+            <p>
+              محصولی یافت نشد. {apiError || "سرور فروشگاه در دسترس نیست."}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+            {products.map((p) => (
+              <article
+                key={p.id}
+                className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col hover:shadow-md transition group"
+              >
+                <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
+                  <span className="text-gray-400 text-sm">تصویر محصول</span>
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">
+                  {p.name}
+                </h3>
+                <div className="mt-auto flex items-baseline gap-2">
+                  {p.price != null && (
+                    <span className="text-emerald-600 font-bold text-lg ltr">
+                      {p.price} AFN
+                    </span>
+                  )}
+                </div>
+                <button className="mt-3 w-full py-2 bg-slate-brand text-white text-sm rounded-lg hover:bg-slate-700 transition disabled:opacity-50" disabled={!p.inStock}>
+                  {t("add_to_cart")}
+                </button>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Categories grid */}
@@ -110,7 +176,7 @@ export default function Home() {
       {/* Trust / info */}
       <section className="grid grid-cols-2 sm:grid-cols-4 gap-6 bg-gray-50 p-6 rounded-xl border border-gray-100">
         {[
-          { label: t("cash_on_delivery"), icon: "COD" },
+          { label: t("cash_on_delivery"), icon: "AFN" },
           { label: t("bank_transfer"), icon: "BT" },
           { label: "تهیه فوری", icon: "QS" },
           { label: "حمایت ۲۴/۷", icon: "24" },
