@@ -65,6 +65,10 @@ jobs:
       - name: Surface RSpec failure details
         if: failure()
         run: node ../scripts/annotate-log.mjs tmp/rspec.log "RSpec failed"
+      - name: Surface RSpec failure head
+        if: failure()
+        run: |
+          node -e "const fs=require('fs');const p='tmp/rspec.log';if(fs.existsSync(p)){const s=fs.readFileSync(p,'utf8').slice(0,3300);console.log('::error title=RSpec failed (head)::'+s.replace(/%/g,'%25').replace(/\r/g,'%0D').replace(/\n/g,'%0A'))}"
       - name: Brakeman (warnings fail the job)
         run: bash ../scripts/ci-run.sh bundle exec brakeman --no-pager -q
       - name: Bundle Audit (advisories fail the job)
