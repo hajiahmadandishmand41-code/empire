@@ -25,6 +25,7 @@ x-backend: &backend
     RAILS_FORCE_SSL: "false"
     RAILS_ASSUME_SSL: "false"
     RAILS_LOG_TO_STDOUT: "true"
+    RAILS_LOG_LEVEL: info
     SPREE_HOST: ${SPREE_HOST:-localhost:3000}
     SOLID_QUEUE_IN_PUMA: "true"
     JOB_THREADS: ${JOB_THREADS:-10}

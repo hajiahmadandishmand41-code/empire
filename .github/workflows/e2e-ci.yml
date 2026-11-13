@@ -57,7 +57,10 @@ jobs:
           docker compose -f docker-compose.dev.yml logs --no-color migrate > migrate.log 2>&1 || true
       - name: Surface migration failure details
         if: failure()
-        run: node scripts/annotate-log.mjs migrate.log "Migration container failed" 12000
+        run: |
+          node scripts/annotate-log.mjs migrate.log "Migration container failed" 12000
+          grep -nE "EMPIRE_PREPARED|EMPIRE_SEEDED|aborted|Error|Exception|Invalid|Missing|failed|Missing permission|I18n::" migrate.log | tail -60 > migrate-errors.log || true
+          node scripts/annotate-log.mjs migrate-errors.log "Migration/seed error lines" 12000
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -96,7 +99,10 @@ jobs:
           docker compose -f docker-compose.yml logs --no-color migrate > migrate.log 2>&1 || true
       - name: Surface migration failure details
         if: failure()
-        run: node scripts/annotate-log.mjs migrate.log "Migration container failed" 12000
+        run: |
+          node scripts/annotate-log.mjs migrate.log "Migration container failed" 12000
+          grep -nE "EMPIRE_PREPARED|EMPIRE_SEEDED|aborted|Error|Exception|Invalid|Missing|failed|Missing permission|I18n::" migrate.log | tail -60 > migrate-errors.log || true
+          node scripts/annotate-log.mjs migrate-errors.log "Migration/seed error lines" 12000
       - uses: actions/upload-artifact@v4
         if: always()
         with:
