@@ -87,7 +87,11 @@ module EmpireSeed
                       prices: [{ currency: 'AFN', amount: '1200.00' }] })
       raise result.value.errors.full_messages.to_sentence unless result.success?
       product = result.value
-      product.default_variant.stock_levels.each { |level| level.update!(count_on_hand: 100) }
+      # Seller warehouses do not auto-propagate new variants; create the demo
+      # variant's stock row explicitly so the seeded catalog is purchasable.
+      location = seller.stock_locations.find_by(default: true) || seller.stock_locations.first
+      raise 'Demo seller requires a stock location' unless location
+      location.set_up_stock_level(product.default_variant).update!(count_on_hand: 100)
       Spree.product_propose_workflow.call(product: product, submitted_by: seller_user)
       Spree.product_approve_workflow.call(product: product.reload, reviewer: admin).tap do |approval|
         raise 'Demo product approval failed' unless approval.success?
@@ -106,6 +110,9 @@ module EmpireSeed
     store.delivery_methods.where(name: 'Standard').find_each do |method|
       method.calculator.preferences = { amount: 150, currency: 'AFN' }
       method.calculator.save!
+      # Spree 6 defaults marketplace methods to private; share the operator's
+      # standard rate with seller-owned stock so checkout can quote delivery.
+      method.update!(available_to_sellers: true, storefront_visible: true)
     end
 
     buyer = Spree.customer_class.find_or_create_by!(email: ENV.fetch('DEMO_BUYER_EMAIL', 'demo.buyer@empire.test')) do |user|

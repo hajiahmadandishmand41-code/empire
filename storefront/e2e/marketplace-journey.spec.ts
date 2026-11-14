@@ -52,6 +52,7 @@ test("full marketplace and B2B journey against the live Backend", async () => {
   expect(published.product_count).toBe(1);
   const liveProduct = await store("GET", `/products/${slug}?expand=variants,seller`);
   expect(liveProduct.available).toBe(true);
+  expect(liveProduct.purchasable).toBe(true);
   const variantId = liveProduct.default_variant_id as string;
 
   // Buyer registers, builds a cart, checks out with COD.
