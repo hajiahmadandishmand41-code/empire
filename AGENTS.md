@@ -21,7 +21,7 @@ Spree is an exact-pinned dependency (`= 6.0.4` in **both** `server/Gemfile` and 
 - Migrations in `server/db/migrate/` (`empire_*` / `spree_*`)
 - Models/services in `server/app/{models,services}/empire/`
 - Controllers in `server/app/controllers/api/v3/{store,seller,admin}/empire/`
-- Routes inside `Spree::Core::Engine.add_routes` in `server/config/routes.rb`
+- Routes in the host app's `Rails.application.routes.draw` (`server/config/routes.rb`). Empire controllers are host-app `Api::V3::*`, so drawing them inside `Spree::Core::Engine.add_routes` would resolve the wrong `Spree::Api::V3::*` namespace.
 - Initializers in `server/config/initializers/` (register payment methods in `after_initialize`, not `to_prepare`)
 - Locales in `server/config/locales/` (generated from storefront JSON via `node scripts/audit-static.mjs --write`)
 - Storefront pages/components in `storefront/src/`

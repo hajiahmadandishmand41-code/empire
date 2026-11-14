@@ -55,8 +55,9 @@ corepack pnpm typecheck && corepack pnpm lint && corepack pnpm test && VITE_BASE
 
 `storefront/playwright.config.ts` + `storefront/e2e/`:
 
-- `storefront.spec.ts`: home, language/direction persistence, product detail, cart qty/remove, login, full COD checkout (6 browser tests).
-- `marketplace-journey.spec.ts`: live API journey — seller application → staff approval → seller product → staff publish → buyer COD checkout → staff capture/fulfil → seller balance → payout request → staff approve/complete → B2B company/catalog/tiered price/MOQ/PO → RFQ → quote → accept.
+- `storefront.spec.ts`: home, language/direction persistence, product detail, cart qty/remove, login, full COD checkout (6 tests).
+- `marketplace-journey.spec.ts` is the seventh test in the same Playwright run.
+- `marketplace-journey.spec.ts`: live API journey — seller application → staff approval → seller product → staff publish → buyer COD checkout (`payment_status: authorized`, not captured) → staff capture/fulfil (`paid`) → seller balance → payout request → staff approve/complete → B2B company/catalog/tiered price/MOQ/PO → RFQ → quote → accept.
 
 `.github/workflows/e2e-ci.yml` has two jobs:
 - `browser`: builds `docker-compose.dev.yml`, waits for backend/storefront, runs `scripts/verify-runtime.mjs`, installs Chromium, runs Playwright.

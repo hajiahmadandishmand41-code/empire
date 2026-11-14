@@ -63,6 +63,10 @@ async function refreshSession(): Promise<boolean> {
 interface RequestOptions { method?: string; body?: unknown; noRetry?: boolean; noAuth?: boolean; cartToken?: string | null }
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const headers: Record<string, string> = { Accept: "application/json", "Content-Type": "application/json", "X-Spree-Api-Key": publicKey() };
+  if (typeof window !== "undefined") {
+    const locale = document.cookie.split("; ").find((row) => row.startsWith("empire_locale="))?.split("=")[1] || "fa-AF";
+    headers["X-Spree-Locale"] = locale === "en" ? "en" : "fa";
+  }
   const token = !options.noAuth && session()?.token;
   if (token) headers.Authorization = `Bearer ${token}`;
   if (options.cartToken) headers["X-Spree-Token"] = options.cartToken;

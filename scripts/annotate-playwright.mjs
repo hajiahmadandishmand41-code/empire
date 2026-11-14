@@ -13,10 +13,14 @@ function visit(suites) {
     for (const spec of suite.specs || []) {
       for (const test of spec.tests || []) {
         const result = test.results?.at(-1);
-        if (spec.ok && result?.status === 'passed') continue;
+        if (result?.status === 'passed' || result?.status === 'skipped') continue;
         failed += 1;
         const errors = (result?.errors || []).map((error) => clean(error.message)).join('\n');
-        const snapshot = clean(result?.errorContext?.body || result?.errorContext?.attachment?.body || '');
+        const context = (result?.attachments || []).find((attachment) => attachment.name === 'error-context' || attachment.contentType === 'text/markdown');
+        let snapshot = '';
+        if (context?.body) snapshot = Buffer.from(context.body, 'base64').toString('utf8');
+        else if (context?.path && fs.existsSync(context.path)) snapshot = fs.readFileSync(context.path, 'utf8');
+        snapshot = clean(snapshot);
         const message = `${spec.file}:${spec.line}\n${errors}\n${snapshot ? `\nPage snapshot:\n${snapshot}` : ''}`.slice(0, 3500);
         console.log(`::error title=${escape(spec.title)}::${escape(message)}`);
       }

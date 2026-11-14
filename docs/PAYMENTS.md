@@ -16,7 +16,7 @@ Empire enables **Cash on Delivery (COD)** on Spree 6.0.4's payment-method framew
 - `Empire::CashOnDelivery < Spree::PaymentMethod::Check` reuses Spree's offline Check implementation; provider key `empire_cash_on_delivery`.
 - Registered in `Rails.application.config.after_initialize` (after Spree core populates `Spree.payment_methods`), matching the pattern used by Spree provider gems. Registering in `to_prepare` fails because the registry is still nil.
 - Seeded as an active payment method for the Afghanistan store.
-- Checkout: `POST /api/v3/store/carts/:id/payments` with the COD `payment_method_id`, then `POST …/complete`. The order is **not** reported paid merely because COD was selected; capture is manual.
+- Checkout: `POST /api/v3/store/carts/:id/payments` with the COD `payment_method_id`, then `POST …/complete`. Spree 6 authorizes the offline payment at completion, so the order's `payment_status` is **`authorized`** (pending collection), not `paid`; capture is manual.
 - Staff captures when cash is collected: `PATCH /api/v3/admin/orders/:order_id/payments/:id/capture`.
 
 ## Security rules

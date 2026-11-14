@@ -74,7 +74,7 @@ test("full marketplace and B2B journey against the live Backend", async () => {
   const purchase = await store("POST", `/carts/${cart.id}/complete`, { token: buyerToken, cartToken });
   const order = purchase.orders?.[0] || purchase;
   expect(order.id).toBeTruthy();
-  expect(order.payment_status).toBe("none"); // Spree 6: COD is manual capture, not an upfront charge.
+  expect(order.payment_status).toBe("authorized"); // COD is recorded as pending collection, never captured at checkout.
 
   // Seller sees only their assigned order; staff captures COD and fulfils.
   const sellerOrders = await seller("GET", "/orders", sellerToken, sellerId);
@@ -132,7 +132,7 @@ test("full marketplace and B2B journey against the live Backend", async () => {
   expect(b2bOrder.company_id).toBe(company.id);
   expect(b2bOrder.po_number).toBe(`PO-${run}`);
   expect(b2bOrder.total_quantity).toBe(10);
-  expect(b2bOrder.payment_status).toBe("none");
+  expect(b2bOrder.payment_status).toBe("authorized");
 
   // RFQ: buyer requests, seller quotes, buyer accepts.
   const rfq = await store("POST", "/empire/rfqs", { token: buyerToken, body: { title: `Journey RFQ ${run}`, requested_quantity: 10, company_id: company.id, variant_id: variantId, description: "درخواست قیمت عمده آزمایشی" }, status: 201 });
