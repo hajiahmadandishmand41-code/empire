@@ -28,8 +28,10 @@ RSpec.describe 'Empire reference seeds', type: :model do
     admin_email = ENV.fetch('ADMIN_EMAIL', 'admin@empire.test')
     Spree.admin_user_class.find_by(email: admin_email) || create(:admin_user, email: admin_email)
     store = Spree::Store.default
-    # The test database is migrated, not seeded. Mirror the first-run store
-    # provisioning that Spree's admin seed performs in a real installation.
+    # The test database is migrated, not seeded. Give the default store the
+    # same required identity fields the core store seed/factory provides, then
+    # mirror the first-run provisioning that Spree's admin seed performs.
+    store.update!(name: 'Empire', url: 'www.example.com', mail_from_address: 'no-reply@example.com')
     Spree::Stores::ProvisionDefaults.call(store: store, country: Spree::Country.by_iso('AF'), locale: 'fa', currency: 'AFN')
     load Rails.root.join('db/seeds/empire_seed.rb')
     product = store.products.find_by!(slug: 'empire-demo-handmade-basket')
