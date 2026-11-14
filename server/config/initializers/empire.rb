@@ -9,6 +9,11 @@ Spree.permissions.register_scope(:quotes, group: :customers, audiences: %i[store
 Spree.permissions.register_scope(:payout_requests, group: :sellers, audiences: %i[store seller],
                                  resources: -> { [Empire::PayoutRequest] })
 
+# Afghanistan has limited postal-code coverage. Spree explicitly leaves this
+# list mutable for host-country customization; keep postal codes optional for
+# AF rather than inventing a code or weakening validation for every country.
+Spree::Address::NO_ZIPCODE_ISO_CODES << 'AF' unless Spree::Address::NO_ZIPCODE_ISO_CODES.include?('AF')
+
 # Core populates the payment-method registry in its own after_initialize.
 # Append in a later after_initialize, as the Spree provider gems do.
 Rails.application.config.after_initialize do

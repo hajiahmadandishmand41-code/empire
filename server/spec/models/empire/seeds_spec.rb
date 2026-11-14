@@ -22,4 +22,11 @@ RSpec.describe 'Empire reference seeds', type: :model do
     expect(Empire::CashOnDelivery.where(active: true).count).to eq(1)
     expect(I18n.available_locales).not_to include(:'ps-AF')
   end
+
+  it 'makes an Afghan address valid without inventing a postal code' do
+    address = build(:address, country: Spree::Country.by_iso('AF'), postal_code: nil,
+                    state_name: 'کابل', city: 'کابل', address1: 'کوچه آزمایشی، خانه ۱')
+    expect(address).to be_valid
+    expect(Spree::Country.by_iso('US')).to be_zipcode_required
+  end
 end

@@ -21,6 +21,18 @@ for (const path of ['/dashboard', '/sellers']) {
   const response = await fetch(`${api}${path}`, { signal: AbortSignal.timeout(15000) });
   if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
 }
+// A 200 storefront shell is not enough: prove the browser-facing relative API
+// proxy reaches the Backend (Next bakes rewrite targets into the image).
+const storefront = process.env.E2E_BASE_URL || 'http://127.0.0.1:3001';
+const proxied = await fetch(`${storefront}/api/v3/store/products`, {
+  headers: { 'X-Spree-Api-Key': key }, signal: AbortSignal.timeout(15000),
+});
+if (!proxied.ok) throw new Error(`Storefront API proxy: HTTP ${proxied.status}`);
+const proxyBody = await proxied.json();
+if (!Array.isArray(proxyBody.data)) throw new Error('Storefront API proxy did not return a Store API collection');
+if (!production && !proxyBody.data.some((p) => p.slug === 'empire-demo-handmade-basket')) {
+  throw new Error('Storefront API proxy cannot see the seeded demo product');
+}
 if (!production) {
   for (const [path, email, password] of [
     ['/api/v3/store/auth/login', process.env.DEMO_BUYER_EMAIL, process.env.DEMO_BUYER_PASSWORD],

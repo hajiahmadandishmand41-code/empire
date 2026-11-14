@@ -11,6 +11,18 @@ test("home displays products fetched from the real Backend", async ({ page }) =>
   await expect(page.getByTestId("product-card").filter({ hasText: "سبد دست‌باف نمایشی Empire" })).toBeVisible();
 });
 
+test("language selection changes direction and survives a reload", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+  await page.getByLabel("زبان", { exact: true }).selectOption("en");
+  await expect(page.getByRole("heading", { name: "Shop with confidence on Empire" })).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Shop with confidence on Empire" })).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("dir", "ltr");
+});
+
 test("product details open from the Backend catalog", async ({ page }) => {
   await page.goto("/products");
   await page.getByTestId("product-link").filter({ hasText: "سبد دست‌باف نمایشی Empire" }).click();

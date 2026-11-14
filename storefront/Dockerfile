@@ -12,7 +12,10 @@ FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ARG NEXT_PUBLIC_SPREE_PUBLISHABLE_KEY
-ENV NEXT_PUBLIC_SPREE_PUBLISHABLE_KEY=${NEXT_PUBLIC_SPREE_PUBLISHABLE_KEY}
+# Next bakes rewrite destinations at build time. The Compose service name must
+# be present during the build, not only in the runtime container environment.
+ARG API_INTERNAL_URL=http://web:3000
+ENV NEXT_PUBLIC_SPREE_PUBLISHABLE_KEY=${NEXT_PUBLIC_SPREE_PUBLISHABLE_KEY} API_INTERNAL_URL=${API_INTERNAL_URL}
 RUN npm run build
 
 FROM base AS runner

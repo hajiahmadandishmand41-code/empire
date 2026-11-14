@@ -32,7 +32,7 @@ npm ci
 npm run build      # standalone output
 ```
 
-- Set `API_INTERNAL_URL` to the backend's internal URL (server-side rewrite target; never exposed to the browser).
+- Set `API_INTERNAL_URL` to the backend's internal URL (server-side rewrite target; never exposed to the browser). Next.js bakes rewrite destinations at build time: pass it as a Docker build arg as well as runtime environment (`storefront/Dockerfile` defaults to `http://web:3000` for Compose).
 - Set `NEXT_PUBLIC_SPREE_PUBLISHABLE_KEY` to the store's publishable key (public, not a secret).
 - Browser requests stay relative (`/api/*`); `next.config.ts` rewrites them to the backend. Do not point browser code at `localhost`.
 - Alternatively build `storefront/Dockerfile` and run the standalone server on port 3001.

@@ -50,6 +50,9 @@ jobs:
         run: bash scripts/ci-run.sh npx --prefix storefront playwright install --with-deps chromium
       - name: Real browser tests (no Backend means failure)
         run: bash scripts/ci-run.sh npm --prefix storefront run test:e2e
+      - name: Surface each Playwright failure
+        if: failure()
+        run: node scripts/annotate-playwright.mjs storefront/test-results/results.json || true
       - name: Collect container logs
         if: always()
         run: |
