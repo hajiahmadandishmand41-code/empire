@@ -94,6 +94,13 @@ module EmpireSeed
       end
     end
 
+    # Spree 6 storefront visibility is per-channel: a product must have a
+    # ProductPublication for the current channel. The core model method takes
+    # database IDs (the Admin API decodes prefixed IDs before calling it).
+    channel = store.default_channel
+    raise 'Empire demo requires a default sales channel' unless channel
+    channel.add_products([product.id])
+
     rate = store.commission_rates.find_by(code: 'marketplace-default')
     rate&.update!(value: '10', enabled: true)
     store.delivery_methods.where(name: 'Standard').find_each do |method|

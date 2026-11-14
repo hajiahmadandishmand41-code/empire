@@ -45,6 +45,10 @@ test("full marketplace and B2B journey against the live Backend", async () => {
   const product = await seller("POST", "/products", sellerToken, sellerId, { name: `Empire journey basket ${run}`, slug, description: "کالای آزمایشی برای سفر خرید واقعی", variants: [{ sku: `JOURNEY-${run}`, prices: [{ currency: "AFN", amount: "1000.00" }], stock_levels: [{ stock_location_id: stockLocationId, count_on_hand: 100 }] }] }, 201);
   await seller("PATCH", `/products/${product.id}/submit`, sellerToken, sellerId);
   await admin("PATCH", `/products/${product.id}/approve`, adminToken);
+  // Spree 6 visibility is per-channel; publish the approved product to the default channel.
+  const channels = await admin("GET", "/channels", adminToken);
+  const channel = channels.data.find((row: any) => row.default) || channels.data[0];
+  await admin("POST", `/channels/${channel.id}/add_products`, adminToken, { product_ids: [product.id] });
   const liveProduct = await store("GET", `/products/${slug}?expand=variants,seller`);
   expect(liveProduct.available).toBe(true);
   const variantId = liveProduct.default_variant_id as string;
@@ -85,7 +89,7 @@ test("full marketplace and B2B journey against the live Backend", async () => {
     const balances = await seller("GET", "/balances", sellerToken, sellerId);
     return balances.data.some((balance: any) => Number(balance.balance) > 0);
   }, { timeout: 45000, intervals: [1000, 2000, 3000] }).toBe(true);
-  const payoutRequest = await seller("POST", "/empire/payout_requests", sellerToken, sellerId, { note: "Journey settlement review" });
+  const payoutRequest = await seller("POST", "/empire/payout_requests", sellerToken, sellerId, { note: "Journey settlement review" }, 201);
   expect(payoutRequest.status).toBe("requested");
   const review = await admin("PATCH", `/empire/payout_requests/${payoutRequest.id}/approve`, adminToken);
   expect(review.status).toBe("approved");
@@ -113,7 +117,7 @@ test("full marketplace and B2B journey against the live Backend", async () => {
 
   // RFQ: buyer requests, seller quotes, buyer accepts.
   const rfq = await store("POST", "/empire/rfqs", { token: buyerToken, body: { title: `Journey RFQ ${run}`, requested_quantity: 10, company_id: company.id, variant_id: variantId, description: "درخواست قیمت عمده آزمایشی" }, status: 201 });
-  const quote = await seller("POST", "/empire/quotes", sellerToken, sellerId, { rfq_id: rfq.id, amount: "900.00", notes: "Journey wholesale quote" });
+  const quote = await seller("POST", "/empire/quotes", sellerToken, sellerId, { rfq_id: rfq.id, amount: "900.00", notes: "Journey wholesale quote" }, 201);
   const accepted = await store("POST", `/empire/rfqs/${rfq.id}/quotes/${quote.id}/accept`, { token: buyerToken });
   expect(accepted.status).toBe("accepted");
   expect(accepted.quotes.find((row: any) => row.id === quote.id).status).toBe("accepted");
