@@ -9,15 +9,15 @@ Spree.permissions.register_scope(:quotes, group: :customers, audiences: %i[store
 Spree.permissions.register_scope(:payout_requests, group: :sellers, audiences: %i[store seller],
                                  resources: -> { [Empire::PayoutRequest] })
 
-# Afghanistan has limited postal-code coverage. Spree explicitly leaves this
-# list mutable for host-country customization; keep postal codes optional for
-# AF rather than inventing a code or weakening validation for every country.
-Spree::Address::NO_ZIPCODE_ISO_CODES << 'AF' unless Spree::Address::NO_ZIPCODE_ISO_CODES.include?('AF')
-
-# Core populates the payment-method registry in its own after_initialize.
-# Append in a later after_initialize, as the Spree provider gems do.
+# Core populates the payment-method registry and autoloads its models in
+# after_initialize; touch neither during the initializer pass itself.
 Rails.application.config.after_initialize do
   Spree.payment_methods << Empire::CashOnDelivery unless Spree.payment_methods.include?(Empire::CashOnDelivery)
+
+  # Afghanistan has limited postal-code coverage. Spree explicitly leaves this
+  # list mutable for host-country customization; keep postal codes optional for
+  # AF rather than inventing a code or weakening validation for every country.
+  Spree::Address::NO_ZIPCODE_ISO_CODES << 'AF' unless Spree::Address::NO_ZIPCODE_ISO_CODES.include?('AF')
 end
 
 # Spree 6.0.4's canonical content locale for Dari/Persian is `fa`
