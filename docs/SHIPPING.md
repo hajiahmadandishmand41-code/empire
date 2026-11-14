@@ -4,7 +4,7 @@ Shipping uses **native Spree 6.0.4**: shipping methods, zones, delivery rates, f
 
 ## Rates
 
-- Rates are defined by operators in the Admin Dashboard / Admin API (flat-rate, weight/region-based Spree calculators). The seed provisions Spree's default `Standard` and `International Shipping` flat-rate methods when an admin is created.
+- Rates are defined by operators in the Admin Dashboard / Admin API (flat-rate, weight/region-based Spree calculators). Spree's first-run admin seed provisions the default `Standard` and `International Shipping` flat-rate methods; Empire's demo seed then sets `Standard` to **150 AFN** and shares it with sellers (`available_to_sellers: true`, `storefront_visible: true`).
 - No live carrier API is connected, so rates are **not** real-time carrier quotes.
 - At checkout the cart's fulfillments expose `delivery_rates`; the buyer selects one via `PATCH /api/v3/store/carts/:id/fulfillments/:id` (`selected_delivery_rate_id`).
 

@@ -15,7 +15,7 @@ Empire's primary market is Afghanistan. This document states what is actually im
 - Backend messages: `server/config/locales/{en,fa-AF}.yml` are generated from the storefront JSON (`node scripts/audit-static.mjs --write`); `empire-backend.{en,fa-AF}.yml` holds backend-only service messages.
 - `server/config/locales/ps-AF.yml` is an explicit draft (`translation_status: draft`, empty `empire:`). No machine-guessed Pashto is shipped; a qualified reviewer must populate and review it before it is offered.
 - Spree 6.0.4's canonical content locale for Dari/Persian is `fa`, so the seeded store uses `default_locale: fa`, `supported_locales: en,fa`. The app keeps `en`, `fa`, `fa-AF` available with fallbacks (`fa-AF → fa → en`) so store content and Empire messages both resolve.
-- Language selection persists in the `empire_locale` cookie and sets `<html lang>` / `dir` on the next server render. RTL is applied via `[dir="rtl"]` rules in `storefront/src/app/globals.css`.
+- Language selection persists in the `empire_locale` cookie and sets `<html lang>` / `dir` on the next server render. Browser API requests also send `X-Spree-Locale` (`fa-AF → fa`, `en → en`) so Empire geography and other locale-sensitive API payloads match the UI. RTL is applied via `[dir="rtl"]` rules in `storefront/src/app/globals.css`.
 
 ## Currency
 
