@@ -48,7 +48,8 @@ test("full marketplace and B2B journey against the live Backend", async () => {
   // Spree 6 visibility is per-channel; publish the approved product to the default channel.
   const channels = await admin("GET", "/channels", adminToken);
   const channel = channels.data.find((row: any) => row.default) || channels.data[0];
-  await admin("POST", `/channels/${channel.id}/add_products`, adminToken, { product_ids: [product.id] });
+  const published = await admin("POST", `/channels/${channel.id}/add_products`, adminToken, { product_ids: [product.id] });
+  expect(published.product_count).toBe(1);
   const liveProduct = await store("GET", `/products/${slug}?expand=variants,seller`);
   expect(liveProduct.available).toBe(true);
   const variantId = liveProduct.default_variant_id as string;
@@ -72,7 +73,7 @@ test("full marketplace and B2B journey against the live Backend", async () => {
   const purchase = await store("POST", `/carts/${cart.id}/complete`, { token: buyerToken, cartToken });
   const order = purchase.orders?.[0] || purchase;
   expect(order.id).toBeTruthy();
-  expect(order.payment_state).not.toBe("paid"); // COD is manual capture, not an upfront charge.
+  expect(order.payment_status).toBe("none"); // Spree 6: COD is manual capture, not an upfront charge.
 
   // Seller sees only their assigned order; staff captures COD and fulfils.
   const sellerOrders = await seller("GET", "/orders", sellerToken, sellerId);
@@ -82,6 +83,7 @@ test("full marketplace and B2B journey against the live Backend", async () => {
   const fulfillments = await admin("GET", `/orders/${order.id}/fulfillments`, adminToken);
   await admin("PATCH", `/orders/${order.id}/fulfillments/${fulfillments.data[0].id}/fulfill`, adminToken, { notify_customer: false });
   const adminOrder = await admin("GET", `/orders/${order.id}`, adminToken);
+  expect(adminOrder.payment_status).toBe("paid");
   expect(Number(adminOrder.commission_total)).toBeGreaterThan(0);
 
   // Native ledger credits the seller; seller requests review; only staff approves.
@@ -104,8 +106,9 @@ test("full marketplace and B2B journey against the live Backend", async () => {
   const company = await admin("POST", "/companies", adminToken, { name: `Empire Journey Company ${run}`, kind: "company", po_number_required: true }, 201);
   await admin("POST", `/companies/${company.id}/memberships`, adminToken, { customer_id: buyer.user.id }, 201);
   const catalog = await admin("POST", "/catalogs", adminToken, { name: `Journey catalog ${run}`, active: true, minimum_order_quantity: 10, order_multiple: 5, assignments: [{ assignable_type: "company", assignable_id: company.id }], price_list: { name: `Journey prices ${run}`, status: "active", price_adjustment_percentage: "-10.0", price_adjustment_tiers: [{ min_quantity: 10, percentage: "-20.0" }] } }, 201);
-  await admin("POST", `/catalogs/${catalog.id}/products`, adminToken, { product_ids: [product.id] }, 201);
-  await admin("PUT", `/catalogs/${catalog.id}/quantity_rules`, adminToken, { terms: { [product.id]: { minimum_order_quantity: 10, order_multiple: 5 } } });
+  const curated = await admin("POST", `/catalogs/${catalog.id}/products`, adminToken, { product_ids: [product.id] }, 201);
+  expect(curated.added_count).toBe(1);
+  await admin("PUT", `/catalogs/${catalog.id}/quantity_rules`, adminToken, { terms: { [product.id]: { minimum_order_quantity: 10, order_multiple: 5 } } }, 204);
   let b2bCart = await store("POST", "/carts", { token: buyerToken, body: {}, status: 201 });
   const b2bToken = b2bCart.token as string;
   b2bCart = await store("PATCH", `/carts/${b2bCart.id}`, { token: buyerToken, cartToken: b2bToken, body: { company_id: company.id, po_number: `PO-${run}`, email: buyerEmail, shipping_address: address, use_shipping: true } });
@@ -114,6 +117,21 @@ test("full marketplace and B2B journey against the live Backend", async () => {
   expect(b2bCart.company_id).toBe(company.id);
   expect(b2bCart.items[0].quantity).toBe(10);
   expect(Number(b2bCart.items[0].price)).toBeCloseTo(800, 2);
+  // Complete the B2B purchase too: the PO reference and company must survive
+  // onto the placed order, not merely live on an abandoned cart.
+  b2bCart = await store("GET", `/carts/${b2bCart.id}`, { token: buyerToken, cartToken: b2bToken });
+  const b2bFulfillment = b2bCart.fulfillments[0];
+  expect(b2bFulfillment.delivery_rates.length).toBeGreaterThan(0);
+  await store("PATCH", `/carts/${b2bCart.id}/fulfillments/${b2bFulfillment.id}`, { token: buyerToken, cartToken: b2bToken, body: { selected_delivery_rate_id: b2bFulfillment.delivery_rates[0].id } });
+  const b2bCod = b2bCart.payment_methods.find((method: any) => /CashOnDelivery|cash_on_delivery|پرداخت هنگام تحویل/.test(`${method.type} ${method.name}`));
+  expect(b2bCod).toBeTruthy();
+  await store("POST", `/carts/${b2bCart.id}/payments`, { token: buyerToken, cartToken: b2bToken, body: { payment_method_id: b2bCod.id }, status: 201 });
+  const b2bPurchase = await store("POST", `/carts/${b2bCart.id}/complete`, { token: buyerToken, cartToken: b2bToken });
+  const b2bOrder = b2bPurchase.orders?.[0] || b2bPurchase;
+  expect(b2bOrder.company_id).toBe(company.id);
+  expect(b2bOrder.po_number).toBe(`PO-${run}`);
+  expect(b2bOrder.total_quantity).toBe(10);
+  expect(b2bOrder.payment_status).toBe("none");
 
   // RFQ: buyer requests, seller quotes, buyer accepts.
   const rfq = await store("POST", "/empire/rfqs", { token: buyerToken, body: { title: `Journey RFQ ${run}`, requested_quantity: 10, company_id: company.id, variant_id: variantId, description: "درخواست قیمت عمده آزمایشی" }, status: 201 });
