@@ -27,8 +27,9 @@ const storefront = process.env.E2E_BASE_URL || 'http://127.0.0.1:3001';
 const proxied = await fetch(`${storefront}/api/v3/store/products`, {
   headers: { 'X-Spree-Api-Key': key }, signal: AbortSignal.timeout(15000),
 });
-if (!proxied.ok) throw new Error(`Storefront API proxy: HTTP ${proxied.status}`);
-const proxyBody = await proxied.json();
+const proxyText = await proxied.text();
+if (!proxied.ok) throw new Error(`Storefront API proxy: HTTP ${proxied.status} ${proxyText.slice(0, 500)}`);
+const proxyBody = JSON.parse(proxyText);
 if (!Array.isArray(proxyBody.data)) throw new Error('Storefront API proxy did not return a Store API collection');
 if (!production && !proxyBody.data.some((p) => p.slug === 'empire-demo-handmade-basket')) {
   throw new Error('Storefront API proxy cannot see the seeded demo product');

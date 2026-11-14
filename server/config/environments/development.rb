@@ -36,6 +36,9 @@ Rails.application.configure do
   # (foo.localhost:1355), which is how local https proxies (portless, Caddy)
   # forward requests. Allow any .localhost host, with or without a port.
   config.hosts << /\A[a-z0-9-]+(\.[a-z0-9-]+)*\.localhost(:\d+)?\z/i
+  # The storefront container proxies browser-relative API calls to this
+  # Compose service name; Rails' development HostAuthorization must accept it.
+  config.hosts << 'web'
 
   # Tunnels that expose this dev server to the outside world, so third-party
   # webhooks (carriers, payment gateways) can reach it. Each tunnel gets a
