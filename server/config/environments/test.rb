@@ -1,0 +1,59 @@
+Rails.application.configure do
+  # Settings specified here will take precedence over those in config/application.rb.
+
+  # While tests run files are not watched, reloading is not necessary.
+  config.enable_reloading = false
+
+  # Eager loading loads your entire application. When running a single test locally,
+  # this is usually not necessary, and can slow down your test suite. However, it's
+  # recommended that you enable it in continuous integration systems to ensure eager
+  # loading is working properly before deploying your code.
+  config.eager_load = ENV["CI"].present?
+
+  # Configure public file server for tests with cache-control for performance.
+  config.public_file_server.headers = { "cache-control" => "public, max-age=3600" }
+
+  # Show full error reports.
+  config.consider_all_requests_local = true
+  config.cache_store = :null_store
+
+  # Render exception templates for rescuable exceptions and raise for other exceptions.
+  config.action_dispatch.show_exceptions = :rescuable
+
+  # Disable request forgery protection in test environment.
+  config.action_controller.allow_forgery_protection = false
+
+  # Store uploaded files on the local file system in a temporary directory.
+  config.active_storage.service = :test
+
+  # config/application.rb sets Solid Queue for every environment, and
+  # ActiveJob::TestHelper keeps an adapter the app configured, so specs would
+  # enqueue into the Solid Queue tables and the Active Job matchers and
+  # perform_enqueued_jobs would not see the jobs. Use the test adapter.
+  config.active_job.queue_adapter = :test
+
+  # Tell Action Mailer not to deliver emails to the real world.
+  # The :test delivery method accumulates sent emails in the
+  # ActionMailer::Base.deliveries array.
+  config.action_mailer.delivery_method = :test
+
+  # Set host to be used by links generated in mailer templates.
+  config.action_mailer.default_url_options = { host: "example.com" }
+
+  # Print deprecation notices to the stderr.
+  config.active_support.deprecation = :stderr
+
+  # A Spree deprecation fails the spec when this app's own code calls the
+  # deprecated API, so it is replaced before a Spree upgrade removes it.
+  # Deprecated calls made inside Spree itself still only print a warning.
+  config.after_initialize do
+    Spree::Deprecation.behavior = lambda do |message, callstack, deprecator|
+      caller_path = callstack.first&.absolute_path.to_s
+      behavior = caller_path.start_with?(Rails.root.to_s) && !caller_path.match?(%r{/(vendor|node_modules)/}) ? :raise : :stderr
+      ActiveSupport::Deprecation::DEFAULT_BEHAVIORS[behavior].call(message, callstack, deprecator)
+    end
+  end
+
+  # Raise error when a before_action's only/except options reference missing actions.
+  config.action_controller.raise_on_missing_callback_actions = true
+end

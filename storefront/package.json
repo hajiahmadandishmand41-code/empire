@@ -1,0 +1,32 @@
+{
+  "name": "empire-storefront",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Empire customer-facing Next.js storefront (TypeScript, Tailwind, RTL/LTR, Dari/Pashto/English)",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "npm run lint && npx tsc --noEmit",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@spree/sdk": "6.0.4",
+    "next": "16.4.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "@tailwindcss/turbopack": "4.3.3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.6",
+    "tailwindcss": "4.3.3",
+    "typescript": "^5",
+    "yaml": "2.8.1"
+  }
+}
