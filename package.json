@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@spree/cli": "3.7.0",
-    "@spree/docs": "0.1.426"
+    "@spree/docs": "0.1.428"
   },
   "engines": {
     "node": ">=20"
