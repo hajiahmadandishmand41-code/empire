@@ -155,7 +155,11 @@ export function ProductCard({ product, compact = false }: { product: Product; co
           type="button"
           onClick={add}
           disabled={busy || !purchasable}
-          data-testid="add-to-cart"
+          /** Card-scoped on purpose. `add-to-cart` names the buy-box action on a
+           * product page, and a product page also renders related-product cards;
+           * sharing one testid put two "add to cart" buttons on that page and made
+           * the action ambiguous for a test and for a screen-reader user alike. */
+          data-testid="product-card-add"
           className={cx(
             "flex h-10 w-full items-center justify-center gap-2 rounded-xl text-sm font-bold transition-colors",
             added
