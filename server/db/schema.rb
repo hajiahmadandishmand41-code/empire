@@ -65,20 +65,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_000103) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_empire_districts_on_active"
-    t.index ["province_id"], name: "index_empire_districts_on_province_id"
     t.index ["province_id", "name"], name: "index_empire_districts_on_province_id_and_name", unique: true
-  end
-
-  create_table "empire_provinces", force: :cascade do |t|
-    t.string "name", null: false, comment: "نام ولایت (دری)"
-    t.string "name_ps", comment: "Pashto draft: NULL until reviewed"
-    t.string "name_en", null: false, comment: "Province name (English)"
-    t.string "code", null: false, comment: "ISO-like province code (e.g. KAB)"
-    t.boolean "active", default: true, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["active"], name: "index_empire_provinces_on_active"
-    t.index ["code"], name: "index_empire_provinces_on_code", unique: true
+    t.index ["province_id"], name: "index_empire_districts_on_province_id"
   end
 
   create_table "empire_payout_requests", force: :cascade do |t|
@@ -94,8 +82,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_000103) do
     t.datetime "updated_at", null: false
     t.index ["payout_id"], name: "index_empire_payout_requests_on_payout_id"
     t.index ["reviewed_by_id"], name: "index_empire_payout_requests_on_reviewed_by_id"
-    t.index ["seller_id"], name: "index_empire_payout_requests_on_seller_id"
     t.index ["seller_id", "currency"], name: "index_empire_one_open_payout_request", unique: true, where: "(status = 0)"
+    t.index ["seller_id"], name: "index_empire_payout_requests_on_seller_id"
+  end
+
+  create_table "empire_provinces", force: :cascade do |t|
+    t.string "name", null: false, comment: "نام ولایت (دری)"
+    t.string "name_ps", comment: "Pashto draft: NULL until reviewed"
+    t.string "name_en", null: false, comment: "Province name (English)"
+    t.string "code", null: false, comment: "ISO-like province code (e.g. KAB)"
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["active"], name: "index_empire_provinces_on_active"
+    t.index ["code"], name: "index_empire_provinces_on_code", unique: true
   end
 
   create_table "empire_quotes", force: :cascade do |t|
@@ -108,8 +108,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_000103) do
     t.datetime "responded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["rfq_id"], name: "index_empire_quotes_on_rfq_id"
     t.index ["rfq_id", "seller_id"], name: "index_empire_quotes_on_rfq_id_and_seller_id", unique: true
+    t.index ["rfq_id"], name: "index_empire_quotes_on_rfq_id"
     t.index ["seller_id"], name: "index_empire_quotes_on_seller_id"
   end
 
@@ -132,8 +132,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_000103) do
     t.index ["company_id"], name: "index_empire_rfqs_on_company_id"
     t.index ["customer_id"], name: "index_empire_rfqs_on_customer_id"
     t.index ["seller_id"], name: "index_empire_rfqs_on_seller_id"
-    t.index ["store_id"], name: "index_empire_rfqs_on_store_id"
     t.index ["store_id", "status"], name: "index_empire_rfqs_on_store_id_and_status"
+    t.index ["store_id"], name: "index_empire_rfqs_on_store_id"
     t.index ["variant_id"], name: "index_empire_rfqs_on_variant_id"
   end
 
@@ -3949,8 +3949,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_000103) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "empire_districts", "empire_provinces", column: "province_id"
-  add_foreign_key "empire_payout_requests", "spree_seller_payouts", column: "payout_id"
   add_foreign_key "empire_payout_requests", "spree_admin_users", column: "reviewed_by_id"
+  add_foreign_key "empire_payout_requests", "spree_seller_payouts", column: "payout_id"
   add_foreign_key "empire_payout_requests", "spree_sellers", column: "seller_id"
   add_foreign_key "empire_quotes", "empire_rfqs", column: "rfq_id"
   add_foreign_key "empire_quotes", "spree_sellers", column: "seller_id"
