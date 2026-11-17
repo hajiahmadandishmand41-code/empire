@@ -24,38 +24,56 @@ test("language selection changes direction and survives a reload", async ({ page
 });
 
 test("product details open from the Backend catalog", async ({ page }) => {
-  await page.goto("/products");
   // TEMPORARY DIAGNOSTIC — remove once the duplicated catalog card is explained.
-  // The server-rendered HTML has exactly two cards with distinct hrefs, yet this
-  // locator resolves to two links for the demo product alone, so the extra link
-  // appears in the browser and not in the markup. This dumps what the DOM really
-  // holds: counts, each link's href, its text, and its ancestor chain, which says
-  // which part of the page each one belongs to. The assertion is meant to fail;
-  // the failure annotation is how the dump reaches us.
-  const dump = await page.evaluate(() => {
-    const links = Array.from(document.querySelectorAll('[data-testid="product-link"]'));
-    const cards = document.querySelectorAll('[data-testid="product-card"]').length;
-    const mains = document.querySelectorAll("main").length;
-    const rows = links.map((element, index) => {
-      const node = element as HTMLElement;
-      const chain: string[] = [];
-      let parent = node.parentElement;
-      for (let depth = 0; depth < 7 && parent; depth += 1) {
-        const testId = parent.getAttribute("data-testid");
-        const classes = String(parent.className).trim().split(/\s+/).slice(0, 2).join(".");
-        chain.push(parent.tagName + (testId ? `[${testId}]` : "") + (classes ? `.${classes}` : ""));
-        parent = parent.parentElement;
-      }
-      const text = (node.textContent ?? "").replace(/\s+/g, " ").slice(0, 60);
-      return `#${index} href=${node.getAttribute("href")} text="${text}" chain=${chain.join(" < ")}`;
-    });
-    return `TOTAL_LINKS=${links.length} CARDS=${cards} MAINS=${mains} URL=${location.href}\n${rows.join("\n")}`;
-  });
-  expect(dump, `DIAGNOSTIC catalog DOM\n${dump}`).toBe("__diagnostic__");
-  await page.getByTestId("product-link").filter({ hasText: "سبد دست‌باف نمایشی Empire" }).click();
-  await expect(page).toHaveURL(/\/products\/empire-demo-handmade-basket/);
-  await expect(page.getByTestId("product-title")).toHaveText("سبد دست‌باف نمایشی Empire");
-  await expect(page.getByTestId("product-price")).toContainText("۱٬۲۰");
+  // Right after goto the DOM holds two links and only one matches the demo name,
+  // yet the click below has resolved to two matching links and a third overall.
+  // So a card appears later. This records when: a count timeline, the console
+  // (React hydration mismatches are logged there), and the DOM again after the
+  // click has failed. The final assertion is meant to fail — the annotation step
+  // is the only way to read any of it, since runner logs are not retrievable.
+  const logs: string[] = [];
+  page.on("console", (message) => logs.push(`${message.type()}: ${message.text().slice(0, 180)}`));
+  page.on("pageerror", (error) => logs.push(`pageerror: ${String(error).slice(0, 180)}`));
+
+  const probe = () =>
+    page.evaluate(() =>
+      Array.from(document.querySelectorAll('[data-testid="product-link"]')).map((element) => {
+        const node = element as HTMLElement;
+        const chain: string[] = [];
+        let parent = node.parentElement;
+        for (let depth = 0; depth < 5 && parent; depth += 1) {
+          const testId = parent.getAttribute("data-testid");
+          chain.push(parent.tagName + (testId ? `[${testId}]` : ""));
+          parent = parent.parentElement;
+        }
+        const text = (node.textContent ?? "").replace(/\s+/g, " ").slice(0, 42);
+        return `${node.getAttribute("href")} :: ${text} :: ${chain.join("<")}`;
+      }),
+    );
+
+  await page.goto("/products");
+  const timeline: string[] = [];
+  for (let step = 0; step < 10; step += 1) {
+    const links = await probe();
+    timeline.push(`t+${step * 300}ms n=${links.length}`);
+    if (step === 9) timeline.push(...links.map((row, index) => `  #${index} ${row}`));
+    await page.waitForTimeout(300);
+  }
+
+  let clickOutcome = "CLICK OK";
+  try {
+    await page
+      .getByTestId("product-link")
+      .filter({ hasText: "سبد دست‌باف نمایشی Empire" })
+      .click({ timeout: 5000 });
+  } catch (cause) {
+    clickOutcome = `CLICK FAILED: ${String(cause).split("\n").slice(0, 4).join(" | ")}`;
+    const after = await probe();
+    timeline.push(`after-failed-click n=${after.length}`, ...after.map((row, index) => `  #${index} ${row}`));
+  }
+
+  const report = `${clickOutcome}\nTIMELINE\n${timeline.join("\n")}\nCONSOLE ${logs.length}\n${logs.slice(0, 10).join("\n")}`;
+  expect(report, `DIAGNOSTIC\n${report}`).toBe("__diagnostic__");
 });
 
 test("add, increase, decrease and remove use persisted cart API operations", async ({ page }) => {
