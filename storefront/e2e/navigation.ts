@@ -1,9 +1,22 @@
 import type { Page } from "@playwright/test";
 
-/** True once no hidden container in the document holds test-id markup. */
+/**
+ * True once no hidden container in the document holds rendered markup.
+ *
+ * Nothing in this storefront sets the `hidden` attribute — decorative elements use
+ * `aria-hidden` and responsive hiding uses Tailwind classes — so every hidden
+ * container in the document is one of React's streaming buffers, and "empty" is a
+ * permanent state rather than a lucky one.
+ *
+ * Deliberately not keyed to `[data-testid]`. The first version was, and the login
+ * page has no test ids at all, so the wait returned immediately while a buffered
+ * copy of the form was still in the document and `getByLabel("ایمیل")` resolved
+ * twice. Buffer content has to be ruled out whatever a locator happens to match
+ * on: test id, label, role or text.
+ */
 function settled(): boolean {
   return Array.from(document.querySelectorAll("body div[hidden]")).every(
-    (container) => container.querySelector("[data-testid]") === null,
+    (container) => container.firstElementChild === null && (container.textContent ?? "").trim() === "",
   );
 }
 
@@ -29,6 +42,10 @@ function settled(): boolean {
  * Waiting here rather than at each locator keeps every assertion in these specs
  * describing what is actually on screen, and does not depend on React's internal
  * segment ids — only on the rule that inert markup is hidden.
+ *
+ * The same race reached the login form: two identical email inputs, both inert
+ * copies of one field. Waiting for the buffers to empty covers it, and covers the
+ * client pages too, whose streamed HTML is buffered the same way.
  */
 export async function settle(page: Page): Promise<void> {
   await page.waitForFunction(settled, undefined, { timeout: 10_000 });
