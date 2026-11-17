@@ -3951,14 +3951,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_000103) do
   add_foreign_key "empire_districts", "empire_provinces", column: "province_id"
   add_foreign_key "empire_payout_requests", "spree_seller_payouts", column: "payout_id"
   add_foreign_key "empire_payout_requests", "spree_admin_users", column: "reviewed_by_id"
-  add_foreign_key "empire_payout_requests", "spree_sellers"
+  add_foreign_key "empire_payout_requests", "spree_sellers", column: "seller_id"
   add_foreign_key "empire_quotes", "empire_rfqs", column: "rfq_id"
-  add_foreign_key "empire_quotes", "spree_sellers"
-  add_foreign_key "empire_rfqs", "spree_companies"
-  add_foreign_key "empire_rfqs", "spree_customers"
-  add_foreign_key "empire_rfqs", "spree_sellers"
-  add_foreign_key "empire_rfqs", "spree_stores"
-  add_foreign_key "empire_rfqs", "spree_variants"
+  add_foreign_key "empire_quotes", "spree_sellers", column: "seller_id"
+  add_foreign_key "empire_rfqs", "spree_companies", column: "company_id"
+  add_foreign_key "empire_rfqs", "spree_customers", column: "customer_id"
+  add_foreign_key "empire_rfqs", "spree_sellers", column: "seller_id"
+  add_foreign_key "empire_rfqs", "spree_stores", column: "store_id"
+  add_foreign_key "empire_rfqs", "spree_variants", column: "variant_id"
   add_foreign_key "solid_queue_batch_executions", "solid_queue_batches", column: "batch_id", on_delete: :cascade
   add_foreign_key "solid_queue_batch_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

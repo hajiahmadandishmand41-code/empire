@@ -108,4 +108,34 @@ for (const file of migrations) {
   }
 }
 
-console.log(JSON.stringify({ status: 'PASS', translation_keys: keys.length, frontend_keys_checked: used.size, pashto: 'Draft (not offered)', core_operations_checked: contract.core.length, empire_operations: contract.empire.length, compose_builds: 'Empire server/Dockerfile', spree: contract.spree_version, schema_version: schemaVersion, empire_tables_in_schema: (schema.match(/create_table "empire_/g) || []).length }));
+
+// Foreign-key resolution guard. Rails infers an FK's column from the *target*
+// table (`add_foreign_key "empire_rfqs", "spree_sellers"` resolves to
+// `spree_seller_id`), so an FK to a prefixed Spree table that omits `column:`
+// names a column that does not exist. Postgres rejects it at db:schema:load,
+// which is late and expensive: it fails both the migration job and the Docker
+// image build. Checking it here costs nothing and needs no Ruby.
+const singularize = (table) => {
+  if (table.endsWith('ies')) return `${table.slice(0, -3)}y`;
+  if (/(ses|xes|zes)$/.test(table)) return table.slice(0, -2);
+  if (table.endsWith('s') && !table.endsWith('ss')) return table.slice(0, -1);
+  return table;
+};
+const columnsByTable = new Map();
+for (const match of schema.matchAll(/create_table "([^"]+)"[^\n]*do \|t\|\n([\s\S]*?)\n  end\n/g)) {
+  columnsByTable.set(match[1], new Set([...match[2].matchAll(/^\s+t\.\w+ "([a-z0-9_]+)"/gm)].map((column) => column[1])));
+}
+let foreignKeysChecked = 0;
+for (const match of schema.matchAll(/add_foreign_key "([^"]+)", "([^"]+)"((?:, [^\n]+?)?)\n/g)) {
+  const [, fromTable, toTable, options] = match;
+  const explicit = options.match(/column: "([a-z0-9_]+)"/);
+  const column = explicit ? explicit[1] : `${singularize(toTable)}_id`;
+  const fromColumns = columnsByTable.get(fromTable);
+  if (!fromColumns) fail(`add_foreign_key names "${fromTable}", which db/schema.rb never creates`);
+  if (!columnsByTable.has(toTable)) fail(`add_foreign_key "${fromTable}" -> "${toTable}": the target table is not in db/schema.rb`);
+  if (!fromColumns.has(column)) {
+    fail(`add_foreign_key "${fromTable}" -> "${toTable}" resolves to column "${column}", which "${fromTable}" does not have${explicit ? '' : ' (Rails inferred it from the target table; pass column: explicitly)'}`);
+  }
+  foreignKeysChecked += 1;
+}
+console.log(JSON.stringify({ status: 'PASS', translation_keys: keys.length, frontend_keys_checked: used.size, pashto: 'Draft (not offered)', core_operations_checked: contract.core.length, empire_operations: contract.empire.length, compose_builds: 'Empire server/Dockerfile', spree: contract.spree_version, schema_version: schemaVersion, empire_tables_in_schema: (schema.match(/create_table "empire_/g) || []).length, foreign_keys_resolved: foreignKeysChecked }));
