@@ -8,10 +8,7 @@ import { currentLocale } from "@/lib/locale-server";
 import { formatCount } from "@/lib/numbers";
 import { SITE } from "@/lib/site";
 import { translator } from "@/lib/i18n";
-import {
-  getCategory, listProductFilters, listProducts,
-  type ProductSort,
-} from "@/lib/api";
+import { getCategory, listProductFilters, listProducts, uniqueProducts, type ProductSort } from "@/lib/api";
 
 const PAGE_SIZE = 24;
 const SORTS: ProductSort[] = ["price", "-price", "best_selling", "name", "-name", "-available_on", "available_on"];
@@ -102,7 +99,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
       priceGte: min, priceLte: max, inStock, optionValues,
       expand: "variants,seller",
     });
-    products = result.data;
+    products = uniqueProducts(result.data);
     total = result.meta.count;
     pages = result.meta.pages;
   } catch {

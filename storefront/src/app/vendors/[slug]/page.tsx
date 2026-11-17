@@ -12,7 +12,7 @@ import { JsonLd, absoluteUrl, buildMetadata } from "@/lib/seo";
 import { currentLocale } from "@/lib/locale-server";
 import { translator } from "@/lib/i18n";
 import { SITE } from "@/lib/site";
-import { SpreeApiError, getSeller, listProducts, sameOriginMedia, type Product, type Seller } from "@/lib/api";
+import { SpreeApiError, getSeller, listProducts, sameOriginMedia, uniqueProducts, type Product, type Seller } from "@/lib/api";
 
 const PAGE_SIZE = 12;
 
@@ -69,7 +69,7 @@ export default async function VendorPage({ params, searchParams }: { params: Pro
     // `seller_id` is a documented filter attribute, so this needs no backend
     // change and no client-side filtering of an unrelated page of results.
     const result = await listProducts({ seller: seller.id, page, limit: PAGE_SIZE, sort: "best_selling", expand: "variants,seller" });
-    products = result.data;
+    products = uniqueProducts(result.data);
     total = result.meta.count;
     pages = result.meta.pages;
   } catch {

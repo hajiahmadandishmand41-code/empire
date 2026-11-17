@@ -7,7 +7,7 @@ import { currentLocale } from "@/lib/locale-server";
 import { translator } from "@/lib/i18n";
 import { formatCount } from "@/lib/numbers";
 import { SITE } from "@/lib/site";
-import { listProducts, type Product } from "@/lib/api";
+import { listProducts, uniqueProducts, type Product } from "@/lib/api";
 
 const PAGE_SIZE = 24;
 
@@ -54,7 +54,7 @@ export default async function OffersPage({ searchParams }: { searchParams: Promi
       sort: "best_selling",
       expand: "variants,seller",
     });
-    products = result.data;
+    products = uniqueProducts(result.data);
     total = result.meta.count;
     pages = result.meta.pages;
   } catch {

@@ -9,10 +9,7 @@ import { currentLocale } from "@/lib/locale-server";
 import { translator } from "@/lib/i18n";
 import { formatCount } from "@/lib/numbers";
 import { SITE } from "@/lib/site";
-import {
-  SpreeApiError, listCollections, listProducts, sameOriginMedia,
-  type Collection, type Product,
-} from "@/lib/api";
+import { SpreeApiError, listCollections, listProducts, sameOriginMedia, uniqueProducts, type Collection, type Product } from "@/lib/api";
 
 const PAGE_SIZE = 24;
 
@@ -74,7 +71,7 @@ export default async function CollectionPage({ params, searchParams }: { params:
   if (collection) {
     try {
       const result = await listProducts({ collection: collection.id, page, limit: PAGE_SIZE, sort: "best_selling", expand: "variants,seller" });
-      products = result.data;
+      products = uniqueProducts(result.data);
       total = result.meta.count;
       pages = result.meta.pages;
     } catch {

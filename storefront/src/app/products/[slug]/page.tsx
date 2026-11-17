@@ -12,7 +12,7 @@ import { JsonLd, absoluteUrl, buildMetadata } from "@/lib/seo";
 import { currentLocale } from "@/lib/locale-server";
 import { translator } from "@/lib/i18n";
 import { SITE } from "@/lib/site";
-import { SpreeApiError, getProduct, listProducts, productImage, type CustomField, type Product } from "@/lib/api";
+import { SpreeApiError, getProduct, listProducts, productImage, uniqueProducts, type CustomField, type Product } from "@/lib/api";
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -43,7 +43,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   if (category) {
     try {
       const result = await listProducts({ category: category.id, limit: 13, expand: "variants,seller" });
-      related = result.data.filter((item) => item.id !== product.id).slice(0, 12);
+      related = uniqueProducts(result.data).filter((item) => item.id !== product.id).slice(0, 12);
     } catch { related = []; }
   }
 
