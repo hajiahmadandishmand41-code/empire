@@ -1,143 +1,621 @@
 fa-AF:
   empire:
-    brand: Empire
-    home: صفحه اصلی
-    products: محصولات
-    cart: سبد خرید
+    accept_quote: پذیرفتن پیشنهاد
     account: حساب من
-    login: ورود
-    register: ایجاد حساب
-    logout: خروج
-    language: زبان
-    tagline: Empire — بازارگاه آنلاین
-    hero_title: با خیال آسوده از Empire خرید کنید
-    hero_body: خرید عمده و خرده، فروشندگان تأییدشده و حساب‌های شرکتی. قیمت‌ها،
-      موجودی و سفارش‌ها مستقیماً از فروشگاه دریافت می‌شوند.
-    shop_now: مشاهده محصولات
-    request_quote: درخواست قیمت
-    featured_products: محصولات ویژه
-    view_all: مشاهده همه
-    loading: در حال بارگذاری…
-    no_products: هنوز محصولی برای عرضه وجود ندارد.
-    backend_error: ارتباط با سرور فروشگاه برقرار نشد. لطفاً دوباره تلاش کنید.
-    retry: تلاش دوباره
-    search: جست‌وجوی محصولات
-    product_details: جزئیات محصول
+    account_nav_addresses: آدرس‌ها
+    account_nav_company: شرکت
+    account_nav_orders: سفارش‌ها
+    account_nav_overview: نمای کلی
+    account_nav_rfqs: درخواست‌های قیمت
+    account_nav_settings: تنظیمات
+    account_nav_wishlist: علاقه‌مندی‌ها
+    account_subtitle: سفارش‌ها، آدرس‌ها، درخواست‌های قیمت و تنظیمات.
+    account_title: حساب کاربری من
+    action_error: انجام این کار ممکن نشد. لطفاً دوباره تلاش کنید.
+    add_address: افزودن آدرس
     add_to_cart: افزودن به سبد خرید
+    add_to_wishlist: افزودن به علاقه‌مندی‌ها
     added_to_cart: به سبد خرید اضافه شد
-    in_stock: موجود است
-    out_of_stock: ناموجود
-    quantity: تعداد
-    price: قیمت
-    seller: فروشنده
-    description: توضیحات
-    product_not_found: محصول پیدا نشد
+    adding_to_cart: در حال افزودن…
+    address_default: پیش‌فرض
+    address_delete: حذف
+    address_delete_confirm: این آدرس حذف شود؟
+    address_deleted: آدرس حذف شد
+    address_edit: ویرایش
+    address_label_field: عنوان این آدرس
+    address_line: نشانی کوچه و خیابان
+    address_saved: آدرس ذخیره شد
+    addresses: آدرس‌ها
+    addresses_subtitle: برای پر کردن سریع‌تر فرم تکمیل خرید.
+    addresses_title: آدرس‌های ذخیره‌شده
+    admin_dashboard: داشبورد مدیریت
+    admin_links_body: صفحات اصلی مدیریت برای کاربران، فروشندگان، محصولات،
+      دسته‌بندی‌ها، سفارش‌ها و پرداخت‌ها در داشبورد قرار دارد.
+    admin_links_title: ابزارهای کارکنان Empire
+    admin_login: ورود مدیر
+    admin_no_rfqs: هنوز هیچ درخواست قیمتی منتشر نشده است.
+    admin_panel: باز کردن داشبورد مدیریت
+    admin_rfq_body: همه درخواست‌هایی که در این فروشگاه منتشر شده‌اند.
+    admin_rfq_company: شرکت
+    admin_rfq_customer: مشتری
+    admin_rfq_status: وضعیت
+    admin_rfq_title: درخواست‌های قیمت
+    all: همه
+    all_categories: همه دسته‌بندی‌ها
+    already_have_account: قبلاً حساب ساخته‌اید؟
+    application_submitted: درخواست شما برای بررسی ثبت شد. برای پیگیری وضعیت، وارد پنل فروشندگان شوید.
+    approve: تأیید
     back: بازگشت
-    your_cart: سبد خرید شما
+    back_to_products: بازگشت به محصولات
+    backend_error: ارتباط با سرور فروشگاه برقرار نشد. لطفاً دوباره تلاش کنید.
+    badge_carton: کارتن {count} عددی
+    badge_cod: پرداخت در محل
+    badge_moq: حداقل {count}
+    badge_new: جدید
+    badge_offer: تخفیف
+    badge_verified: تأییدشده
+    badge_wholesale: عمده
+    balances: موجودی‌ها
+    become_seller: فروشنده شوید
+    benefit_cod_body: پول را هنگام رسیدن سفارش نقد پرداخت کنید. پیش از تحویل، مبلغی
+      از شما گرفته نمی‌شود.
+    benefit_cod_title: پرداخت نقدی هنگام تحویل
+    benefit_support_body: آدرس‌ها هر ۳۴ ولایت را با ولسوالی‌ها، به دری و انگلیسی پوشش می‌دهند.
+    benefit_support_title: ارسال به سراسر کشور
+    benefit_verified_body: پیش از رسیدن هر کالا به کاتالوگ، فروشنده آن توسط Empire
+      بررسی و تأیید می‌شود.
+    benefit_verified_title: فقط فروشندگان تأییدشده
+    benefit_wholesale_body: حداقل تعداد سفارش، مضاعف سفارش، واحد کارتنی و فهرست قیمت ویژه شرکت‌ها.
+    benefit_wholesale_title: شرایط واقعی عمده‌فروشی
+    benefits_subtitle: برای تجارت عمده و خرده افغانستان ساخته شده است.
+    benefits_title: چرا از Empire خرید کنیم
+    bestsellers_subtitle: بر پایه سفارش‌های واقعی تکمیل‌شده.
+    bestsellers_title: پرفروش‌ترین‌ها
+    billing_address: آدرس صورتحساب
+    brand: Empire
+    budget_max: بیشترین بودجه
+    budget_min: کمترین بودجه
+    cancel: لغو
+    cart: سبد خرید
+    cart_badge_count: "{count} کالا"
     cart_empty: سبد خرید شما خالی است
     cart_empty_message: هنوز محصولی به سبد خرید اضافه نکرده‌اید.
-    continue_shopping: ادامه خرید
-    subtotal: جمع کالاها
-    shipping: هزینه ارسال
-    tax: مالیات
-    total: مبلغ کل
-    proceed_to_checkout: ادامه به تکمیل خرید
-    remove_item: حذف کالا
-    update_quantity: تغییر تعداد
-    increase_quantity: افزایش تعداد
-    decrease_quantity: کاهش تعداد
-    action_error: انجام این کار ممکن نشد. لطفاً دوباره تلاش کنید.
-    sign_in: ورود به حساب کاربری
-    email: ایمیل
-    password: رمز عبور
-    password_confirm: تأیید رمز عبور
-    first_name: نام
-    last_name: نام خانوادگی
-    phone: شماره تلفن
-    no_account: حساب کاربری ندارید؟
-    already_have_account: قبلاً حساب ساخته‌اید؟
-    my_orders: سفارش‌های من
-    addresses: آدرس‌ها
-    save: ذخیره
-    cancel: لغو
-    shipping_address: آدرس تحویل
-    billing_address: آدرس صورتحساب
-    same_billing: آدرس صورتحساب همان آدرس تحویل باشد
-    city: شهر
-    province: ولایت
-    district: ولسوالی
-    address_line: نشانی کوچه و خیابان
-    postal_code: کد پستی
-    country: کشور
-    phone_label: تلفن تماس (+۹۳)
-    payment_method: روش پرداخت
+    cart_note: یادداشت برای فروشنده
+    cart_note_placeholder: زمان تحویل، ترجیح رنگ یا هر نکته‌ای که فروشنده باید بداند.
+    cart_warning_title: این هشدارها را بررسی کنید
+    carton_notice: این کالا در کارتن‌های {count} عددی عرضه می‌شود.
     cash_on_delivery: پرداخت هنگام تحویل
-    place_order: ثبت سفارش
-    order_placed: سفارش شما با موفقیت ثبت شد
-    order_number: شماره سفارش
-    order_summary: خلاصه سفارش
+    catalog_subtitle: در کاتالوگ زنده جست‌وجو، فیلتر و مرتب‌سازی کنید.
+    catalog_title: همه محصولات
+    categories_empty: هنوز هیچ دسته‌بندی منتشر نشده است.
+    categories_subtitle: کاتالوگ را همان‌گونه که مدیریت فروشگاه چیده است مرور کنید.
+    categories_title: خرید بر اساس دسته‌بندی
+    change_password_title: تغییر رمز عبور
     checkout: تکمیل خرید
-    delivery_method: شیوه ارسال
-    select_delivery: یک شیوه ارسال انتخاب کنید
-    no_payment_methods: در حال حاضر روش پرداختی در دسترس نیست.
+    checkout_steps_address: آدرس
+    checkout_steps_delivery: ارسال
+    checkout_steps_payment: پرداخت
+    checkout_steps_review: بازبینی
+    city: شهر
+    close: بستن
+    collections_empty: این مجموعه هنوز محصولی ندارد.
+    collections_empty_body: فروشنده چیزی به این مجموعه اضافه نکرده است. در عوض کاتالوگ کامل را ببینید.
+    collections_none: هنوز مجموعه‌ای نیست
+    collections_none_body: فروشندگان ما هنوز محصولات را در مجموعه‌ها دسته‌بندی
+      نکرده‌اند. کاتالوگ کامل را ببینید یا با فروشندگان آشنا شوید.
+    collections_subtitle: چیدمان‌هایی که تیم Empire آماده کرده است.
+    collections_title: مجموعه‌های منتخب
     company: شرکت
-    po_number: شماره سفارش خرید شرکت
-    optional: اختیاری
-    personal_purchase: خرید شخصی
-    seller_dashboard: داشبورد فروشنده
-    become_seller: فروشنده شوید
-    shop_name: نام فروشگاه
-    registration_number: شماره ثبت کسب‌وکار
-    application_submitted: درخواست شما برای بررسی ثبت شد. برای پیگیری وضعیت، وارد پنل فروشندگان شوید.
-    seller_panel: باز کردن پنل فروشندگان
-    admin_dashboard: داشبورد مدیریت
-    admin_panel: باز کردن داشبورد مدیریت
-    rfq: درخواست استعلام قیمت
-    rfq_title: عنوان درخواست
-    rfq_description: نیاز خود را برای فروشندگان توضیح دهید
-    requested_quantity: تعداد مورد نیاز
-    budget_min: کمترین بودجه
-    budget_max: بیشترین بودجه
-    submit: ثبت
-    no_rfqs: هنوز درخواست قیمتی ثبت نکرده‌اید.
-    quotes: پیشنهادهای قیمت
-    quote_amount: مبلغ پیشنهادی
-    accept_quote: پذیرفتن پیشنهاد
-    status: وضعیت
     company_account: حساب شرکتی
-    no_companies: هنوز عضو هیچ شرکتی نیستید.
-    rights: تمام حقوق محفوظ است.
-    draft_notice: ترجمه پشتو در انتظار بازبینی است و به‌عنوان زبان نهایی عرضه نمی‌شود.
-    minimum_quantity: حداقل تعداد سفارش
-    order_multiple: مضاعف تعداد سفارش
-    profile: مشخصات کاربری
-    no_orders: هنوز سفارشی ندارید.
-    no_addresses: هنوز آدرسی ذخیره نکرده‌اید.
-    add_address: افزودن آدرس
-    address_saved: آدرس ذخیره شد
-    welcome: خوش آمدید
-    guest_checkout: ادامه به‌عنوان مهمان
-    login_or_guest: وارد شوید، حساب بسازید یا به‌عنوان مهمان ادامه دهید.
+    company_members: اعضا
+    company_subtitle: شرکت‌هایی که عضو آن‌ها هستید، همراه با شرایط خریدشان.
+    company_title: حساب شرکتی
     configuration_error: فروشگاه پیکربندی نشده است. از مدیر بخواهید کلید عمومی فروشگاه را تنظیم کند.
+    continue_shopping: ادامه خرید
+    continue_to_account: مشاهده سفارش‌های من
+    country: کشور
+    currency_afn: افغانی
+    current_password: رمز عبور فعلی
+    decrease_quantity: کاهش تعداد
+    delivery_estimate: حدود {min} تا {max} روز کاری
+    delivery_estimate_unknown: مدت زمان ارسال را فروشنده تعیین می‌کند.
+    delivery_method: شیوه ارسال
+    description: توضیحات
+    description_tab: توضیحات
+    discount_applied: کد تخفیف اعمال شد.
+    discount_apply: اعمال کد
+    discount_code: کد تخفیف
+    discount_failed: کد تخفیف پذیرفته نشد.
+    discount_remove: حذف کد
+    district: ولسوالی
+    draft_notice: ترجمه پشتو در انتظار بازبینی است و به‌عنوان زبان نهایی عرضه نمی‌شود.
+    email: ایمیل
+    error_action: تلاش دوباره
+    error_body: نمایش این صفحه ممکن نشد. سبد خرید و حساب شما دست‌نخورده مانده است.
+    error_title: مشکلی پیش آمد
+    featured_products: محصولات ویژه
+    filter_availability: موجودی
+    filter_category: دسته‌بندی
+    filter_in_stock_only: فقط کالاهای موجود
+    filter_price_max: تا
+    filter_price_min: از
+    filter_price_range: بازه قیمت
+    filter_seller: فروشنده
+    filters_apply: اعمال
+    filters_clear: پاک کردن فیلترها
+    filters_title: فیلترها
+    filters_toggle: نمایش فیلترها
+    first_name: نام
+    footer_about_title: Empire
+    footer_address_label: نشانی
+    footer_contact_title: تماس با ما
+    footer_hours_label: ساعات کاری
+    footer_no_policies: هنوز هیچ قانونی برای فروشگاه منتشر نشده است.
+    footer_payment_body: پرداخت نقدی هنگام تحویل در سراسر افغانستان. پرداخت آنلاین
+      هنوز فعال نشده است.
+    footer_payment_title: پرداخت
+    footer_policies_title: قوانین و مقررات
+    footer_services_title: خدمات
+    footer_shop_title: خرید
+    footer_tagline: Empire یک بازارگاه چندفروشنده برای تجارت عمده و خرده در افغانستان است.
+    forgot_password: رمز عبور را فراموش کرده‌اید؟
+    forgot_password_body: ایمیل خود را وارد کنید تا پیوند بازنشانی برایتان ارسال شود.
+    from_price: از
+    fulfillment_status_canceled: لغوشده
+    fulfillment_status_fulfilled: تحویل‌شده
+    fulfillment_status_partial: تحویل بخشی
+    fulfillment_status_pending: در حال آماده‌سازی
+    fulfillment_status_ready_for_pickup: آماده تحویل حضوری
+    gallery_label: تصاویر محصول
+    guest_checkout: ادامه به‌عنوان مهمان
+    hero_body: خرید عمده و خرده، فروشندگان تأییدشده و حساب‌های شرکتی. قیمت‌ها،
+      موجودی و سفارش‌ها مستقیماً از فروشگاه دریافت می‌شوند.
+    hero_title: با خیال آسوده از Empire خرید کنید
+    hero_trust_cod: پرداخت نقدی هنگام تحویل
+    hero_trust_delivery: ارسال به هر ۳۴ ولایت
+    hero_trust_verified: فروشندگان تأییدشده
+    hero_trust_wholesale: قیمت عمده‌فروشی
+    home: صفحه اصلی
+    home_unavailable: در حال حاضر امکان دریافت محصولات وجود ندارد.
+    image_counter: تصویر {index} از {total}
+    in_stock: موجود است
+    in_wishlist: ذخیره شد
+    increase_quantity: افزایش تعداد
+    language: زبان
+    last_name: نام خانوادگی
+    loading: در حال بارگذاری…
+    loading_title: در حال بارگذاری
+    login: ورود
+    login_or_guest: وارد شوید، حساب بسازید یا به‌عنوان مهمان ادامه دهید.
+    logout: خروج
+    made_in_afghanistan: ساخته‌شده برای افغانستان
+    menu: منو
+    meta_account_description: سفارش‌ها، نشانی‌های ذخیره‌شده، درخواست‌های قیمت و
+      فهرست علاقه‌مندی شما در Empire.
+    meta_account_title: حساب کاربری من
+    meta_admin_description: "بخش کارکنان Empire: نظارت بر درخواست‌های قیمت و بررسی درخواست‌های پرداخت."
+    meta_admin_title: مدیریت Empire
+    meta_become_seller_description: برای فروش در Empire درخواست دهید. فروشگاه شما
+      بررسی می‌شود و پس از تأیید، در سراسر افغانستان دیده خواهد شد.
+    meta_become_seller_title: فروشنده شوید
+    meta_cart_description: اقلام سبد خرید خود را مرور کنید، تعداد را تغییر دهید و به
+      مرحله پرداخت بروید.
+    meta_cart_title: سبد خرید شما
+    meta_category_title: دسته‌بندی
+    meta_checkout_description: نشانی تحویل، شیوه ارسال و پرداخت را تأیید کنید، سپس سفارش را ثبت کنید.
+    meta_checkout_title: تکمیل خرید
+    meta_collection_title: مجموعه
+    meta_company_description: پروفایل شرکت، اعضا و مشخصات پرداخت مشترک خود را مدیریت کنید.
+    meta_company_title: حساب شرکتی
+    meta_home_description: از فروشندگان تأییدشده افغان در Empire به‌صورت عمده و خرده
+      خرید کنید. پرداخت نقدی هنگام تحویل، حداقل تعداد سفارش، فهرست قیمت شرکتی و
+      درخواست استعلام قیمت.
+    meta_home_title: Empire — بازارگاه خرید عمده و خرده افغانستان
+    meta_login_description: برای پیگیری سفارش‌ها و درخواست‌های قیمت، وارد حساب Empire خود شوید.
+    meta_login_title: ورود به حساب
+    meta_not_found_title: صفحه پیدا نشد
+    meta_offers_title: پیشنهادهای ویژه
+    meta_payout_description: درخواست پرداخت علیه موجودی فروشنده ثبت یا بررسی کنید.
+    meta_payout_title: درخواست‌های پرداخت
+    meta_products_description: "کاتالوگ زنده Empire را مرور کنید: جست‌وجو، فیلتر بر
+      اساس دسته‌بندی، قیمت و فروشنده، و مرتب‌سازی بر اساس پرفروش‌ترین یا
+      تازه‌ترین."
+    meta_products_title: محصولات
+    meta_register_description: یک حساب خریدار Empire بسازید تا نشانی‌ها ذخیره شوند،
+      سفارش‌ها را پیگیری کنید و درخواست قیمت ثبت کنید.
+    meta_register_title: ایجاد حساب کاربری
+    meta_rfq_description: درخواست قیمت را با تعداد مورد نیاز منتشر کنید. فروشندگان
+      تأییدشده پیشنهاد می‌فرستند و شما بهترین را می‌پذیرید.
+    meta_rfq_title: درخواست قیمت عمده
+    meta_seller_description: "بخش فروشنده: فروشگاه، محصولات، قیمت‌ها و درخواست‌های پرداخت شما."
+    meta_seller_title: پنل فروشنده
+    meta_vendors_description: فروشندگان تأییدشده Empire که اکنون سفارش می‌پذیرند،
+      همراه با محصولات و شرایط فروششان.
+    meta_vendors_title: فروشندگان تأییدشده
+    meta_wholesale_description: کالاهایی با حداقل تعداد سفارش، مضاعف سفارش، واحد کارتنی و قیمت پلکانی.
+    meta_wholesale_title: محصولات عمده‌فروشی
+    minimum_quantity: حداقل تعداد سفارش
+    moq_notice: حداقل تعداد سفارش این کالا {count} عدد است.
+    my_account: حساب کاربری من
+    my_orders: سفارش‌های من
+    nav_categories: دسته‌بندی‌ها
+    nav_offers: پیشنهادها
+    nav_rfq: درخواست قیمت
+    nav_vendors: فروشندگان
+    nav_wholesale: عمده‌فروشی
+    new_arrivals_subtitle: کالاهایی که به‌تازگی منتشر شده‌اند.
+    new_arrivals_title: تازه‌ترین محصولات
+    new_password: رمز عبور تازه
+    newsletter_body: برای شما خبر محصولات و قیمت‌ها را می‌فرستیم. هر زمان می‌توانید
+      لغو اشتراک کنید.
+    newsletter_consent: می‌پذیرم که Empire برایم ایمیل بفرستد.
+    newsletter_error: نشانی ایمیل معتبر نیست.
+    newsletter_placeholder: نشانی ایمیل شما
+    newsletter_submit: ثبت اشتراک
+    newsletter_success: ایمیل شما ثبت شد.
+    newsletter_title: از محصولات تازه و پیشنهادها باخبر شوید
+    no: خیر
+    no_account: حساب کاربری ندارید؟
+    no_addresses: هنوز آدرسی ذخیره نکرده‌اید.
+    no_balance: هنوز موجودی کسب‌شده‌ای وجود ندارد.
+    no_companies: هنوز عضو هیچ شرکتی نیستید.
+    no_orders: هنوز سفارشی ندارید.
+    no_orders_body: پس از ثبت هر سفارش، وضعیت پرداخت و ارسال آن اینجا نمایش داده می‌شود.
+    no_payment_methods: در حال حاضر روش پرداختی در دسترس نیست.
+    no_payout_requests: هنوز درخواست پرداختی وجود ندارد.
+    no_products: هنوز محصولی برای عرضه وجود ندارد.
+    no_results_action: پاک کردن فیلترها
+    no_results_body: واژه کوتاه‌تری را امتحان کنید، یک فیلتر را بردارید یا همه
+      محصولات را ببینید.
+    no_results_title: نتیجه‌ای پیدا نشد
+    no_rfqs: هنوز درخواست قیمتی ثبت نکرده‌اید.
+    not_found_action: بازگشت به صفحه اصلی
+    not_found_body: ممکن است پیوند نادرست باشد یا صفحه برداشته شده باشد.
+    not_found_title: این صفحه وجود ندارد
+    offers_empty: در حال حاضر تخفیفی نیست
+    offers_empty_body: اکنون محصول تخفیف‌دار وجود ندارد. قیمت‌ها پیوسته تغییر
+      می‌کنند، پس دوباره سر بزنید یا کاتالوگ کامل را ببینید.
+    offers_subtitle: کالاهایی که کاهش قیمت فعال دارند.
+    offers_title: پیشنهادهای ویژه
+    open_cart: باز کردن سبد خرید
+    optional: اختیاری
+    order_back: بازگشت به سفارش‌ها
+    order_company: شرکت
+    order_date: تاریخ
+    order_detail_title: سفارش
+    order_fulfillment_status: ارسال
+    order_items_title: کالاهای سفارش
+    order_multiple: مضاعف تعداد سفارش
+    order_multiple_notice: تعداد سفارش باید مضربی از {count} باشد.
+    order_not_found: این سفارش پیدا نشد.
+    order_number: شماره سفارش
+    order_payment_status: پرداخت
+    order_placed: سفارش شما با موفقیت ثبت شد
+    order_po: سفارش خرید شرکت
+    order_quantity: تعداد
+    order_status_canceled: لغوشده
+    order_status_completed: تکمیل‌شده
+    order_status_draft: پیش‌نویس
     order_status_pending: در انتظار بررسی
     order_status_placed: ثبت‌شده
-    order_status_completed: تکمیل‌شده
-    order_status_canceled: لغوشده
-    order_status_draft: پیش‌نویس
-    admin_login: ورود مدیر
-    seller_login: ورود فروشنده
-    payout_review: بررسی درخواست‌های پرداخت
-    payout_requests: درخواست‌های پرداخت
-    no_payout_requests: هنوز درخواست پرداختی وجود ندارد.
-    approve: تأیید
-    reject: رد کردن
-    rejection_reason: دلیل رد کردن
-    balances: موجودی‌ها
-    no_balance: هنوز موجودی کسب‌شده‌ای وجود ندارد.
+    order_success_body: سفارش شما ثبت شد. وضعیت آن را می‌توانید از حساب کاربری خود پیگیری کنید.
+    order_success_note: در پرداخت نقدی هنگام تحویل، مبلغ هنگام رسیدن سفارش دریافت می‌شود.
+    order_summary: خلاصه سفارش
+    order_view: مشاهده سفارش
+    out_of_stock: ناموجود
+    page_of: صفحه {page} از {pages}
+    pagination_next: بعدی
+    pagination_prev: قبلی
+    password: رمز عبور
+    password_confirm: تأیید رمز عبور
+    password_updated: رمز عبور شما تغییر کرد.
+    payment_method: روش پرداخت
+    payment_status_authorized: در انتظار دریافت نقدی
+    payment_status_failed: ناموفق
+    payment_status_paid: پرداخت‌شده
+    payment_status_pending: در انتظار
+    payment_status_refunded: بازگردانده‌شده
+    payment_status_unpaid: پرداخت‌نشده
+    payment_status_void: باطل‌شده
     payout_note: یادداشت برای بررسی‌کننده (اختیاری)
-    request_payout: درخواست بررسی پرداخت
-    payout_status_requested: در انتظار بررسی
+    payout_request_link: درخواست بررسی پرداخت
+    payout_requests: درخواست‌های پرداخت
+    payout_review: بررسی درخواست‌های پرداخت
+    payout_review_link: بررسی درخواست‌های پرداخت
     payout_status_approved: تأییدشده برای تسویه
     payout_status_rejected: ردشده
-    payout_review_link: بررسی درخواست‌های پرداخت
-    payout_request_link: درخواست بررسی پرداخت
+    payout_status_requested: در انتظار بررسی
+    per_carton: برای هر کارتن
+    per_unit: برای هر عدد
+    personal_purchase: خرید شخصی
+    phone: شماره تلفن
+    phone_invalid: شماره افغانستان را وارد کنید، مثال +۹۳۷۰۰۱۲۳۴۵۶ یا ۰۷۰۰۱۲۳۴۵۶.
+    phone_label: تلفن تماس (+۹۳)
+    place_order: ثبت سفارش
+    po_number: شماره سفارش خرید شرکت
+    policies_subtitle: قواعدی که Empire و فروشندگانش بر اساس آن کار می‌کنند، یک‌جا.
+    policies_title: سیاست‌های فروشگاه
+    policy_no_body: این سیاست هنوز به‌طور کامل منتشر نشده است. با ما تماس بگیرید تا
+      آن را برایتان بفرستیم.
+    policy_questions_body: اگر چیزی در این سیاست روشن نیست، تیم ما به دری، پشتو یا
+      انگلیسی پاسخ می‌دهد.
+    policy_questions_title: درباره این سیاست پرسش دارید؟
+    policy_updated: آخرین به‌روزرسانی {date}
+    popular_searches: جست‌وجوهای پرتکرار
+    postal_code: کد پستی
+    preorder_notice: این کالا پیش‌سفارش است و بعداً ارسال می‌شود.
+    price: قیمت
+    proceed_to_checkout: ادامه به تکمیل خرید
+    product_details: جزئیات محصول
+    product_not_found: محصول پیدا نشد
+    product_unavailable: این کالا در حال حاضر قابل خرید نیست.
+    products: محصولات
+    profile: مشخصات کاربری
+    province: ولایت
+    quantity: تعداد
+    quote_amount: مبلغ پیشنهادی
+    quote_status_accepted: پذیرفته‌شده
+    quote_status_pending: در انتظار تصمیم شما
+    quote_status_rejected: ردشده
+    quote_status_withdrawn: پس‌گرفته‌شده
+    quotes: پیشنهادهای قیمت
+    register: ایجاد حساب
+    registration_number: شماره ثبت کسب‌وکار
+    reject: رد کردن
+    rejection_reason: دلیل رد کردن
+    related_products: محصولات مرتبط
+    related_products_empty: کالای مرتبطی در این دسته‌بندی پیدا نشد.
+    remove_from_wishlist: حذف از علاقه‌مندی‌ها
+    remove_item: حذف کالا
+    request_payout: درخواست بررسی پرداخت
+    request_quote: درخواست قیمت
+    request_quote_for_product: درخواست قیمت عمده برای این کالا
+    requested_quantity: تعداد مورد نیاز
+    required_field: این بخش الزامی است.
+    reset_password_body: برای حساب خود یک رمز عبور تازه تعیین کنید.
+    reset_password_title: انتخاب رمز عبور تازه
+    reset_send: ارسال پیوند بازنشانی
+    reset_sent: اگر این ایمیل ثبت شده باشد، پیوند بازنشانی برایش ارسال شد.
+    reset_submit: ذخیره رمز تازه
+    reset_success: رمز عبور شما تغییر کرد. اکنون می‌توانید وارد شوید.
+    reset_token_label: کد بازنشانی
+    results_count: "{count} کالا"
+    retry: تلاش دوباره
+    rfq: درخواست استعلام قیمت
+    rfq_accepted_note: شما یک پیشنهاد را پذیرفتید. برای ثبت سفارش با فروشنده تماس بگیرید.
+    rfq_banner_body: نیاز و تعداد مورد نظر خود را منتشر کنید. فروشندگان تأییدشده
+      پیشنهاد قیمت می‌فرستند و شما بهترین را می‌پذیرید.
+    rfq_banner_cta: ثبت درخواست قیمت
+    rfq_banner_note: برای خریدار رایگان است. پیشنهاد تنها پس از پذیرش شما اعتبار پیدا می‌کند.
+    rfq_banner_title: قیمت عمده می‌خواهید؟ مستقیم از فروشندگان بپرسید.
+    rfq_budget_range: بودجه
+    rfq_created_at: تاریخ انتشار
+    rfq_description: نیاز خود را برای فروشندگان توضیح دهید
+    rfq_detail_title: جزئیات درخواست
+    rfq_no_quotes: هنوز هیچ فروشنده‌ای پیشنهاد نداده است.
+    rfq_quantity_label: تعداد
+    rfq_status_accepted: پذیرفته‌شده
+    rfq_status_closed: بسته‌شده
+    rfq_status_open: باز
+    rfq_status_quoted: دارای پیشنهاد
+    rfq_submit_success: درخواست شما برای فروشندگان منتشر شد.
+    rfq_title: عنوان درخواست
+    rfq_view: مشاهده پیشنهادها
+    rfqs_subtitle: درخواست‌هایی که منتشر کرده‌اید و پیشنهادی که فروشندگان فرستاده‌اند.
+    rfqs_title: درخواست‌های قیمت
+    rights: تمام حقوق محفوظ است.
+    same_billing: آدرس صورتحساب همان آدرس تحویل باشد
+    save: ذخیره
+    search: جست‌وجوی محصولات
+    search_no_results: هنوز نتیجه‌ای برای این متن پیدا نشد.
+    search_placeholder: جست‌وجوی کالا، فروشنده یا دسته‌بندی…
+    search_scope_all: همه دسته‌بندی‌ها
+    search_submit: جست‌وجو
+    search_suggestions: پیشنهادهای جست‌وجو
+    select_delivery: یک شیوه ارسال انتخاب کنید
+    select_quantity: تعداد
+    select_variant: انتخاب گزینه
+    seller: فروشنده
+    seller_about_hint: "Empire به تولیدکنندگان، صنایع‌گران و واردکنندگان افغان یک
+      ویترین می‌دهد: محصولات را فهرست کنید، درخواست‌های عمده‌فروشی بگیرید و مبلغ
+      را به افغانی دریافت کنید."
+    seller_account_hint: این مشخصات حساب ورود شما به Empire را می‌سازد. از آن برای
+      مدیریت محصولات، قیمت‌ها و پرداخت‌ها استفاده می‌کنید.
+    seller_address_label: نشانی خیابان
+    seller_address_placeholder: سرک، ولسوالی و نشانِ محل
+    seller_already_quoted: پیش از این به این درخواست پاسخ داده‌اید.
+    seller_application_done_body: درخواست شما ثبت شد و اکنون در حال بررسی است. تیم
+      ما با شماره تلفنی که داده‌اید تماس می‌گیرد؛ پس از تأیید می‌توانید از
+      داشبورد خود محصولات را منتشر کنید.
+    seller_application_done_title: درخواست ثبت شد
+    seller_application_subtitle: با یک فورم، فروش را آغاز کنید.
+    seller_application_title: فروشنده شوید
+    seller_apply_terms_note: با ثبت درخواست، شرایط خدمات Empire و سیاست فروشندگان را می‌پذیرید.
+    seller_balances_title: موجودی‌ها
+    seller_benefit_payment_body: خریداران به افغانی پرداخت می‌کنند، از جمله پرداخت
+      هنگام تحویل. پرداخت‌ها بررسی و از موجودی فروشنده شما آزاد می‌شود.
+    seller_benefit_payment_title: پرداخت به افغانی
+    seller_benefit_rfq_body: خریداران تجاری درخواست قیمت ثبت می‌کنند و فروشندگان با
+      قیمت پاسخ می‌دهند. شما درخواست‌های مربوط به دسته‌بندی خود را می‌بینید.
+    seller_benefit_rfq_title: درخواست‌های عمده به شما می‌رسد
+    seller_benefit_shipping_body: زمان آماده‌سازی خود را تعیین کنید و با شیوه‌های
+      ارسال Empire در هر ۳۴ ولایت کار کنید.
+    seller_benefit_shipping_title: کنترل ارسال با شماست
+    seller_benefit_store_body: صفحه فروشگاه خودتان با لوگو، داستان، سیاست‌ها و همه
+      محصولاتی که منتشر می‌کنید.
+    seller_benefit_store_title: فروشگاهی از آن خود
+    seller_card_products: مشاهده محصولات این فروشنده
+    seller_card_title: فروشنده
+    seller_card_verified: فروشنده تأییدشده
+    seller_categories_hint: دسته‌بندی‌هایی را انتخاب کنید که در آن‌ها فروش دارید.
+      این کار بررسی درخواست و ارجاع درخواست‌های خریدار به شما را آسان می‌کند.
+    seller_categories_unavailable: دسته‌بندی‌ها در این لحظه در دسترس نیستند. با این
+      حال می‌توانید درخواست را ثبت کنید و ما آن‌ها را هنگام بررسی اضافه می‌کنیم.
+    seller_city_label: شهر
+    seller_city_placeholder: کابل
+    seller_dashboard: داشبورد فروشنده
+    seller_description_hint: چه چیزی تولید یا وارد می‌کنید، ظرفیت شما چیست، و خریدار
+      پیش از تماس باید چه بداند.
+    seller_description_label: درباره کسب‌وکار شما
+    seller_email_hint: برای ورود شما و اطلاع‌های سفارش استفاده می‌شود.
+    seller_email_invalid: یک نشانی ایمیل معتبر وارد کنید.
+    seller_form_about: درباره کسب‌وکار شما
+    seller_form_account: مشخصات ورود
+    seller_form_categories: دسته‌بندی محصولات
+    seller_form_contact: تماس و موقعیت
+    seller_form_identity: مشخصات فروشگاه
+    seller_links_title: ابزارهای فروشنده
+    seller_login: ورود فروشنده
+    seller_my_quotes: پیشنهادهای من
+    seller_no_open_rfqs: در حال حاضر درخواست بازی وجود ندارد.
+    seller_no_quotes: هنوز پیشنهادی نفرستاده‌اید.
+    seller_open_rfqs: درخواست‌های باز
+    seller_owner_hint: شخصی که درباره این فروشگاه با او تماس می‌گیریم.
+    seller_owner_label: نام مالک یا مدیر
+    seller_panel: باز کردن پنل فروشندگان
+    seller_panel_home: میز کار فروشنده
+    seller_password_hint: حداقل ۸ نویسه.
+    seller_password_mismatch: دو رمز عبور با هم مطابقت ندارند.
+    seller_phone_hint: شماره موبایل؛ برای تماس درباره درخواست شما استفاده می‌شود.
+    seller_phone_invalid: یک شماره موبایل معتبر افغان وارد کنید، مثلاً ۰۷۰۰۱۲۳۴۵۶.
+    seller_phone_label: شماره تماس
+    seller_quote_amount: قیمت شما برای کل درخواست
+    seller_quote_failed: ارسال پیشنهاد ممکن نشد. ممکن است درخواست بسته شده باشد.
+    seller_quote_hint: مبلغ برای کل تعداد درخواست‌شده و به واحد پول همان درخواست است.
+    seller_quote_notes: یادداشت برای خریدار
+    seller_quote_status: وضعیت پیشنهاد
+    seller_quote_success: پیشنهاد شما برای خریدار ارسال شد.
+    seller_registration_hint: اختیاری. داشتن جواز یا شماره مالیاتی بررسی را سریع‌تر می‌کند.
+    seller_registration_label: شماره ثبت تجارتی
+    seller_rfq_budget: بودجه خریدار
+    seller_rfq_buyer: خریدار
+    seller_rfq_desk: درخواست‌های قیمت
+    seller_rfq_desk_body: درخواست‌های بازی که می‌توانید به آن‌ها پیشنهاد دهید،
+      به‌همراه پیشنهادی که فرستاده‌اید.
+    seller_rfq_posted: تاریخ انتشار
+    seller_rfq_product: کالا
+    seller_rfq_quantity_label: تعداد درخواست‌شده
+    seller_shop_name_label: نام فروشگاه
+    seller_shop_name_required: نام فروشگاه ضروری است.
+    seller_step_1: این درخواست را با مشخصات فروشگاه، دسته‌بندی‌ها و شماره تماس خود ثبت کنید.
+    seller_step_2: تیم ما آن را بررسی می‌کند و اگر چیزی نیاز به تأیید داشت با شما
+      تماس می‌گیرد.
+    seller_step_3: پس از تأیید، وارد شوید و نخستین محصولات خود را منتشر کنید.
+    seller_step_body: تیم ما درخواست‌ها را دستی بررسی می‌کند. اگر چیزی لازم باشد
+      تلفنی با شما تماس می‌گیریم و پس از تأیید، فروشگاه شما در فهرست فروشندگان
+      Empire نمایش داده می‌شود.
+    seller_step_title: مرحله بعد چیست
+    seller_submit_quote: ارسال پیشنهاد
+    seller_submitting: در حال ارسال
+    settings_body: زبان، رمز عبور و شیوه تماس ما با شما.
+    settings_title: تنظیمات
+    shipping: هزینه ارسال
+    shipping_address: آدرس تحویل
+    shipping_body: گزینه‌های ارسال و هزینه آن‌ها در مرحله تکمیل خرید بر اساس آدرس
+      شما محاسبه می‌شود.
+    shipping_tab: ارسال
+    shipping_title: ارسال و پرداخت
+    shop_name: نام فروشگاه
+    shop_now: مشاهده محصولات
+    sign_in: ورود به حساب کاربری
+    site_name: بازارگاه Empire
+    skip_to_content: پرش به محتوا
+    sort_best_selling: پرفروش‌ترین
+    sort_featured: پیشنهاد فروشگاه
+    sort_label: مرتب‌سازی
+    sort_name_asc: نام، از الف تا ی
+    sort_newest: تازه‌ترین
+    sort_price_asc: کمترین قیمت
+    sort_price_desc: بیشترین قیمت
+    spec_no_data: برای این کالا مشخصاتی منتشر نشده است.
+    specifications: مشخصات
+    status: وضعیت
+    stock_backorderable: قابل سفارش با تأمین بعدی
+    submit: ثبت
+    subtotal: جمع کالاها
+    tagline: Empire — بازارگاه آنلاین
+    tax: مالیات
+    total: مبلغ کل
+    unit: عدد
+    update_quantity: تغییر تعداد
+    variant_default: استاندارد
+    vendor_about_title: درباره این فروشنده
+    vendor_cover_alt: تصویر پوشش فروشنده
+    vendor_logo_alt: نشان فروشنده
+    vendor_not_found: این فروشنده پیدا نشد
+    vendor_not_found_body: ممکن است حساب فروشنده معلق شده باشد یا پیوند نادرست باشد.
+    vendor_policies_title: شرایط فروشنده
+    vendor_products_empty: این فروشنده هنوز محصولی منتشر نکرده است.
+    vendor_products_title: محصولات این فروشنده
+    vendor_search_placeholder: جست‌وجوی فروشندگان…
+    vendor_verified_note: تأییدشده توسط Empire
+    vendors_count: "{count} فروشنده"
+    vendors_empty: هنوز فروشنده‌ای ثبت نشده است.
+    vendors_empty_body: به محض این‌که فروشندگان تأییدشده امکان پذیرش سفارش داشته
+      باشند، اینجا نمایش داده می‌شوند.
+    vendors_subtitle: هر فروشنده‌ای که اینجا می‌بینید تأییدشده و آماده پذیرش سفارش است.
+    vendors_title: فروشندگان
+    verified_suppliers_subtitle: فروشندگانی که Empire تأیید کرده و اکنون سفارش می‌پذیرند.
+    verified_suppliers_title: تأمین‌کنندگان معتبر
+    view_all: مشاهده همه
+    view_all_vendors: مشاهده همه فروشندگان
+    view_details: مشاهده جزئیات
+    visit_seller_store: مشاهده صفحه فروشنده
+    welcome: خوش آمدید
+    wholesale_hint: با افزایش تعداد، قیمت کاهش می‌یابد. حداقل تعداد سفارش روی هر
+      کالای عمده نمایش داده می‌شود.
+    wholesale_how_title: خرید عمده چگونه کار می‌کند
+    wholesale_pillar_carton_body: محصولاتی که کارتنی فروخته می‌شوند تعداد واحد در هر
+      کارتن را نشان می‌دهند، تا به‌جای دانه‌ای، کارتن کامل سفارش دهید.
+    wholesale_pillar_carton_title: مقدار کارتنی
+    wholesale_pillar_company_body: شرکت خود را یک بار ثبت کنید و مشخصات، شماره
+      مالیاتی و نشانی‌هایش را در هر سفارش دوباره استفاده کنید.
+    wholesale_pillar_company_title: حساب شرکتی
+    wholesale_pillar_moq_body: هر واریانت حداقل مقدار سفارش خود را دارد. پله تعداد
+      اجازه کمتر از آن را نمی‌دهد، پس سفارش شما از نخستین بار پذیرفته می‌شود.
+    wholesale_pillar_moq_title: حداقل‌های روشن
+    wholesale_pillar_payment_body: به افغانی پرداخت کنید، از جمله پرداخت هنگام تحویل
+      در هر ۳۴ ولایت. سفارش‌های بزرگ‌تر از راه درخواست قیمت هماهنگ می‌شود.
+    wholesale_pillar_payment_title: افغانی و پرداخت هنگام تحویل
+    wholesale_pillar_rfq_body: محصول، مقدار و بودجه را بگویید. فروشندگان با قیمت
+      پاسخ می‌دهند و شما هر کدام را که مناسب بود می‌پذیرید.
+    wholesale_pillar_rfq_title: درخواست قیمت
+    wholesale_pillar_shipping_body: شیوه‌ها و نرخ‌های ارسال پیش از پرداخت نشان داده
+      می‌شوند و زمان آماده‌سازی هر فروشنده در صفحه محصول آمده است.
+    wholesale_pillar_shipping_title: ارسالی که می‌توانید برایش برنامه بریزید
+    wholesale_pillars_title: ساخته‌شده برای خریداران عمده
+    wholesale_products_empty: هنوز مجموعه عمده‌فروشی نیست
+    wholesale_products_empty_body: فروشندگان ما هنوز گزینش عمده‌فروشی را دسته‌بندی
+      نکرده‌اند. یک درخواست قیمت ثبت کنید تا فروشندگان برای مقداری که لازم دارید
+      قیمت بدهند.
+    wholesale_products_title: آماده سفارش عمده
+    wholesale_rule_carton: واحد در هر کارتن
+    wholesale_rule_carton_value: در صفحه محصول، در صورتی که فروشنده تعیین کرده باشد
+    wholesale_rule_moq: حداقل مقدار سفارش
+    wholesale_rule_moq_value: روی هر محصول نوشته و در سبد خرید اعمال می‌شود
+    wholesale_rule_multiple: ضریب سفارش
+    wholesale_rule_multiple_value: پله تعداد فقط مقدارهای مجاز را پیشنهاد می‌دهد
+    wholesale_rule_payment: پرداخت
+    wholesale_rule_payment_value: افغانی، از جمله پرداخت هنگام تحویل
+    wholesale_rules_note: قیمت‌گذاری حجمی هنگام تأیید سفارش شما توسط فروشگاه اعمال
+      می‌شود. Empire جدول تخفیفی را منتشر نمی‌کند که در مرحله پرداخت نتواند به
+      آن عمل کند.
+    wholesale_rules_title: قواعد، به زبان ساده
+    wholesale_section_body: قواعد تعداد هنگام افزودن کالا به سبد توسط فروشگاه اعمال می‌شود.
+    wholesale_section_title: شرایط عمده‌فروشی
+    wholesale_step_1: محصول مورد نیاز را پیدا کنید و حداقل مقدار سفارش و اندازه
+      کارتن آن را ببینید.
+    wholesale_step_2: آن را با مقدار مجاز به سبد خرید اضافه کنید، یا برای هر مقدار
+      بزرگ‌تر یا سفارشی درخواست قیمت ثبت کنید.
+    wholesale_step_3: فروشندگان به درخواست‌های قیمت با نرخ پاسخ می‌دهند؛ شما قیمتی
+      را که می‌پسندید می‌پذیرید.
+    wholesale_step_4: شیوه ارسال را انتخاب کنید و به افغانی پرداخت کنید، از جمله هنگام تحویل.
+    wholesale_subtitle: قیمت عمده، حداقل تعداد سفارش و واحد کارتنی.
+    wholesale_title: محصولات عمده‌فروشی
+    wishlist_empty: هنوز علاقه‌مندی ندارید
+    wishlist_empty_body: روی نشان قلب هر کالا بزنید تا اینجا ذخیره شود.
+    wishlist_move_to_cart: انتقال به سبد خرید
+    wishlist_subtitle: کالاهایی که برای بعد نگه داشته‌اید.
+    wishlist_title: علاقه‌مندی‌ها
+    yes: بله
+    your_cart: سبد خرید شما
