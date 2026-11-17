@@ -9,7 +9,7 @@ import { JsonLd, absoluteUrl, buildMetadata } from "@/lib/seo";
 import { currentLocale } from "@/lib/locale-server";
 import { translator } from "@/lib/i18n";
 import { SITE } from "@/lib/site";
-import { listProducts, type Product } from "@/lib/api";
+import { listProducts, uniqueProducts, type Product } from "@/lib/api";
 
 /** Optional curated collection. Wholesale is a programme, not only a product
  * set, so this page still renders its full explanation when the collection is
@@ -37,7 +37,7 @@ export default async function WholesalePage() {
 
   let products: Product[] = [];
   try {
-    products = (await listProducts({ collectionPermalink: WHOLESALE_COLLECTION, limit: 12, sort: "best_selling", expand: "variants,seller" })).data;
+    products = uniqueProducts((await listProducts({ collectionPermalink: WHOLESALE_COLLECTION, limit: 12, sort: "best_selling", expand: "variants,seller" })).data);
   } catch {
     products = [];
   }

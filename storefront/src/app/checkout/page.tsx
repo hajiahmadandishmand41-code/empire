@@ -57,7 +57,7 @@ export default function CheckoutPage() {
   const methods = cart?.payment_methods.filter((method) => !method.session_required) || [];
   const deliveryReady = Boolean(cart?.shipping_address && cart.fulfillments.length > 0 && cart.fulfillments.every((item) => item.selected_delivery_rate_id));
   if (loading) return <p role="status">{t("loading")}</p>;
-  if (purchase) return <div className="mx-auto max-w-xl rounded-2xl border bg-white p-8 text-center" data-testid="order-success"><h1 className="mb-4 text-2xl font-bold text-emerald-700">{t("order_placed")}</h1><p className="mb-2">{t("order_number")}: <span dir="ltr">{purchase.number || purchase.id}</span></p>{purchase.orders?.map((order) => <p key={order.id} dir="ltr">{order.number}</p>)}<Link href="/account" className="mt-6 inline-block rounded-lg bg-slate-brand px-5 py-3 text-white">{t("my_orders")}</Link></div>;
+  if (purchase) return <div className="mx-auto max-w-xl rounded-2xl border bg-white p-8 text-center" data-testid="order-success"><h1 className="mb-4 text-2xl font-bold text-emerald-700">{t("order_placed")}</h1><p className="mb-2">{t("order_number")}: <span dir="ltr">{purchase.number || purchase.id}</span></p>{purchase.orders?.map((order) => <p key={order.id} dir="ltr">{order.number}</p>)}<Link href="/account" className="mt-6 inline-block rounded-lg bg-navy-900 px-5 py-3 text-white">{t("my_orders")}</Link></div>;
   if (!cart || cart.items.length === 0) return <div><h1 className="mb-4 text-2xl font-bold">{t("checkout")}</h1><p className="mb-6">{t("cart_empty")}</p><Link href="/products" className="text-emerald-700 underline">{t("continue_shopping")}</Link></div>;
   return <div className="mx-auto max-w-5xl space-y-6"><h1 className="text-3xl font-bold">{t("checkout")}</h1><ErrorNotice message={error} />
     <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
@@ -69,7 +69,7 @@ export default function CheckoutPage() {
           <AddressFields value={address} onChange={setAddress} provinces={provinces} />
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={sameBilling} onChange={(e) => setSameBilling(e.target.checked)} />{t("same_billing")}</label>
           {!sameBilling && <><h3 className="font-semibold">{t("billing_address")}</h3><AddressFields value={billing} onChange={setBilling} provinces={provinces} /></>}
-          <button disabled={busy} className="rounded-lg bg-slate-brand px-5 py-2.5 font-semibold text-white disabled:opacity-50">{busy ? t("loading") : t("save")}</button>
+          <button disabled={busy} className="rounded-lg bg-navy-900 px-5 py-2.5 font-semibold text-white disabled:opacity-50">{busy ? t("loading") : t("save")}</button>
         </form>
         {cart.shipping_address && <section className="space-y-4 rounded-xl border bg-white p-6"><h2 className="text-xl font-bold">{t("delivery_method")}</h2>
           {cart.fulfillments.length === 0 ? <p className="text-sm text-gray-500">{t("select_delivery")}</p> : cart.fulfillments.map((fulfillment) => <div key={fulfillment.id} className="block text-sm"><label htmlFor={`delivery-${fulfillment.id}`}>{t("delivery_method")}</label><select id={`delivery-${fulfillment.id}`} required disabled={busy} value={fulfillment.selected_delivery_rate_id || ""} onChange={(e) => chooseDelivery(fulfillment.id, e.target.value)} className="mt-1 w-full rounded-lg border bg-white p-2.5"><option value="">{t("select_delivery")}</option>{fulfillment.delivery_rates.map((rate) => <option key={rate.id} value={rate.id}>{rate.name || t("shipping")} — {money(rate.cost)}</option>)}</select></div>)}
@@ -78,7 +78,7 @@ export default function CheckoutPage() {
       </div>
       <aside className="h-fit rounded-xl border bg-white p-6"><h2 className="mb-4 text-xl font-bold">{t("order_summary")}</h2><ul className="mb-4 space-y-2 text-sm">{cart.items.map((item) => <li key={item.id} className="flex justify-between gap-3"><span>{item.name} × {item.quantity}</span><span>{money(item.total)}</span></li>)}</ul><dl className="space-y-2 border-t pt-4 text-sm"><div className="flex justify-between"><dt>{t("subtotal")}</dt><dd>{money(cart.item_total)}</dd></div><div className="flex justify-between"><dt>{t("shipping")}</dt><dd>{money(cart.delivery_total)}</dd></div><div className="flex justify-between"><dt>{t("tax")}</dt><dd>{money(cart.tax_total)}</dd></div><div className="flex justify-between text-lg font-bold"><dt>{t("total")}</dt><dd data-testid="checkout-total">{money(cart.total)}</dd></div></dl>
         {cart.requirements.length > 0 && <ul className="mt-4 space-y-1 text-sm text-amber-700">{cart.requirements.map((requirement) => <li key={requirement.code}>{requirement.message}</li>)}</ul>}
-        <button type="button" onClick={placeOrder} disabled={busy || !deliveryReady || !paymentMethod} data-testid="place-order" className="mt-6 w-full rounded-lg bg-slate-brand px-5 py-3 font-semibold text-white disabled:opacity-50">{busy ? t("loading") : t("place_order")}</button>
+        <button type="button" onClick={placeOrder} disabled={busy || !deliveryReady || !paymentMethod} data-testid="place-order" className="mt-6 w-full rounded-lg bg-navy-900 px-5 py-3 font-semibold text-white disabled:opacity-50">{busy ? t("loading") : t("place_order")}</button>
       </aside>
     </div>
   </div>;

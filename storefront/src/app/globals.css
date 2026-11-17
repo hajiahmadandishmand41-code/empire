@@ -176,35 +176,6 @@ body {
   }
 }
 
-/* ------------------------------------------------------------------------ *
- * Transitional compatibility aliases.
- *
- * The previous stylesheet defined these five brand utilities directly, and
- * pages that have not been redesigned yet still reference them. Without this
- * block those pages would render unstyled, so the legacy names are mapped onto
- * the new navy/jade tokens — which also means a not-yet-migrated page already
- * shows the current identity instead of a second, competing palette.
- *
- * These are NOT part of the design system. Do not use them in new code; use
- * bg-navy-900 / text-jade-700 and friends. Each entry is removed as its page
- * is migrated.
- * ------------------------------------------------------------------------ */
-.text-emerald-brand {
-  @apply text-jade-700;
-}
-.bg-emerald-brand {
-  @apply bg-jade-700;
-}
-.border-emerald-brand {
-  @apply border-jade-700;
-}
-.text-slate-brand {
-  @apply text-navy-900;
-}
-.bg-slate-brand {
-  @apply bg-navy-900;
-}
-
 /* Print: an order summary or a quote should be printable without chrome. */
 @media print {
   header,
