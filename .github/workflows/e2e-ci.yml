@@ -50,43 +50,6 @@ jobs:
         run: bash scripts/ci-run.sh npx --prefix storefront playwright install --with-deps chromium
       - name: Real browser tests (no Backend means failure)
         run: bash scripts/ci-run.sh npm --prefix storefront run test:e2e
-      # TEMPORARY DIAGNOSTIC — remove once the duplicate catalog card is
-      # explained. The API returns exactly one row for the demo product
-      # (meta.count=1, distinct ids=1), so the second card is not coming from the
-      # response. This runs AFTER the Playwright suite, once the marketplace
-      # journey test has created its own products, and inspects both the API and
-      # the HTML the storefront actually rendered — counting product-link
-      # elements and printing each card's href and title.
-      - name: "DIAGNOSTIC: rendered catalog vs API catalog"
-        if: always()
-        run: |
-          set -uo pipefail
-          KEY="$SPREE_PUBLISHABLE_KEY"
-          OUT=diag-catalog.txt
-          : > "$OUT"
-          {
-            echo "=== API: page=1&limit=24&expand=variants,seller"
-            curl -fsS -H "x-spree-api-key: $KEY" "http://127.0.0.1:3000/api/v3/store/products?page=1&limit=24&expand=variants%2Cseller" \
-              | jq -r '"  meta.count=\(.meta.count) returned=\(.data|length) distinctIds=\([.data[].id]|unique|length)",
-                       (.data[] | "  id=\(.id) slug=\(.slug) name=\(.name)")'
-            echo "=== STOREFRONT HTML: /products"
-            curl -fsS "http://127.0.0.1:3001/products" -o catalog.html
-            echo "  bytes=$(wc -c < catalog.html)"
-            echo "  product-card count=$(grep -o 'data-testid="product-card"' catalog.html | wc -l)"
-            echo "  product-link count=$(grep -o 'data-testid="product-link"' catalog.html | wc -l)"
-            echo "  <main count=$(grep -o '<main' catalog.html | wc -l)"
-            echo "  demo-name occurrences=$(grep -o 'سبد دست‌باف نمایشی Empire' catalog.html | wc -l)"
-            echo "  product-link hrefs:"
-            grep -o 'data-testid="product-link"[^>]*href="[^"]*"' catalog.html | sed 's/^/    /'
-            echo "  card titles (h3):"
-            grep -o '<h3[^>]*>[^<]*</h3>' catalog.html | sed 's/^/    /'
-            echo "=== STOREFRONT HTML: / (home, control)"
-            curl -fsS "http://127.0.0.1:3001/" -o home.html
-            echo "  product-card count=$(grep -o 'data-testid="product-card"' home.html | wc -l)"
-            echo "  product-link count=$(grep -o 'data-testid="product-link"' home.html | wc -l)"
-          } >> "$OUT" 2>&1 || echo "  diagnostic probe failed" >> "$OUT"
-          MSG="$(sed -e 's/%/%25/g' -e 's/\r/%0D/g' "$OUT" | awk '{printf "%s%%0A", $0}')"
-          echo "::notice title=DIAGNOSTIC rendered catalog vs API catalog::${MSG}"
       - name: Surface each Playwright failure
         if: failure()
         run: node scripts/annotate-playwright.mjs storefront/test-results/results.json || true
