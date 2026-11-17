@@ -246,6 +246,18 @@ export interface Cart {
 }
 
 export interface Customer { id: string; email: string; first_name: string | null; last_name: string | null; phone?: string | null }
+
+/** What `PATCH /store/customers/me` accepts. `current_password` is required by the
+ * API when the email or the password changes, so callers send it only then. */
+export interface UpdateCustomerParams {
+  email?: string;
+  password?: string;
+  password_confirmation?: string;
+  current_password?: string;
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+}
 export interface AuthResult { token: string; refresh_token: string; user: Customer }
 
 export interface Order {
@@ -733,6 +745,9 @@ export async function resetPassword(token: string, password: string, passwordCon
 /* ---------------------------------------------------------------- account */
 
 export async function getAccount(): Promise<Customer> { return request(`${STORE}/customers/me`); }
+export async function updateAccount(params: UpdateCustomerParams): Promise<Customer> {
+  return request(`${STORE}/customers/me`, { method: "PATCH", body: params });
+}
 export async function listOrders(): Promise<Paginated<Order>> { return request(`${STORE}/customers/me/orders`); }
 export async function getOrder(id: string): Promise<Order> { return request(`${STORE}/customers/me/orders/${encodeURIComponent(id)}?expand=items,fulfillments`); }
 export async function listAddresses(): Promise<Paginated<Address>> { return request(`${STORE}/customers/me/addresses`); }

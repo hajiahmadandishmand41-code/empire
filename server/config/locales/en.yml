@@ -9,6 +9,7 @@ en:
     account_nav_rfqs: Quotation requests
     account_nav_settings: Settings
     account_nav_wishlist: Favourites
+    account_rfqs_hint: Quotes and accepting them live on the request-for-quote page.
     account_subtitle: Orders, addresses, quotation requests and settings.
     account_title: My account
     action_error: The action could not be completed. Please try again.
@@ -310,6 +311,8 @@ en:
     pagination_next: Next
     pagination_prev: Previous
     password: Password
+    password_change_notice: Changing your email or password signs you out
+      everywhere, so you will need to sign in again.
     password_confirm: Confirm password
     password_updated: Your password was changed.
     payment_method: Payment method
@@ -354,6 +357,7 @@ en:
     product_unavailable: This product is not available for purchase right now.
     products: Products
     profile: Profile
+    profile_saved: Your changes were saved.
     province: Province
     quantity: Quantity
     quote_amount: Quoted amount
@@ -520,6 +524,7 @@ en:
     shop_name: Shop name
     shop_now: Browse products
     sign_in: Sign in to your account
+    sign_in_details: Sign-in details
     site_name: Empire marketplace
     skip_to_content: Skip to content
     sort_best_selling: Best selling
