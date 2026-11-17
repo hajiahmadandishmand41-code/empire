@@ -496,17 +496,20 @@ export interface ProductQuery {
 
 /** Removes repeated products while preserving the order the API returned.
  *
- * The Store API multiplies rows when a has_many association is expanded:
- * `expand=variants` returns one entry per variant rather than one per product,
- * so a product with two variants arrives twice with the same id. Rendering that
- * verbatim puts the same card on the page twice, which doubles the payload and
- * makes "the card for product X" resolve to two elements for assistive
- * technology and for label-based lookups. De-duplicating here keeps every
- * product list honest without giving up the variant data the card needs for its
- * minimum-order badge.
+ * A guard, not a workaround for a measured defect. Expanding a has_many
+ * association is the usual way a list endpoint ends up emitting one row per
+ * child instead of one per parent, so this was added on that suspicion. Measured
+ * against the real Store API it does not happen: `page=1&limit=24&expand=
+ * variants,seller` returns one row per product with `meta.count` agreeing, and
+ * distinct ids equal to the row count.
  *
- * `meta.count` is left as the API reports it: inventing a corrected total would
- * be a guess about a backend query this storefront cannot see. */
+ * It stays because rendering the same product twice is a bad failure to reach a
+ * shopper — it doubles the payload and makes "the card for product X" resolve to
+ * two elements for assistive technology and for label-based lookups — and
+ * because the guarantee is cheap. `meta.count` is left exactly as the API
+ * reports it: a "corrected" total would be a guess about a query this storefront
+ * cannot see.
+ */
 export function uniqueProducts(products: Product[]): Product[] {
   const seen = new Set<string>();
   return products.filter((product) => (seen.has(product.id) ? false : (seen.add(product.id), true)));
