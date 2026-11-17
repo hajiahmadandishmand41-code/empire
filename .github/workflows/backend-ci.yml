@@ -51,6 +51,16 @@ jobs:
         run: bash ../scripts/ci-run.sh bin/rails db:create db:migrate
       - name: Migration status
         run: bash ../scripts/ci-run.sh bin/rails db:migrate:status
+      - name: schema.rb must match the migrations
+        run: |
+          set -euo pipefail
+          bin/rails db:schema:dump
+          if ! git diff --quiet -- db/schema.rb; then
+            git --no-pager diff -- db/schema.rb
+            echo "::error title=db/schema.rb is stale::Migrations were added without re-dumping schema.rb. Commit the diff above so db:schema:load and db:prepare build the same database as db:migrate."
+            exit 1
+          fi
+          echo "db/schema.rb matches the migrations."
       - name: Seed reference and demo data
         run: bash ../scripts/ci-run.sh bin/rails db:seed
       - name: Verify seed idempotence
