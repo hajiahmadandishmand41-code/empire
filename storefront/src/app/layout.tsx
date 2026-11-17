@@ -1,27 +1,43 @@
-import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { CartProvider } from "@/components/cart-context";
+import { LocaleProvider } from "@/components/locale-provider";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { LocaleProvider } from "@/components/locale-provider";
-import { DEFAULT_LOCALE, direction, isLocale } from "@/lib/i18n";
+import { LOCALE_DIRECTION, LOCALE_HTML_LANG, translate } from "@/lib/i18n";
+import { currentLocale } from "@/lib/locale-server";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: { template: "%s | Empire", default: "Empire — بازارگاه آنلاین" },
-  description: "Empire؛ بازارگاه چندفروشنده برای خرید عمده و خرده در افغانستان.",
-  openGraph: { siteName: "Empire", title: "Empire", locale: "fa_AF", type: "website" },
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await currentLocale();
+  return buildMetadata({
+    locale,
+    title: translate(locale, "meta_home_title"),
+    description: translate(locale, "meta_home_description"),
+    path: "/",
+  });
+}
+
+/** Theme colour matches the header so the browser chrome on mid-range Android
+ * devices does not flash white above a navy header. */
+export const viewport: Viewport = {
+  themeColor: "#0a1a33",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookieLocale = (await cookies()).get("empire_locale")?.value;
-  const locale = isLocale(cookieLocale) ? cookieLocale : DEFAULT_LOCALE;
+  const locale = await currentLocale();
   return (
-    <html lang={locale} dir={direction(locale)}>
-      <body className="font-sans antialiased">
+    <html lang={LOCALE_HTML_LANG[locale]} dir={LOCALE_DIRECTION[locale]} suppressHydrationWarning>
+      <body className="flex min-h-screen flex-col bg-gray-50 font-sans text-navy-950 antialiased">
         <LocaleProvider locale={locale}>
-          <Header />
-          <main className="mx-auto min-h-[60vh] max-w-7xl px-4 py-8 sm:px-6 lg:px-8">{children}</main>
-          <Footer />
+          <CartProvider>
+            <a href="#main" className="skip-link">{translate(locale, "skip_to_content")}</a>
+            <Header />
+            <main id="main" className="flex-1">{children}</main>
+            <Footer />
+          </CartProvider>
         </LocaleProvider>
       </body>
     </html>

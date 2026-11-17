@@ -1,146 +1,629 @@
 en:
   empire:
-    brand: Empire
-    home: Home
-    products: Products
-    cart: Cart
+    accept_quote: Accept quote
     account: My account
-    login: Sign in
-    register: Create account
-    logout: Sign out
-    language: Language
-    tagline: Empire — online marketplace
-    hero_title: Shop with confidence on Empire
-    hero_body: Retail and wholesale shopping, verified sellers and company accounts.
-      Prices, stock and orders come directly from the store.
-    shop_now: Browse products
-    request_quote: Request a quote
-    featured_products: Featured products
-    view_all: View all
-    loading: Loading…
-    no_products: No products are available yet.
-    backend_error: The store server is unavailable. Please try again.
-    retry: Try again
-    search: Search products
-    product_details: Product details
-    add_to_cart: Add to cart
-    added_to_cart: Added to cart
-    in_stock: In stock
-    out_of_stock: Out of stock
-    quantity: Quantity
-    price: Price
-    seller: Seller
-    description: Description
-    product_not_found: Product not found
-    back: Back
-    your_cart: Your cart
-    cart_empty: Your cart is empty
-    cart_empty_message: You have not added any products yet.
-    continue_shopping: Continue shopping
-    subtotal: Subtotal
-    shipping: Delivery
-    tax: Tax
-    total: Total
-    proceed_to_checkout: Proceed to checkout
-    remove_item: Remove item
-    update_quantity: Update quantity
-    increase_quantity: Increase quantity
-    decrease_quantity: Decrease quantity
+    account_nav_addresses: Addresses
+    account_nav_company: Company
+    account_nav_orders: Orders
+    account_nav_overview: Overview
+    account_nav_rfqs: Quotation requests
+    account_nav_settings: Settings
+    account_nav_wishlist: Favourites
+    account_rfqs_hint: Quotes and accepting them live on the request-for-quote page.
+    account_subtitle: Orders, addresses, quotation requests and settings.
+    account_title: My account
     action_error: The action could not be completed. Please try again.
-    sign_in: Sign in to your account
-    email: Email
-    password: Password
-    password_confirm: Confirm password
-    first_name: First name
-    last_name: Last name
-    phone: Phone number
-    no_account: Do not have an account?
-    already_have_account: Already have an account?
-    my_orders: My orders
-    addresses: Addresses
-    save: Save
-    cancel: Cancel
-    shipping_address: Delivery address
-    billing_address: Billing address
-    same_billing: Use the delivery address for billing
-    city: City
-    province: Province
-    district: District
+    add_address: Add address
+    add_to_cart: Add to cart
+    add_to_wishlist: Add to favourites
+    added_to_cart: Added to cart
+    adding_to_cart: Adding…
+    address_default: Default
+    address_delete: Delete
+    address_delete_confirm: Delete this address?
+    address_deleted: Address deleted
+    address_edit: Edit
+    address_label_field: Label for this address
     address_line: Street address
-    postal_code: Postal code
-    country: Country
-    phone_label: Contact phone (+93)
-    payment_method: Payment method
-    cash_on_delivery: Cash on delivery
-    place_order: Place order
-    order_placed: Your order was placed successfully
-    order_number: Order number
-    order_summary: Order summary
-    checkout: Checkout
-    delivery_method: Delivery option
-    select_delivery: Select a delivery option
-    no_payment_methods: No payment method is currently available.
-    company: Company
-    po_number: Purchase order number
-    optional: Optional
-    personal_purchase: Personal purchase
-    seller_dashboard: Seller dashboard
-    become_seller: Become a seller
-    shop_name: Shop name
-    registration_number: Business registration number
+    address_saved: Address saved
+    addresses: Addresses
+    addresses_subtitle: Used to fill checkout faster.
+    addresses_title: Saved addresses
+    admin_dashboard: Admin dashboard
+    admin_links_body: Native Spree screens manage users, sellers, products,
+      categories, orders and payments.
+    admin_links_title: Empire staff tools
+    admin_login: Admin sign-in
+    admin_no_rfqs: No quotation request has been published yet.
+    admin_panel: Open admin dashboard
+    admin_rfq_body: Every request published in this store.
+    admin_rfq_company: Company
+    admin_rfq_customer: Customer
+    admin_rfq_status: Status
+    admin_rfq_title: Quotation requests
+    all: All
+    all_categories: All categories
+    already_have_account: Already have an account?
     application_submitted: Your application was submitted for review. Sign in to the
       seller panel to follow its status.
-    seller_panel: Open seller panel
-    admin_dashboard: Admin dashboard
-    admin_panel: Open admin dashboard
-    rfq: Request for quotation
-    rfq_title: Request title
-    rfq_description: Tell sellers what you need
-    requested_quantity: Requested quantity
-    budget_min: Minimum budget
+    approve: Approve
+    back: Back
+    back_to_products: Back to products
+    backend_error: The store server is unavailable. Please try again.
+    badge_carton: Carton of {count}
+    badge_cod: Cash on delivery
+    badge_moq: Min {count}
+    badge_new: New
+    badge_offer: Offer
+    badge_verified: Verified
+    badge_wholesale: Wholesale
+    balances: Balances
+    become_seller: Become a seller
+    benefit_cod_body: Pay in cash when the order arrives. Nothing is charged before
+      you receive it.
+    benefit_cod_title: Cash on delivery
+    benefit_support_body: Addresses cover all 34 provinces with districts, in Dari and English.
+    benefit_support_title: Countrywide delivery
+    benefit_verified_body: Every seller is reviewed and approved by Empire before a
+      product reaches the catalog.
+    benefit_verified_title: Approved sellers only
+    benefit_wholesale_body: Minimum order quantities, order multiples, carton units
+      and price lists for companies.
+    benefit_wholesale_title: Real wholesale terms
+    benefits_subtitle: Built for Afghan retail and wholesale trade.
+    benefits_title: Why buy from Empire
+    bestsellers_subtitle: Ranked by real completed orders.
+    bestsellers_title: Best sellers
+    billing_address: Billing address
+    brand: Empire
     budget_max: Maximum budget
-    submit: Submit
-    no_rfqs: You have not submitted a quotation request yet.
-    quotes: Quotes
-    quote_amount: Quoted amount
-    accept_quote: Accept quote
-    status: Status
+    budget_min: Minimum budget
+    cancel: Cancel
+    cart: Cart
+    cart_badge_count: "{count} items"
+    cart_empty: Your cart is empty
+    cart_empty_message: You have not added any products yet.
+    cart_note: Note for the seller
+    cart_note_placeholder: Delivery time, colour preference, anything the seller should know.
+    cart_warning_title: Please review these warnings
+    carton_notice: This product is supplied in cartons of {count}.
+    cash_on_delivery: Cash on delivery
+    catalog_subtitle: Search, filter and sort the live catalog.
+    catalog_title: All products
+    categories_empty: No categories have been published yet.
+    categories_subtitle: Browse the catalog the way operators organise it.
+    categories_title: Shop by category
+    change_password_title: Change password
+    checkout: Checkout
+    checkout_steps_address: Address
+    checkout_steps_delivery: Delivery
+    checkout_steps_payment: Payment
+    checkout_steps_review: Review
+    city: City
+    close: Close
+    collections_empty: This collection has no products yet.
+    collections_empty_body: The merchant has not added anything to this collection.
+      Browse the full catalogue instead.
+    collections_none: No collections yet
+    collections_none_body: Our sellers have not grouped products into collections
+      yet. Browse the full catalogue or meet the sellers.
+    collections_subtitle: Assortments prepared by the Empire team.
+    collections_title: Curated collections
+    company: Company
     company_account: Company account
-    no_companies: You are not a member of a company yet.
-    rights: All rights reserved.
-    draft_notice: Pashto translation is awaiting review and is not offered as a
-      finished language.
-    minimum_quantity: Minimum order quantity
-    order_multiple: Order multiple
-    profile: Profile
-    no_orders: You have no orders yet.
-    no_addresses: No saved address yet.
-    add_address: Add address
-    address_saved: Address saved
-    welcome: Welcome
-    guest_checkout: Continue as a guest
-    login_or_guest: Sign in, create an account, or continue as a guest.
+    company_members: Members
+    company_subtitle: Companies you belong to, with their purchase terms.
+    company_title: Company account
     configuration_error: The storefront is not configured. Ask the operator to set
       the public store key.
+    continue_shopping: Continue shopping
+    continue_to_account: Go to my orders
+    country: Country
+    currency_afn: AFN
+    current_password: Current password
+    decrease_quantity: Decrease quantity
+    delivery_estimate: About {min} to {max} business days
+    delivery_estimate_unknown: Transit time is set by the seller.
+    delivery_method: Delivery option
+    description: Description
+    description_tab: Description
+    discount_applied: Discount code applied.
+    discount_apply: Apply
+    discount_code: Discount code
+    discount_failed: The discount code was not accepted.
+    discount_remove: Remove code
+    district: District
+    draft_notice: Pashto translation is awaiting review and is not offered as a
+      finished language.
+    email: Email
+    error_action: Try again
+    error_body: The page could not be displayed. Your cart and account are unaffected.
+    error_title: Something went wrong
+    featured_products: Featured products
+    filter_availability: Availability
+    filter_category: Category
+    filter_in_stock_only: In stock only
+    filter_price_max: To
+    filter_price_min: From
+    filter_price_range: Price range
+    filter_seller: Seller
+    filters_apply: Apply
+    filters_clear: Clear filters
+    filters_title: Filters
+    filters_toggle: Show filters
+    first_name: First name
+    footer_about_title: Empire
+    footer_address_label: Address
+    footer_contact_title: Contact
+    footer_hours_label: Working hours
+    footer_no_policies: No store policy has been published yet.
+    footer_payment_body: Cash on delivery across Afghanistan. Online payment is not enabled yet.
+    footer_payment_title: Payment
+    footer_policies_title: Policies
+    footer_services_title: Services
+    footer_shop_title: Shopping
+    footer_tagline: Empire is a multi-seller marketplace for retail and wholesale
+      trade in Afghanistan.
+    forgot_password: Forgot your password?
+    forgot_password_body: Enter your email and we will send a reset link.
+    from_price: From
+    fulfillment_status_canceled: Canceled
+    fulfillment_status_fulfilled: Delivered
+    fulfillment_status_partial: Partially delivered
+    fulfillment_status_pending: Preparing
+    fulfillment_status_ready_for_pickup: Ready for pickup
+    gallery_label: Product images
+    guest_checkout: Continue as a guest
+    hero_body: Retail and wholesale shopping, verified sellers and company accounts.
+      Prices, stock and orders come directly from the store.
+    hero_title: Shop with confidence on Empire
+    hero_trust_cod: Cash on delivery
+    hero_trust_delivery: Delivery to all 34 provinces
+    hero_trust_verified: Verified sellers
+    hero_trust_wholesale: Wholesale pricing
+    home: Home
+    home_unavailable: Products could not be loaded right now.
+    image_counter: Image {index} of {total}
+    in_stock: In stock
+    in_wishlist: Saved
+    increase_quantity: Increase quantity
+    language: Language
+    last_name: Last name
+    loading: Loading…
+    loading_title: Loading
+    login: Sign in
+    login_or_guest: Sign in, create an account, or continue as a guest.
+    logout: Sign out
+    made_in_afghanistan: Built for Afghanistan
+    menu: Menu
+    meta_account_description: Your Empire orders, saved addresses, requests for quote and wishlist.
+    meta_account_title: My account
+    meta_admin_description: "Empire staff area: request-for-quote oversight and payout request review."
+    meta_admin_title: Empire admin
+    meta_become_seller_description: Apply to sell on Empire. Your shop is reviewed
+      and, once approved, appears to buyers across Afghanistan.
+    meta_become_seller_title: Become a seller
+    meta_cart_description: Review the items in your cart, adjust quantities and continue to checkout.
+    meta_cart_title: Your cart
+    meta_category_title: Category
+    meta_checkout_description: Confirm your delivery address, shipping method and
+      payment, then place your order.
+    meta_checkout_title: Checkout
+    meta_collection_title: Collection
+    meta_company_description: Manage your company profile, members and shared billing details.
+    meta_company_title: Company account
+    meta_home_description: Buy retail and wholesale from verified Afghan sellers on
+      Empire. Cash on delivery, minimum order quantities, company price lists
+      and quotation requests.
+    meta_home_title: Empire — retail and wholesale marketplace of Afghanistan
+    meta_login_description: Sign in to your Empire account to track orders and requests for quote.
+    meta_login_title: Sign in
+    meta_not_found_title: Page not found
+    meta_offers_title: Special offers
+    meta_payout_description: Request or review a payout against a seller balance.
+    meta_payout_title: Payout requests
+    meta_products_description: "Browse the live Empire catalog: search, filter by
+      category, price and seller, and sort by best selling or newest."
+    meta_products_title: Products
+    meta_register_description: Create an Empire buyer account to save addresses,
+      track orders and post requests for quote.
+    meta_register_title: Create account
+    meta_rfq_description: Publish a quotation request with the quantity you need.
+      Approved sellers send quotes and you accept the best one.
+    meta_rfq_title: Request a quote
+    meta_seller_description: "Seller area: your shop, products, quotes and payout requests."
+    meta_seller_title: Seller panel
+    meta_vendors_description: Approved Empire sellers who can currently take orders,
+      with their products and policies.
+    meta_vendors_title: Verified sellers
+    meta_wholesale_description: Products with minimum order quantities, order
+      multiples, carton units and volume pricing.
+    meta_wholesale_title: Wholesale products
+    minimum_quantity: Minimum order quantity
+    moq_notice: The minimum order quantity for this product is {count}.
+    my_account: My account
+    my_orders: My orders
+    nav_categories: Categories
+    nav_offers: Offers
+    nav_rfq: Request a quote
+    nav_vendors: Sellers
+    nav_wholesale: Wholesale
+    new_arrivals_subtitle: Recently published products.
+    new_arrivals_title: New arrivals
+    new_password: New password
+    newsletter_body: We send product and price updates. You can unsubscribe at any time.
+    newsletter_consent: I agree to receive Empire updates by email.
+    newsletter_error: The email address is not valid.
+    newsletter_placeholder: Your email address
+    newsletter_submit: Subscribe
+    newsletter_success: Your email was registered.
+    newsletter_title: Follow new arrivals and offers
+    no: No
+    no_account: Do not have an account?
+    no_addresses: No saved address yet.
+    no_balance: No earned balance yet.
+    no_companies: You are not a member of a company yet.
+    no_orders: You have no orders yet.
+    no_orders_body: When you place an order it appears here with its payment and
+      delivery status.
+    no_payment_methods: No payment method is currently available.
+    no_payout_requests: There are no payout requests yet.
+    no_products: No products are available yet.
+    no_results_action: Clear filters
+    no_results_body: Try a shorter word, remove a filter, or browse all products.
+    no_results_title: Nothing matched your search
+    no_rfqs: You have not submitted a quotation request yet.
+    not_found_action: Back to the home page
+    not_found_body: The link may be wrong, or the page may have been removed.
+    not_found_title: This page does not exist
+    offers_empty: No offers right now
+    offers_empty_body: There are no discounted products at the moment. Prices change
+      often, so check back, or browse the full catalogue.
+    offers_subtitle: Products with an active price reduction.
+    offers_title: Special offers
+    open_cart: Open cart
+    optional: Optional
+    order_back: Back to orders
+    order_company: Company
+    order_date: Date
+    order_detail_title: Order
+    order_fulfillment_status: Delivery
+    order_items_title: Items
+    order_multiple: Order multiple
+    order_multiple_notice: The quantity must be a multiple of {count}.
+    order_not_found: This order could not be found.
+    order_number: Order number
+    order_payment_status: Payment
+    order_placed: Your order was placed successfully
+    order_po: Purchase order
+    order_quantity: Quantity
+    order_status_canceled: Canceled
+    order_status_completed: Completed
+    order_status_draft: Draft
     order_status_pending: Pending
     order_status_placed: Placed
-    order_status_completed: Completed
-    order_status_canceled: Canceled
-    order_status_draft: Draft
-    admin_login: Admin sign-in
-    seller_login: Seller sign-in
-    payout_review: Payout request review
-    payout_requests: Payout requests
-    no_payout_requests: There are no payout requests yet.
-    approve: Approve
-    reject: Reject
-    rejection_reason: Reason for rejection
-    balances: Balances
-    no_balance: No earned balance yet.
+    order_success_body: We recorded your order. You can follow its status from your account.
+    order_success_note: For cash on delivery, payment is collected when the order is delivered.
+    order_summary: Order summary
+    order_view: View order
+    out_of_stock: Out of stock
+    page_of: Page {page} of {pages}
+    pagination_next: Next
+    pagination_prev: Previous
+    password: Password
+    password_change_notice: Changing your email or password signs you out
+      everywhere, so you will need to sign in again.
+    password_confirm: Confirm password
+    password_updated: Your password was changed.
+    payment_method: Payment method
+    payment_status_authorized: Awaiting collection
+    payment_status_failed: Failed
+    payment_status_paid: Paid
+    payment_status_pending: Pending
+    payment_status_refunded: Refunded
+    payment_status_unpaid: Unpaid
+    payment_status_void: Void
     payout_note: Note for the reviewer (optional)
-    request_payout: Request payout review
-    payout_status_requested: Awaiting review
+    payout_request_link: Request a payout review
+    payout_requests: Payout requests
+    payout_review: Payout request review
+    payout_review_link: Review payout requests
     payout_status_approved: Approved for settlement
     payout_status_rejected: Rejected
-    payout_review_link: Review payout requests
-    payout_request_link: Request a payout review
+    payout_status_requested: Awaiting review
+    per_carton: per carton
+    per_unit: per unit
+    personal_purchase: Personal purchase
+    phone: Phone number
+    phone_invalid: Enter an Afghan number, for example +93700123456 or 0700123456.
+    phone_label: Contact phone (+93)
+    place_order: Place order
+    po_number: Purchase order number
+    policies_subtitle: The rules Empire and its sellers trade under, in one place.
+    policies_title: Store policies
+    policy_no_body: This policy has not been published in full yet. Contact us and
+      we will send it to you.
+    policy_questions_body: If anything in this policy is unclear, our team will
+      answer in Dari, Pashto or English.
+    policy_questions_title: Questions about this policy?
+    policy_updated: Last updated {date}
+    popular_searches: Popular searches
+    postal_code: Postal code
+    preorder_notice: This product is a pre-order and ships later.
+    price: Price
+    proceed_to_checkout: Proceed to checkout
+    product_details: Product details
+    product_not_found: Product not found
+    product_unavailable: This product is not available for purchase right now.
+    products: Products
+    profile: Profile
+    profile_saved: Your changes were saved.
+    province: Province
+    quantity: Quantity
+    quote_amount: Quoted amount
+    quote_status_accepted: Accepted
+    quote_status_pending: Awaiting your decision
+    quote_status_rejected: Rejected
+    quote_status_withdrawn: Withdrawn
+    quotes: Quotes
+    register: Create account
+    registration_number: Business registration number
+    reject: Reject
+    rejection_reason: Reason for rejection
+    related_products: Related products
+    related_products_empty: No related products were found in this category.
+    remove_from_wishlist: Remove from favourites
+    remove_item: Remove item
+    request_payout: Request payout review
+    request_quote: Request a quote
+    request_quote_for_product: Request a bulk price for this product
+    requested_quantity: Requested quantity
+    required_field: This field is required.
+    reset_password_body: Set a new password for your account.
+    reset_password_title: Choose a new password
+    reset_send: Send reset link
+    reset_sent: If that email exists, a reset link was sent to it.
+    reset_submit: Save new password
+    reset_success: Your password was changed. You can sign in.
+    reset_token_label: Reset code
+    results_count: "{count} products"
+    retry: Try again
+    rfq: Request for quotation
+    rfq_accepted_note: You accepted a quote. Contact the seller to place the order.
+    rfq_banner_body: Publish what you need and the quantity. Approved sellers send
+      quotes and you accept the best one.
+    rfq_banner_cta: Start a quotation request
+    rfq_banner_note: Free for buyers. Quotes are binding only after you accept one.
+    rfq_banner_title: Need a bulk price? Ask sellers directly.
+    rfq_budget_range: Budget
+    rfq_created_at: Published
+    rfq_description: Tell sellers what you need
+    rfq_detail_title: Request details
+    rfq_no_quotes: No seller has quoted yet.
+    rfq_quantity_label: Quantity
+    rfq_status_accepted: Accepted
+    rfq_status_closed: Closed
+    rfq_status_open: Open
+    rfq_status_quoted: Quoted
+    rfq_submit_success: Your request was published to sellers.
+    rfq_title: Request title
+    rfq_view: View quotes
+    rfqs_subtitle: Requests you published and the quotes sellers sent.
+    rfqs_title: Quotation requests
+    rights: All rights reserved.
+    same_billing: Use the delivery address for billing
+    save: Save
+    search: Search products
+    search_no_results: No match for this text yet.
+    search_placeholder: Search products, sellers or categories…
+    search_scope_all: All categories
+    search_submit: Search
+    search_suggestions: Search suggestions
+    select_delivery: Select a delivery option
+    select_quantity: Quantity
+    select_variant: Choose an option
+    seller: Seller
+    seller_about_hint: "Empire gives Afghan producers, artisans and importers one
+      storefront: list products, receive wholesale RFQs and get paid in AFN."
+    seller_account_hint: These details create your Empire login. You will use them
+      to manage products, quotes and payouts.
+    seller_address_label: Street address
+    seller_address_placeholder: Street, district and landmark
+    seller_already_quoted: You have already quoted this request.
+    seller_application_done_body: Your application was submitted and is now pending
+      review. Our team will contact you on the phone number you provided; once
+      it is approved you can publish products from your dashboard.
+    seller_application_done_title: Application submitted
+    seller_application_subtitle: One form, and you can start selling.
+    seller_application_title: Become a seller
+    seller_apply_terms_note: By applying you accept the Empire terms of service and the sellers policy.
+    seller_balances_title: Balances
+    seller_benefit_payment_body: Buyers pay in AFN, including cash on delivery.
+      Payouts are reviewed and released from your seller balance.
+    seller_benefit_payment_title: Paid in afghani
+    seller_benefit_rfq_body: Business buyers post request-for-quote orders and
+      sellers answer with a price. You see the requests that match your
+      categories.
+    seller_benefit_rfq_title: Wholesale requests reach you
+    seller_benefit_shipping_body: Set your own handling time and work with Empire's
+      delivery methods across all 34 provinces.
+    seller_benefit_shipping_title: You control fulfilment
+    seller_benefit_store_body: Your own storefront page with your logo, story,
+      policies and every product you publish.
+    seller_benefit_store_title: A shop of your own
+    seller_card_products: See this seller's products
+    seller_card_title: Sold by
+    seller_card_verified: Approved seller
+    seller_categories_hint: Choose the categories you sell in. This helps us review
+      your application and route buyer requests to you.
+    seller_categories_unavailable: Categories are not available right now. You can
+      still submit the application and we will add them during review.
+    seller_city_label: City
+    seller_city_placeholder: Kabul
+    seller_dashboard: Seller dashboard
+    seller_description_hint: What you make or import, your capacity, and anything a
+      buyer should know before contacting you.
+    seller_description_label: About your business
+    seller_email_hint: Used for your login and for order notifications.
+    seller_email_invalid: Enter a valid email address.
+    seller_form_about: About your business
+    seller_form_account: Login details
+    seller_form_categories: Product categories
+    seller_form_contact: Contact and location
+    seller_form_identity: Shop details
+    seller_links_title: Seller tools
+    seller_login: Seller sign-in
+    seller_my_quotes: My quotes
+    seller_no_open_rfqs: There are no open requests right now.
+    seller_no_quotes: You have not sent a quote yet.
+    seller_open_rfqs: Open requests
+    seller_owner_hint: The person we contact about this shop.
+    seller_owner_label: Owner or manager name
+    seller_panel: Open seller panel
+    seller_panel_home: Seller workspace
+    seller_password_hint: At least 8 characters.
+    seller_password_mismatch: The two passwords do not match.
+    seller_phone_hint: Mobile number, used to contact you about your application.
+    seller_phone_invalid: Enter a valid Afghan mobile number, for example 0700123456.
+    seller_phone_label: Contact number
+    seller_quote_amount: Your price for the whole request
+    seller_quote_failed: The quote could not be sent. The request may already be closed.
+    seller_quote_hint: The amount is for the full requested quantity, in the request's currency.
+    seller_quote_notes: Note for the buyer
+    seller_quote_status: Quote status
+    seller_quote_success: Your quote was sent to the buyer.
+    seller_registration_hint: Optional. A licence or tax number makes review faster.
+    seller_registration_label: Business registration number
+    seller_rfq_budget: Buyer budget
+    seller_rfq_buyer: Buyer
+    seller_rfq_desk: Quotation requests
+    seller_rfq_desk_body: Open requests you may quote, and the quotes you have sent.
+    seller_rfq_posted: Published
+    seller_rfq_product: Product
+    seller_rfq_quantity_label: Requested quantity
+    seller_shop_name_label: Shop name
+    seller_shop_name_required: A shop name is required.
+    seller_step_1: Submit this application with your shop details, categories and
+      contact number.
+    seller_step_2: Our team reviews it and calls you if anything needs confirming.
+    seller_step_3: Once approved, sign in and publish your first products.
+    seller_step_body: Our team reviews applications by hand. We contact you by phone
+      if we need anything, and once you are approved your shop appears in the
+      Empire seller directory.
+    seller_step_title: What happens next
+    seller_submit_quote: Send quote
+    seller_submitting: Submitting
+    settings_body: Language, password and how we contact you.
+    settings_title: Settings
+    shipping: Delivery
+    shipping_address: Delivery address
+    shipping_body: Delivery options and their cost are calculated for your address
+      during checkout.
+    shipping_tab: Delivery
+    shipping_title: Delivery and payment
+    shop_name: Shop name
+    shop_now: Browse products
+    sign_in: Sign in to your account
+    sign_in_details: Sign-in details
+    site_name: Empire marketplace
+    skip_to_content: Skip to content
+    sort_best_selling: Best selling
+    sort_featured: Featured
+    sort_label: Sort by
+    sort_name_asc: Name, A to Z
+    sort_newest: Newest
+    sort_price_asc: Lowest price
+    sort_price_desc: Highest price
+    spec_no_data: No specifications were published for this product.
+    specifications: Specifications
+    status: Status
+    stock_backorderable: Available on backorder
+    submit: Submit
+    subtotal: Subtotal
+    tagline: Empire — online marketplace
+    tax: Tax
+    total: Total
+    unit: unit
+    update_quantity: Update quantity
+    variant_default: Standard
+    vendor_about_title: About this seller
+    vendor_cover_alt: Seller cover photo
+    vendor_logo_alt: Seller logo
+    vendor_not_found: This seller could not be found
+    vendor_not_found_body: The seller may have been suspended or the link may be wrong.
+    vendor_policies_title: Seller policies
+    vendor_products_empty: This seller has no published products yet.
+    vendor_products_title: Products from this seller
+    vendor_search_placeholder: Search sellers…
+    vendor_verified_note: Approved by Empire
+    vendors_count: "{count} sellers"
+    vendors_empty: No sellers are listed yet.
+    vendors_empty_body: Approved sellers appear here as soon as they are able to take orders.
+    vendors_subtitle: Every seller listed here is approved and able to take orders.
+    vendors_title: Sellers
+    verified_suppliers_subtitle: Sellers approved by Empire who can currently take orders.
+    verified_suppliers_title: Verified suppliers
+    view_all: View all
+    view_all_vendors: View all sellers
+    view_details: View details
+    visit_seller_store: Visit seller page
+    welcome: Welcome
+    wholesale_hint: Prices drop as the quantity rises. Minimum order quantity is
+      shown on every wholesale product.
+    wholesale_how_title: How buying wholesale works
+    wholesale_pillar_carton_body: Products sold by the carton show their units per
+      carton, so you can order whole cartons instead of loose pieces.
+    wholesale_pillar_carton_title: Carton quantities
+    wholesale_pillar_company_body: Register your company once and reuse its details,
+      tax number and addresses on every order.
+    wholesale_pillar_company_title: Company accounts
+    wholesale_pillar_moq_body: Every variant states its minimum order quantity. The
+      quantity stepper will not let you go below it, so your order is accepted
+      the first time.
+    wholesale_pillar_moq_title: Clear minimums
+    wholesale_pillar_payment_body: Pay in afghani, including cash on delivery in all
+      34 provinces. Larger orders can be arranged against a request for quote.
+    wholesale_pillar_payment_title: AFN and cash on delivery
+    wholesale_pillar_rfq_body: Tell us the product, quantity and budget. Sellers
+      answer with quotes and you accept the one that suits you.
+    wholesale_pillar_rfq_title: Request for quote
+    wholesale_pillar_shipping_body: Delivery methods and rates are shown before you
+      pay, and each seller's handling time is listed on the product page.
+    wholesale_pillar_shipping_title: Delivery you can plan around
+    wholesale_pillars_title: Built for bulk buyers
+    wholesale_products_empty: No wholesale collection yet
+    wholesale_products_empty_body: Our sellers have not grouped a wholesale
+      selection yet. Post a request for quote and sellers will answer with
+      prices for the quantity you need.
+    wholesale_products_title: Available for bulk order
+    wholesale_rule_carton: Units per carton
+    wholesale_rule_carton_value: Shown on the product page where the seller has set it
+    wholesale_rule_moq: Minimum order quantity
+    wholesale_rule_moq_value: Printed on every product and enforced in the cart
+    wholesale_rule_multiple: Order multiple
+    wholesale_rule_multiple_value: The quantity stepper only offers allowed quantities
+    wholesale_rule_payment: Payment
+    wholesale_rule_payment_value: Afghani, including cash on delivery
+    wholesale_rules_note: Volume pricing is applied by the store when your order is
+      confirmed. Empire does not publish a discount ladder it cannot honour at
+      checkout.
+    wholesale_rules_title: The rules, plainly
+    wholesale_section_body: Quantity rules are enforced by the store when the item
+      is added to the cart.
+    wholesale_section_title: Wholesale terms
+    wholesale_step_1: Find the product you need and check its minimum order quantity
+      and carton size.
+    wholesale_step_2: Add it to your cart in an allowed quantity, or post a request
+      for quote for anything larger or custom.
+    wholesale_step_3: Sellers answer requests for quote with a price; you accept the
+      quote you prefer.
+    wholesale_step_4: Choose a delivery method and pay in afghani, including cash on delivery.
+    wholesale_subtitle: Bulk pricing, minimum order quantities and carton units.
+    wholesale_title: Wholesale products
+    wishlist_empty: No favourites yet
+    wishlist_empty_body: Tap the heart on a product to keep it here.
+    wishlist_move_to_cart: Move to cart
+    wishlist_subtitle: Products you saved for later.
+    wishlist_title: Favourites
+    yes: Yes
+    your_cart: Your cart
