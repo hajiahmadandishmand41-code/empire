@@ -46,6 +46,41 @@ jobs:
           bash scripts/wait-for-http.sh http://127.0.0.1:3000/up 300
           bash scripts/wait-for-http.sh http://127.0.0.1:3001/ 180
           bash scripts/ci-run.sh node scripts/verify-runtime.mjs
+      # TEMPORARY DIAGNOSTIC — remove once the duplicate catalog card is
+      # explained. The catalog asks for page=1&limit=24&expand=variants,seller
+      # while the home page asks for limit=32&expand=variants,seller with no
+      # page. The home card test passes and the catalog one fails on a duplicate,
+      # so this prints both responses side by side. Emitted as a workflow
+      # annotation because runner logs are awkward to reach from a tool that
+      # cannot stream them.
+      - name: "DIAGNOSTIC: compare catalog vs home product queries"
+        if: always()
+        run: |
+          set -uo pipefail
+          KEY="$SPREE_PUBLISHABLE_KEY"
+          OUT=diag-catalog.txt
+          : > "$OUT"
+          probe () {
+            {
+              echo "--- $1"
+              curl -fsS -H "x-spree-api-key: $KEY" "http://127.0.0.1:3000/api/v3/store/products?$2" \
+                | jq -r '"  meta.count=\(.meta.count) pages=\(.meta.pages) returned=\(.data|length)",
+                         (.data[] | "  id=\(.id) slug=\(.slug) variants=\((.variants // [])|length) name=\(.name)")'
+            } >> "$OUT" 2>&1 || echo "  probe failed" >> "$OUT"
+          }
+          probe "CATALOG  page=1&limit=24&expand=variants,seller" 'page=1&limit=24&expand=variants%2Cseller'
+          probe "HOME     limit=32&expand=variants,seller"        'limit=32&expand=variants%2Cseller'
+          probe "PLAIN    limit=24"                               'limit=24'
+          probe "PAGEONLY page=1&limit=24 (no expand)"            'page=1&limit=24'
+          {
+            echo "--- distinct ids per query"
+            for q in 'page=1&limit=24&expand=variants%2Cseller' 'limit=32&expand=variants%2Cseller' 'page=1&limit=24'; do
+              curl -fsS -H "x-spree-api-key: $KEY" "http://127.0.0.1:3000/api/v3/store/products?$q" \
+                | jq -r --arg q "$q" '"  " + $q + "  total=\([.data[].id]|length)  distinct=\([.data[].id]|unique|length)"'
+            done
+          } >> "$OUT" 2>&1 || true
+          MSG="$(sed -e 's/%/%25/g' -e 's/\r/%0D/g' "$OUT" | awk '{printf "%s%%0A", $0}')"
+          echo "::notice title=DIAGNOSTIC catalog vs home product queries::${MSG}"
       - name: Install Playwright browser
         run: bash scripts/ci-run.sh npx --prefix storefront playwright install --with-deps chromium
       - name: Real browser tests (no Backend means failure)
