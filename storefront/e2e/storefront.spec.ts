@@ -24,55 +24,59 @@ test("language selection changes direction and survives a reload", async ({ page
 });
 
 test("product details open from the Backend catalog", async ({ page }) => {
-  // TEMPORARY DIAGNOSTIC — remove once the duplicated catalog card is explained.
-  // Right after goto the DOM holds two links and only one matches the demo name,
-  // yet the click below has resolved to two matching links and a third overall.
-  // So a card appears later. This records when: a count timeline, the console
-  // (React hydration mismatches are logged there), and the DOM again after the
-  // click has failed. The final assertion is meant to fail — the annotation step
-  // is the only way to read any of it, since runner logs are not retrievable.
-  const logs: string[] = [];
-  page.on("console", (message) => logs.push(`${message.type()}: ${message.text().slice(0, 180)}`));
-  page.on("pageerror", (error) => logs.push(`pageerror: ${String(error).slice(0, 180)}`));
-
+  // TEMPORARY DIAGNOSTIC — remove once the transient duplicate card is explained.
+  // Established so far: right after goto the catalog holds FOUR product-links and
+  // settles to two within 300ms, with no console message at all. Waiting out that
+  // window makes the click succeed, so the failure is a transient duplicate, not
+  // wrong data. What is still unknown is WHERE the two extra links live, which
+  // decides whether this is our markup or the router's streaming buffer. So this
+  // samples every 150ms and, for the first two samples that still show more than
+  // two links, records each link's ancestor chain (flagging hidden ancestors), the
+  // hidden/template containers in the document, and body's direct children.
   const probe = () =>
-    page.evaluate(() =>
-      Array.from(document.querySelectorAll('[data-testid="product-link"]')).map((element) => {
-        const node = element as HTMLElement;
+    page.evaluate(() => {
+      const describe = (node: Element) => {
         const chain: string[] = [];
-        let parent = node.parentElement;
-        for (let depth = 0; depth < 5 && parent; depth += 1) {
-          const testId = parent.getAttribute("data-testid");
-          chain.push(parent.tagName + (testId ? `[${testId}]` : ""));
-          parent = parent.parentElement;
+        let current: Element | null = node;
+        for (let depth = 0; depth < 6 && current; depth += 1) {
+          const testId = current.getAttribute("data-testid");
+          const hidden = current.hasAttribute("hidden") || current.getAttribute("aria-hidden") === "true";
+          chain.push(`${current.tagName}${testId ? `[${testId}]` : ""}${hidden ? "{hidden}" : ""}`);
+          current = current.parentElement;
         }
-        const text = (node.textContent ?? "").replace(/\s+/g, " ").slice(0, 42);
-        return `${node.getAttribute("href")} :: ${text} :: ${chain.join("<")}`;
-      }),
-    );
+        return chain.join("<");
+      };
+      const links = Array.from(document.querySelectorAll('[data-testid="product-link"]'));
+      const hiddenContainers = Array.from(document.querySelectorAll("body [hidden], body template")).map(
+        (element) => `${element.tagName}#${element.id}[${String(element.className).slice(0, 24)}]`,
+      );
+      return {
+        n: links.length,
+        mains: document.querySelectorAll("main").length,
+        bodyChildren: Array.from(document.body.children).map(
+          (element) => `${element.tagName}#${element.id}${element.hasAttribute("hidden") ? "{hidden}" : ""}`,
+        ),
+        hiddenContainers,
+        rows: links.map((node) => `${node.getAttribute("href")} :: ${describe(node)}`),
+      };
+    });
 
   await page.goto("/products");
   const timeline: string[] = [];
-  for (let step = 0; step < 10; step += 1) {
-    const links = await probe();
-    timeline.push(`t+${step * 300}ms n=${links.length}`);
-    if (step === 9) timeline.push(...links.map((row, index) => `  #${index} ${row}`));
-    await page.waitForTimeout(300);
+  let detailed = 0;
+  for (let step = 0; step < 8; step += 1) {
+    const sample = await probe();
+    timeline.push(`t+${step * 150}ms n=${sample.n} mains=${sample.mains}`);
+    if (sample.n > 2 && detailed < 2) {
+      detailed += 1;
+      timeline.push(`  bodyChildren: ${sample.bodyChildren.join(" ")}`);
+      timeline.push(`  hiddenContainers: ${sample.hiddenContainers.join(" ") || "none"}`);
+      timeline.push(...sample.rows.map((row, index) => `  #${index} ${row}`));
+    }
+    await page.waitForTimeout(150);
   }
 
-  let clickOutcome = "CLICK OK";
-  try {
-    await page
-      .getByTestId("product-link")
-      .filter({ hasText: "سبد دست‌باف نمایشی Empire" })
-      .click({ timeout: 5000 });
-  } catch (cause) {
-    clickOutcome = `CLICK FAILED: ${String(cause).split("\n").slice(0, 4).join(" | ")}`;
-    const after = await probe();
-    timeline.push(`after-failed-click n=${after.length}`, ...after.map((row, index) => `  #${index} ${row}`));
-  }
-
-  const report = `${clickOutcome}\nTIMELINE\n${timeline.join("\n")}\nCONSOLE ${logs.length}\n${logs.slice(0, 10).join("\n")}`;
+  const report = timeline.join("\n");
   expect(report, `DIAGNOSTIC\n${report}`).toBe("__diagnostic__");
 });
 
