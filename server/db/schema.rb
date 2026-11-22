@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_22_000003) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_22_000004) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -188,7 +188,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_22_000003) do
     t.index ["store_id", "email"], name: "index_empire_seller_applications_live_email", unique: true, where: "(status = ANY (ARRAY[0, 1]))"
     t.index ["store_id", "status"], name: "index_empire_seller_applications_on_store_id_and_status"
     t.index ["store_id"], name: "index_empire_seller_applications_on_store_id"
-    t.index ["user_id"], name: "index_empire_seller_applications_on_user_id", unique: true
+    t.index ["user_id"], name: "index_empire_seller_applications_on_user_id"
   end
 
   create_table "friendly_id_slugs", force: :cascade do |t|
