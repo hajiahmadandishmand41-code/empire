@@ -93,6 +93,8 @@ RSpec.describe 'Empire seller applications API', type: :request do
     # old one is a legitimate case too, so both are covered below.
     expect { apply(email: 'applicant@example.com', shop_name: 'Second attempt') }
       .to change(Empire::SellerApplication, :count).by(1)
+    # Print the refusal instead of leaving a zero-change assertion unexplained.
+    warn "REAPPLY1 #{response.status} #{response.body}" unless response.status == 201
     expect_status!(201)
 
     second = Empire::SellerApplication.last
@@ -109,6 +111,7 @@ RSpec.describe 'Empire seller applications API', type: :request do
     # store, so the application has to ask for a free one rather than fail.
     expect { apply(email: 'applicant@example.com') }
       .to change(Empire::SellerApplication, :count).by(1)
+    warn "REAPPLY2 #{response.status} #{response.body}" unless response.status == 201
     expect_status!(201)
     expect(Empire::SellerApplication.last.shop_name).to eq('فروشگاه کابل بازار')
   end
