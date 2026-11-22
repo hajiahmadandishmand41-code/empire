@@ -37,7 +37,7 @@ jobs:
       EMPIRE_SEED_DEMO: 'true'
       SPREE_PUBLISHABLE_KEY: pk_empire_ci_publishable_0123456789
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install native dependencies
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libvips-tools
       - uses: ruby/setup-ruby@v1
@@ -73,7 +73,7 @@ jobs:
         run: bash ../scripts/ci-run.sh bundle exec brakeman --no-pager -q
       - name: Bundle Audit (advisories fail the job)
         run: bash ../scripts/ci-run.sh bundle exec bundle-audit check --update
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: backend-results
