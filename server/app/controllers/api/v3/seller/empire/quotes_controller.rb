@@ -21,7 +21,7 @@ module Api
           def index
             scope = ::Empire::Quote.where(seller: current_seller)
                                    .includes(rfq: %i[customer company variant])
-                                   .order(created_at: :desc)
+                                   .order(created_at: :desc, id: :desc)
             render json: { data: scope.map { |quote| serialize(quote) } }
           end
 
@@ -74,6 +74,11 @@ module Api
 
           def withdraw
             quote = mine.find(params[:id])
+            unless quote.editable?
+              return render_error(code: 'quote_unavailable', message: I18n.t('empire.quote_unavailable'),
+                                  status: :unprocessable_content)
+            end
+
             quote.withdraw!(actor: current_user)
             render json: serialize(quote.reload)
           rescue ActiveRecord::RecordInvalid => e
@@ -97,9 +102,9 @@ module Api
 
           def serialize(quote)
             { id: quote.id, rfq_id: quote.rfq_id, seller_id: quote.seller_id,
-              amount: quote.amount.to_s, quantity: quote.quantity, unit: quote.unit,
+              amount: ::Empire::Money.format(quote.amount), quantity: quote.quantity, unit: quote.unit,
               currency: quote.currency, status: quote.status, notes: quote.notes,
-              valid_until: quote.valid_until, total: quote.total_amount&.to_s,
+              valid_until: quote.valid_until, total: ::Empire::Money.format(quote.total_amount),
               editable: quote.editable?,
               rfq: { id: quote.rfq_id, title: quote.rfq&.title, status: quote.rfq&.status,
                      expires_at: quote.rfq&.expires_at, requested_quantity: quote.rfq&.requested_quantity },

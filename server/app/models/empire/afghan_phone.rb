@@ -9,10 +9,10 @@ module Empire
   # `93700123456`, `0700123456`, and the same with spaces, dashes or Dari-Indic
   # digits — and normalises them to one canonical E.164 string.
   module AfghanPhone
-    E164 = /\A\+93\d{9}\z/
-    # Mobile numbers start with 7; landline area codes in Afghanistan are 2x,
-    # 3x, 4x, 6x and 8x. Anything else is not a reachable Afghan number.
-    MOBILE_OR_LANDLINE = /\A\+93[2-9]\d{8}\z/
+    # Afghanistan's numbering plan: mobile national numbers are 9 digits
+    # starting with 7 (70, 72, 73, 74, 76, 77, 78, 79); landline national
+    # numbers are 8 digits beginning with an area code 2, 3, 4, 6 or 8.
+    NATIONAL = /\A(?:7\d{8}|[23468]\d{7})\z/
 
     # Persian/Arabic-Indic digits to ASCII, so a number typed on a Dari keyboard
     # validates the same way.
@@ -26,20 +26,17 @@ module Empire
     # @return [String, nil] canonical +93… form, or nil when the input is not an
     #   Afghan number at all.
     def normalize(value)
-      digits = value.to_s.gsub(/[۰-۹٠-٩]/, DIGIT_MAP).gsub(/[^\d+]/, '')
+      digits = value.to_s.gsub(/[۰-۹٠-٩]/, DIGIT_MAP).gsub(/[^\d]/, '')
       return nil if digits.blank?
 
-      digits = digits.delete('+')
       national =
         if digits.start_with?('0093') then digits.delete_prefix('0093')
         elsif digits.start_with?('93') then digits.delete_prefix('93')
         elsif digits.start_with?('0') then digits.delete_prefix('0')
         else digits
         end
-      return nil unless national.match?(/\A\d{9}\z/)
 
-      candidate = "+93#{national}"
-      candidate.match?(MOBILE_OR_LANDLINE) ? candidate : nil
+      national.match?(NATIONAL) ? "+93#{national}" : nil
     end
 
     def valid?(value)

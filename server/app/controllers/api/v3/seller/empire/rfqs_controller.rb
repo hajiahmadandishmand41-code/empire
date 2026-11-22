@@ -17,7 +17,7 @@ module Api
 
           def index
             rfqs = visible.includes(:customer, :company, :variant, quotes: :seller)
-                          .order(created_at: :desc)
+                          .order(created_at: :desc, id: :desc)
             render json: { data: rfqs.map { |rfq| serialize(rfq) }, meta: { count: rfqs.size } }
           end
 
@@ -43,8 +43,8 @@ module Api
               requested_quantity: rfq.requested_quantity,
               unit: rfq.unit,
               currency: rfq.currency,
-              budget_min: rfq.budget_min&.to_s,
-              budget_max: rfq.budget_max&.to_s,
+              budget_min: ::Empire::Money.format(rfq.budget_min),
+              budget_max: ::Empire::Money.format(rfq.budget_max),
               expires_at: rfq.expires_at,
               closed_at: rfq.closed_at,
               status_reason: rfq.status_reason,
@@ -69,9 +69,9 @@ module Api
           end
 
           def quote_json(quote)
-            { id: quote.id, amount: quote.amount.to_s, quantity: quote.quantity, unit: quote.unit,
+            { id: quote.id, amount: ::Empire::Money.format(quote.amount), quantity: quote.quantity, unit: quote.unit,
               currency: quote.currency, status: quote.status, notes: quote.notes,
-              valid_until: quote.valid_until, total: quote.total_amount&.to_s,
+              valid_until: quote.valid_until, total: ::Empire::Money.format(quote.total_amount),
               editable: quote.seller_id == current_seller.id && quote.editable?,
               created_at: quote.created_at, responded_at: quote.responded_at }
           end

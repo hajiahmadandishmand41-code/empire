@@ -49,11 +49,14 @@ module Empire
     end
 
     # Total the offer represents, for side-by-side comparison. Always the real
-    # arithmetic of amount × quantity, never a display-only guess.
+    # arithmetic of amount × quantity, never a display-only guess. Computed on
+    # the integer volume so the result stays an exact BigDecimal.
     def total_amount
       return nil if amount.nil?
 
-      amount * (quantity || rfq&.requested_quantity || 1).to_i
+      amount * Integer(quantity || rfq&.requested_quantity || 1)
+    rescue ArgumentError, TypeError
+      nil
     end
 
     private

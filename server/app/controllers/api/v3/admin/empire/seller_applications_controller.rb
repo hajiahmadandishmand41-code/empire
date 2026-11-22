@@ -16,7 +16,7 @@ module Api
           scoped_resource :sellers
 
           def index
-            scope = ::Empire::SellerApplication.where(store: current_store).order(created_at: :desc)
+            scope = ::Empire::SellerApplication.where(store: current_store).order(created_at: :desc, id: :desc)
             scope = scope.where(status: params[:status]) if params[:status].present?
             render json: { data: scope.map(&:review_summary), meta: { count: scope.size } }
           end
@@ -34,8 +34,11 @@ module Api
                                   status: :unprocessable_content)
             end
 
+            # Truthiness is decided explicitly: `"false"` from a JSON body is a
+            # non-empty string, and `present?` would read it as an override.
+            override = ActiveModel::Type::Boolean.new.cast(params[:override_requirements]) || false
             result = Spree.seller_approve_workflow.call(seller: application.seller, approver: current_user,
-                                                        override_requirements: params[:override_requirements].present?)
+                                                        override_requirements: override)
             unless result.success?
               return render_error(code: 'seller_approval_failed',
                                   message: I18n.t('empire.seller_approval_failed'),

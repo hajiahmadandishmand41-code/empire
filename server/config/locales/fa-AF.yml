@@ -38,7 +38,7 @@ fa-AF:
     admin_panel: باز کردن داشبورد مدیریت
     admin_rfq_body: همه درخواست‌هایی که در این فروشگاه منتشر شده‌اند.
     admin_rfq_company: شرکت
-    admin_rfq_customer: مشتری
+    admin_rfq_customer: خریدار
     admin_rfq_status: وضعیت
     admin_rfq_title: درخواست‌های قیمت
     all: همه
@@ -624,3 +624,54 @@ fa-AF:
     wishlist_title: علاقه‌مندی‌ها
     yes: بله
     your_cart: سبد خرید شما
+    rfq_deadline: مهلت پاسخ
+    seller_quote_quantity: تعدادی که می‌توانید تأمین کنید
+    seller_quote_quantity_invalid: یک عدد درست بزرگ‌تر از صفر وارد کنید.
+    seller_quote_amount_invalid: قیمتی مانند ۱۲۵۰ یا ۱۲۵۰٫۵۰ وارد کنید.
+    seller_quote_updated: پیشنهاد قیمت شما به‌روزرسانی شد.
+    seller_quote_withdrawn: پیشنهاد قیمت شما پس گرفته شد.
+    seller_quote_edit_title: ویرایش پیشنهاد قیمت
+    seller_select_rfq: یک درخواست را برای دیدن جزئیات انتخاب کنید.
+    seller_withdraw_quote: پس گرفتن پیشنهاد
+    seller_no_open_rfqs_body: درخواست‌هایی که به شما ارسال شده یا برای همه فروشندگان
+      بازار باز است، تا زمانی که قابل پاسخ باشند اینجا نمایش داده می‌شوند.
+    rfq_closed_notice: این درخواست دیگر برای ثبت پیشنهاد باز نیست.
+    seller_quote_valid_until: اعتبار پیشنهاد تا
+    seller_quote_valid_until_hint: اختیاری. پیشنهاد نمی‌تواند بعد از مهلت درخواست معتبر بماند.
+    admin_rfq_list: درخواست‌ها
+    admin_rfq_detail: جزئیات درخواست
+    admin_rfq_select: یک درخواست را برای بررسی پیشنهادها و تاریخچه آن انتخاب کنید.
+    admin_rfq_actions: مدیریت این درخواست
+    admin_rfq_reason: دلیل
+    admin_rfq_reason_hint: به خریدار نمایش داده می‌شود و در تاریخچه درخواست می‌ماند.
+    admin_rfq_close: بستن درخواست
+    admin_rfq_cancel: لغو درخواست
+    admin_rfq_reopen: بازکردن دوباره
+    admin_rfq_close_done: درخواست بسته شد.
+    admin_rfq_cancel_done: درخواست لغو شد.
+    admin_rfq_reopen_done: درخواست دوباره باز شد.
+    admin_rfq_quote_rejected: پیشنهاد رد شد.
+    admin_rfq_reject_quote: رد پیشنهاد
+    admin_rfq_history: تاریخچه
+    admin_rfq_no_history: هنوز تغییری ثبت نشده است.
+    admin_rfq_all_statuses: همه وضعیت‌ها
+    admin_applications_title: درخواست‌های فروشندگی
+    admin_applications_body: "درخواست کامل فروشنده را بررسی کنید: اطلاعات تماس،
+      موقعیت، دسته‌بندی‌ها و توضیحات کسب‌وکار، نه فقط نام فروشگاه."
+    admin_application_reason: دلیل برای متقاضی
+    admin_application_reason_hint: هنگام رد درخواست لازم است تا متقاضی بداند چه چیزی را اصلاح کند.
+    admin_application_approved: فروشنده تأیید شد و اکنون می‌تواند فعالیت کند.
+    admin_application_rejected: درخواست رد شد.
+    admin_application_reason_required: پیش از رد کردن، دلیل کوتاهی بنویسید.
+    admin_no_applications: در این وضعیت درخواستی وجود ندارد.
+    application_status_pending: در انتظار بررسی
+    application_status_approved: تأییدشده
+    application_status_rejected: ردشده
+    rfq_event_created: درخواست ایجاد شد
+    rfq_event_quoted: پیشنهاد ثبت شد
+    rfq_event_quote_updated: پیشنهاد به‌روزرسانی شد
+    rfq_event_quote_withdrawn: پیشنهاد پس گرفته شد
+    rfq_event_accepted: پیشنهاد پذیرفته شد
+    rfq_event_closed: درخواست بسته شد
+    rfq_event_cancelled: درخواست لغو شد
+    rfq_event_reopened: درخواست دوباره باز شد

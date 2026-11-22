@@ -84,7 +84,7 @@ module Api
             data = { id: rfq.id, title: rfq.title, description: rfq.description, status: rfq.status,
                      quoteable: rfq.quoteable?, requested_quantity: rfq.requested_quantity,
                      unit: rfq.unit, currency: rfq.currency,
-                     budget_min: rfq.budget_min&.to_s, budget_max: rfq.budget_max&.to_s,
+                     budget_min: ::Empire::Money.format(rfq.budget_min), budget_max: ::Empire::Money.format(rfq.budget_max),
                      customer_id: rfq.customer&.prefixed_id, customer_name: customer_name(rfq),
                      company_id: rfq.company&.prefixed_id, company_name: rfq.company&.name,
                      variant_id: rfq.variant&.prefixed_id, product_name: rfq.variant&.product&.name,
@@ -101,9 +101,9 @@ module Api
 
           def quote_json(quote)
             { id: quote.id, seller_id: quote.seller&.prefixed_id, seller_name: quote.seller&.name,
-              amount: quote.amount.to_s, quantity: quote.quantity, unit: quote.unit,
+              amount: ::Empire::Money.format(quote.amount), quantity: quote.quantity, unit: quote.unit,
               currency: quote.currency, status: quote.status, notes: quote.notes,
-              valid_until: quote.valid_until, total: quote.total_amount&.to_s,
+              valid_until: quote.valid_until, total: ::Empire::Money.format(quote.total_amount),
               created_at: quote.created_at, responded_at: quote.responded_at }
           end
 

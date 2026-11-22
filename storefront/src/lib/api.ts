@@ -791,10 +791,19 @@ export async function removeWishlistItem(wishlistId: string, itemId: string): Pr
 export async function listProvinces(): Promise<{ data: Province[] }> { return request(`${STORE}/empire/provinces`, { revalidate: REFERENCE_REVALIDATE }); }
 export async function listRfqs(): Promise<{ data: Rfq[] }> { return request(`${STORE}/empire/rfqs`); }
 export async function getRfq(id: number): Promise<Rfq> { return request(`${STORE}/empire/rfqs/${id}`); }
-export async function createRfq(attributes: {
-  title: string; description?: string; requested_quantity: number; company_id?: string;
-  variant_id?: string; budget_min?: string; budget_max?: string; seller_id?: string;
-}): Promise<Rfq> {
+export interface CreateRfqInput {
+  title: string;
+  description?: string;
+  requested_quantity: number;
+  company_id?: string;
+  variant_id?: string;
+  seller_id?: string;
+  unit?: string;
+  budget_min?: string;
+  budget_max?: string;
+  expires_at?: string;
+}
+export async function createRfq(attributes: CreateRfqInput): Promise<Rfq> {
   return request(`${STORE}/empire/rfqs`, { method: "POST", body: attributes });
 }
 export async function acceptQuote(rfqId: number, quoteId: number): Promise<Rfq> {
@@ -821,8 +830,17 @@ export type SellerApplicationInput = {
   categories?: string[];
 };
 
-export async function applySeller(attributes: SellerApplicationInput): Promise<{ id: string; status: string }> {
+export async function applySeller(attributes: SellerApplicationInput): Promise<{ id: number; status: string; seller_id?: string }> {
   return request(`${STORE}/empire/seller_applications`, { method: "POST", body: attributes, noAuth: true });
+}
+
+/** The applicant's own status. Proof of ownership is the address the
+ * application was made with: there is no buyer session at this point. */
+export async function getSellerApplication(id: number | string, email: string): Promise<{
+  id: number; status: string; shop_name: string; submitted_at: string;
+  reviewed_at: string | null; rejection_reason: string | null;
+}> {
+  return request(`${STORE}/empire/seller_applications/${encodeURIComponent(String(id))}?email=${encodeURIComponent(email)}`, { noAuth: true });
 }
 
 /* -------------------------------------------------------------- helpers */

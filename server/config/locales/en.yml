@@ -38,7 +38,7 @@ en:
     admin_panel: Open admin dashboard
     admin_rfq_body: Every request published in this store.
     admin_rfq_company: Company
-    admin_rfq_customer: Customer
+    admin_rfq_customer: Buyer
     admin_rfq_status: Status
     admin_rfq_title: Quotation requests
     all: All
@@ -627,3 +627,55 @@ en:
     wishlist_title: Favourites
     yes: Yes
     your_cart: Your cart
+    rfq_deadline: Reply deadline
+    seller_quote_quantity: Quantity you can supply
+    seller_quote_quantity_invalid: Enter a whole number greater than zero.
+    seller_quote_amount_invalid: Enter a price such as 1250 or 1250.50.
+    seller_quote_updated: Your quotation was updated.
+    seller_quote_withdrawn: Your quotation was withdrawn.
+    seller_quote_edit_title: Edit your quotation
+    seller_select_rfq: Choose a request to see its details.
+    seller_withdraw_quote: Withdraw quotation
+    seller_no_open_rfqs_body: Requests addressed to you, or open to every seller in
+      the marketplace, appear here while they can still be quoted.
+    rfq_closed_notice: This request is no longer open for quotations.
+    seller_quote_valid_until: Offer valid until
+    seller_quote_valid_until_hint: Optional. An offer cannot stay valid after the request's deadline.
+    admin_rfq_list: Requests
+    admin_rfq_detail: Request details
+    admin_rfq_select: Choose a request to review its offers and history.
+    admin_rfq_actions: Manage this request
+    admin_rfq_reason: Reason
+    admin_rfq_reason_hint: Shown to the buyer and kept in the request history.
+    admin_rfq_close: Close request
+    admin_rfq_cancel: Cancel request
+    admin_rfq_reopen: Reopen request
+    admin_rfq_close_done: The request was closed.
+    admin_rfq_cancel_done: The request was cancelled.
+    admin_rfq_reopen_done: The request was reopened.
+    admin_rfq_quote_rejected: The offer was rejected.
+    admin_rfq_reject_quote: Reject offer
+    admin_rfq_history: History
+    admin_rfq_no_history: No changes recorded yet.
+    admin_rfq_all_statuses: All statuses
+    admin_applications_title: Seller applications
+    admin_applications_body: "Review the complete application a merchant submitted:
+      contact details, location, categories and business description, not only a
+      shop name."
+    admin_application_reason: Reason for the applicant
+    admin_application_reason_hint: Required when rejecting, so the applicant knows what to correct.
+    admin_application_approved: The seller was approved and can now trade.
+    admin_application_rejected: The application was rejected.
+    admin_application_reason_required: Write a short reason before rejecting.
+    admin_no_applications: No applications in this state.
+    application_status_pending: Pending review
+    application_status_approved: Approved
+    application_status_rejected: Rejected
+    rfq_event_created: Request created
+    rfq_event_quoted: Offer submitted
+    rfq_event_quote_updated: Offer updated
+    rfq_event_quote_withdrawn: Offer withdrawn
+    rfq_event_accepted: Offer accepted
+    rfq_event_closed: Request closed
+    rfq_event_cancelled: Request cancelled
+    rfq_event_reopened: Request reopened

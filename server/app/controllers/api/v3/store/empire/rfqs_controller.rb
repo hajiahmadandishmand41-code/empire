@@ -57,11 +57,11 @@ module Api
           def serialize(rfq, quotes: false)
             data = { id: rfq.id, title: rfq.title, description: rfq.description, status: rfq.status,
                      requested_quantity: rfq.requested_quantity, currency: rfq.currency,
-                     budget_min: rfq.budget_min&.to_s, budget_max: rfq.budget_max&.to_s,
+                     budget_min: ::Empire::Money.format(rfq.budget_min), budget_max: ::Empire::Money.format(rfq.budget_max),
                      company_id: rfq.company&.prefixed_id, variant_id: rfq.variant&.prefixed_id,
                      seller_id: rfq.seller&.prefixed_id, expires_at: rfq.expires_at, created_at: rfq.created_at }
             data[:quotes] = rfq.quotes.order(:created_at).map { |quote|
-              { id: quote.id, seller_id: quote.seller.prefixed_id, amount: quote.amount.to_s,
+              { id: quote.id, seller_id: quote.seller.prefixed_id, amount: ::Empire::Money.format(quote.amount),
                 currency: quote.currency, status: quote.status, notes: quote.notes }
             } if quotes
             data
