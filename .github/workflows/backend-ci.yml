@@ -7,6 +7,10 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  # The schema drift step posts the exact diff a developer must commit. Without
+  # it the only copy is in the job log, which is awkward to reach from a phone or
+  # from a tool that cannot stream runner logs.
+  pull-requests: write
 jobs:
   test:
     runs-on: ubuntu-24.04
@@ -51,6 +55,66 @@ jobs:
         run: bash ../scripts/ci-run.sh bin/rails db:create db:migrate
       - name: Migration status
         run: bash ../scripts/ci-run.sh bin/rails db:migrate:status
+      - name: schema.rb must match the migrations
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          bin/rails db:schema:dump
+          if git diff --quiet -- db/schema.rb; then
+            echo "db/schema.rb matches the migrations."
+            exit 0
+          fi
+
+          git --no-pager diff -- db/schema.rb
+          DIFF="$(git --no-pager diff -- db/schema.rb)"
+
+          # Find the pull request this run belongs to. On a pull_request event
+          # the number is in the payload; on a push to an arena/* branch it has
+          # to be looked up from the head SHA.
+          PR=""
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            PR="${{ github.event.pull_request.number }}"
+          else
+            PR="$(curl -fsSL -H "Authorization: Bearer $GH_TOKEN" \
+              "${{ github.api_url }}/repos/${{ github.repository }}/commits/${{ github.sha }}/pulls" \
+              | jq -r '[.[] | select(.state == "open")][0].number // empty' || true)"
+          fi
+
+          if [ -n "$PR" ]; then
+            MARKER="<!-- empire-schema-drift -->"
+            # Comment bodies are capped at 65536 characters; a schema.rb this
+            # size could exceed that if the drift were ever large.
+            if [ "${#DIFF}" -gt 50000 ]; then
+              DIFF="${DIFF:0:50000}
+              ... truncated by CI: the full diff is in the job log."
+            fi
+            BODY="$(jq -rn --arg marker "$MARKER" --arg diff "$DIFF" --arg sha "${{ github.sha }}" '
+              $marker + "\n## db/schema.rb does not match the migrations\n\n" +
+              "`bin/rails db:schema:dump` produced this diff against the committed file at `" + $sha[0:7] + "`. " +
+              "Commit it so `db:schema:load` and `db:prepare` build the same database as `db:migrate`.\n\n" +
+              "```diff\n" + $diff + "\n```\n"')"
+
+            # Reuse one comment per PR rather than adding a new one on every
+            # force-push, so the thread stays readable.
+            EXISTING="$(curl -fsSL -H "Authorization: Bearer $GH_TOKEN" \
+              "${{ github.api_url }}/repos/${{ github.repository }}/issues/$PR/comments?per_page=100" \
+              | jq -r --arg marker "$MARKER" '[.[] | select(.body | startswith($marker))][0].id // empty' || true)"
+
+            if [ -n "$EXISTING" ]; then
+              jq -n --arg body "$BODY" '{body: $body}' \
+                | curl -fsSL -X PATCH -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+                    -d @- "${{ github.api_url }}/repos/${{ github.repository }}/issues/comments/$EXISTING" >/dev/null
+            else
+              jq -n --arg body "$BODY" '{body: $body}' \
+                | curl -fsSL -X POST -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+                    -d @- "${{ github.api_url }}/repos/${{ github.repository }}/issues/$PR/comments" >/dev/null
+            fi
+            echo "Posted the schema diff to PR #$PR."
+          fi
+
+          echo "::error title=db/schema.rb is stale::Migrations were added without re-dumping schema.rb. The diff is printed in this log and, if this run belongs to a pull request, posted as a PR comment."
+          exit 1
       - name: Seed reference and demo data
         run: bash ../scripts/ci-run.sh bin/rails db:seed
       - name: Verify seed idempotence

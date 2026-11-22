@@ -22,7 +22,7 @@ export default function LoginPage() {
       <label className="block text-sm">{t("email")}<input type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 w-full rounded-lg border p-3" dir="ltr" /></label>
       <label className="block text-sm">{t("password")}<input type="password" required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1 w-full rounded-lg border p-3" dir="ltr" /></label>
       <ErrorNotice message={error} />
-      <button disabled={busy} className="w-full rounded-lg bg-slate-brand py-3 font-semibold text-white disabled:opacity-50">{busy ? t("loading") : t("login")}</button>
+      <button disabled={busy} className="w-full rounded-lg bg-navy-900 py-3 font-semibold text-white disabled:opacity-50">{busy ? t("loading") : t("login")}</button>
     </form><p className="mt-6 text-sm">{t("no_account")} <Link href="/register" className="text-emerald-700 underline">{t("register")}</Link></p>
   </div>;
 }

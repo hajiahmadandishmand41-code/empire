@@ -1,10 +1,19 @@
 "use client";
 
 import { useLocale } from "@/components/locale-provider";
+import { ErrorState } from "@/components/ui/states";
 
-export function ErrorNotice({ message }: { message: string | null }) {
+/** Inline API failure. `data-testid="api-error"` is part of the E2E contract
+ * (a successful journey must render zero of these) — do not rename it. */
+export function ErrorNotice({ message, onRetry, className }: { message: string | null; onRetry?: () => void; className?: string }) {
   const { t } = useLocale();
   if (!message) return null;
-  const text = message === "configuration_error" ? t("configuration_error") : message === "backend_error" ? t("backend_error") : message;
-  return <div role="alert" data-testid="api-error" className="my-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">{text}</div>;
+  const title = message === "configuration_error"
+    ? t("configuration_error")
+    : message === "backend_error"
+      ? t("backend_error")
+      : message;
+  return <ErrorState title={title} onRetry={onRetry} retryLabel={t("retry")} className={className} testId="api-error" />;
 }
+
+ErrorNotice.displayName = "ErrorNotice";

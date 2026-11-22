@@ -1,79 +1,185 @@
-/* Empire Storefront — Global styles with RTL/LTR support */
+/* Empire Storefront — design system.
+ *
+ * Identity: navy (سرمه‌ای) + green (سبز) + white. Mobile-first, RTL-first:
+ * every directional utility in the components is a logical one (ms-/me-/ps-/
+ * pe-/start-/end-/text-start), so switching `dir` never needs a second style.
+ *
+ * Tailwind 4: tokens live in @theme and become utilities (bg-navy-900, …).
+ */
 @import "tailwindcss";
+
+/* Direction variants. Tailwind has no built-in rtl:/ltr:, and Empire must be
+ * able to mirror the few glyphs and offsets that are not logical properties. */
+@custom-variant rtl (&:where([dir="rtl"], [dir="rtl"] *));
+@custom-variant ltr (&:where([dir="ltr"], [dir="ltr"] *));
+
+@theme {
+  /* --- Brand: navy ------------------------------------------------------- */
+  --color-navy-50: #f2f7fd;
+  --color-navy-100: #e2edfa;
+  --color-navy-200: #c3daf3;
+  --color-navy-300: #93bde8;
+  --color-navy-400: #5c97d8;
+  --color-navy-500: #3878c4;
+  --color-navy-600: #265fa8;
+  --color-navy-700: #1f4c89;
+  --color-navy-800: #1b3f6f;
+  --color-navy-900: #12294d; /* primary brand surface */
+  --color-navy-950: #0a1a33; /* deepest: header, footer, hero */
+
+  /* --- Brand: green ------------------------------------------------------ */
+  --color-jade-50: #edfbf4;
+  --color-jade-100: #d3f5e3;
+  --color-jade-200: #a9eacb;
+  --color-jade-300: #71d8ac;
+  --color-jade-400: #38be87;
+  --color-jade-500: #14a36b;
+  --color-jade-600: #078357;
+  --color-jade-700: #066847; /* primary accent / CTA */
+  --color-jade-800: #08523a;
+  --color-jade-900: #074431;
+  --color-jade-950: #02261c;
+
+  /* --- Offer accent (used only for discounts / limited-time badges) ------ */
+  --color-saffron-50: #fff9eb;
+  --color-saffron-100: #ffefc6;
+  --color-saffron-400: #fbbf24;
+  --color-saffron-500: #f59e0b;
+  --color-saffron-600: #d97706;
+  --color-saffron-700: #b45309;
+
+  /* --- Typography -------------------------------------------------------- *
+   * Dari-first. No webfont is bundled yet (see docs/KNOWN-LIMITATIONS.md):
+   * this stack is ordered so the best available Persian face on the device
+   * wins, and every entry is a real system face on Android/Windows/iOS.
+   * Drop a licensed .woff2 into public/fonts/ and add a @font-face above the
+   * @theme block, then put its family first here — nothing else changes.
+   */
+  --font-sans: "Vazirmatn", "Noto Sans Arabic", "Noto Naskh Arabic",
+    "Segoe UI", Tahoma, system-ui, -apple-system, "Helvetica Neue", Arial,
+    sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+
+  /* --- Elevation --------------------------------------------------------- */
+  --shadow-card: 0 1px 2px rgb(10 26 51 / 0.05), 0 1px 3px rgb(10 26 51 / 0.06);
+  --shadow-raised: 0 4px 12px rgb(10 26 51 / 0.08), 0 2px 4px rgb(10 26 51 / 0.05);
+  --shadow-pop: 0 12px 32px rgb(10 26 51 / 0.14), 0 4px 8px rgb(10 26 51 / 0.08);
+
+  /* --- Motion: short and purposeful only --------------------------------- */
+  --animate-fade-in: fade-in 160ms ease-out both;
+  --animate-rise: rise 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  @apply bg-gray-50 text-gray-900 antialiased;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans Arabic", "Noto Sans", sans-serif;
+  @apply bg-gray-50 font-sans text-navy-950 antialiased;
+  /* Long Dari words and unbreakable Latin runs must not overflow cards. */
+  overflow-wrap: break-word;
 }
 
-/* Direction utilities */
-[dir="rtl"] {
-  direction: rtl;
-  text-align: right;
-}
-[dir="rtl"] body {
-  text-align: right;
-}
-[dir="ltr"] {
+/* Numbers, phone numbers, order numbers and prices stay LTR inside RTL copy. */
+[dir="rtl"] .ltr,
+.ltr {
   direction: ltr;
-  text-align: left;
+  unicode-bidi: isolate;
 }
-
-/* Ensure numbers/Latin text stay LTR inside RTL blocks */
-[dir="rtl"] .ltr {
+[dir="rtl"] .num {
   direction: ltr;
-  text-align: left;
-  display: inline-block;
+  unicode-bidi: isolate;
+  font-variant-numeric: tabular-nums;
+}
+.num {
+  font-variant-numeric: tabular-nums;
 }
 
-/* Focus styles for accessibility */
+/* Accessibility: a visible focus ring on every interactive element. */
 :focus-visible {
-  @apply outline-none ring-2 ring-emerald-600 ring-offset-2 rounded;
+  @apply outline-none ring-2 ring-jade-600 ring-offset-2 ring-offset-white;
 }
 
-/* Skeleton / loading placeholders */
+/* Skip link — keyboard users reach the content in one tab stop. */
+.skip-link {
+  @apply sr-only;
+}
+.skip-link:focus {
+  @apply not-sr-only fixed top-2 z-100 rounded-lg bg-navy-950 px-4 py-2 text-sm font-semibold text-white shadow-pop;
+  inset-inline-start: 0.5rem;
+}
+
+/* Skeletons: a single shimmering surface, used by every loading state. */
 .skeleton {
-  @apply bg-gray-200 rounded animate-pulse;
+  @apply rounded-lg bg-gray-200/80;
+  background-image: linear-gradient(
+    90deg,
+    rgb(229 231 235 / 0.6) 0%,
+    rgb(243 244 246 / 0.95) 40%,
+    rgb(229 231 235 / 0.6) 80%
+  );
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
 }
 
-/* Custom scrollbar (subtle) */
+/* Hide the scrollbar on horizontally scrolling rails (mobile categories). */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Subtle scrollbars elsewhere. */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 ::-webkit-scrollbar-track {
   @apply bg-transparent;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 rounded-full;
+  @apply rounded-full bg-gray-300;
 }
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-400;
 }
 
-/* Brand colors: emerald (green), slate (charcoal), white */
-:root {
-  --empire-emerald: 16 185 129;   /* #10b981 */
-  --empire-slate: 30 41 59;        /* #1f2937 */
-  --empire-white: 255 255 255;
+/* Respect users who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
-.text-emerald-brand {
-  color: rgb(var(--empire-emerald));
-}
-.bg-emerald-brand {
-  background-color: rgb(var(--empire-emerald));
-}
-.border-emerald-brand {
-  border-color: rgb(var(--empire-emerald));
-}
-.text-slate-brand {
-  color: rgb(var(--empire-slate));
-}
-.bg-slate-brand {
-  background-color: rgb(var(--empire-slate));
+/* Print: an order summary or a quote should be printable without chrome. */
+@media print {
+  header,
+  footer,
+  .no-print { display: none !important; }
+  body { @apply bg-white; }
 }

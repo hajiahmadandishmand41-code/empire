@@ -21,7 +21,7 @@ export default function RegisterPage() {
     finally { setBusy(false); }
   }
   return <div className="mx-auto max-w-lg rounded-2xl border bg-white p-8"><h1 className="mb-6 text-2xl font-bold">{t("register")}</h1>
-    <form onSubmit={submit} className="space-y-4"><div className="grid grid-cols-2 gap-4">{field("first_name")}{field("last_name")}</div>{field("email", "email")}{field("phone", "tel")}{field("password", "password")}{field("password_confirmation", "password")}<ErrorNotice message={error} /><button disabled={busy} className="w-full rounded-lg bg-slate-brand py-3 font-semibold text-white disabled:opacity-50">{busy ? t("loading") : t("register")}</button></form>
+    <form onSubmit={submit} className="space-y-4"><div className="grid grid-cols-2 gap-4">{field("first_name")}{field("last_name")}</div>{field("email", "email")}{field("phone", "tel")}{field("password", "password")}{field("password_confirmation", "password")}<ErrorNotice message={error} /><button disabled={busy} className="w-full rounded-lg bg-navy-900 py-3 font-semibold text-white disabled:opacity-50">{busy ? t("loading") : t("register")}</button></form>
     <p className="mt-6 text-sm">{t("already_have_account")} <Link href="/login" className="text-emerald-700 underline">{t("login")}</Link></p>
   </div>;
 }
