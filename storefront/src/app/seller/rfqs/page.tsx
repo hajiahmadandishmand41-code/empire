@@ -7,7 +7,7 @@ import { StaffLogin } from "@/components/staff-login";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, DataRow } from "@/components/ui/card";
-import { Select, TextArea, TextInput } from "@/components/ui/field";
+import { TextArea, TextInput } from "@/components/ui/field";
 import { EmptyState, InlineNotice } from "@/components/ui/states";
 import { Price } from "@/components/ui/price";
 import {

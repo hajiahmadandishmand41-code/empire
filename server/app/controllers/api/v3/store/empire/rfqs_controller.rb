@@ -50,20 +50,40 @@ module Api
             rfq.public_send("#{name}=", scope.find_by_prefix_id!(value))
           end
 
+          # `unit` was in the table but never permitted, so a buyer asking for
+          # "50 cartons" had the unit silently dropped and every seller quoted a
+          # bare number. It is part of the request, not a seller-side detail.
           def rfq_params
-            params.permit(:title, :description, :requested_quantity, :budget_min, :budget_max, :expires_at)
+            params.permit(:title, :description, :requested_quantity, :unit,
+                          :budget_min, :budget_max, :expires_at)
           end
 
           def serialize(rfq, quotes: false)
             data = { id: rfq.id, title: rfq.title, description: rfq.description, status: rfq.status,
-                     requested_quantity: rfq.requested_quantity, currency: rfq.currency,
+                     requested_quantity: rfq.requested_quantity, unit: rfq.unit, currency: rfq.currency,
                      budget_min: ::Empire::Money.format(rfq.budget_min), budget_max: ::Empire::Money.format(rfq.budget_max),
                      company_id: rfq.company&.prefixed_id, variant_id: rfq.variant&.prefixed_id,
-                     seller_id: rfq.seller&.prefixed_id, expires_at: rfq.expires_at, created_at: rfq.created_at }
-            data[:quotes] = rfq.quotes.order(:created_at).map { |quote|
-              { id: quote.id, seller_id: quote.seller.prefixed_id, amount: ::Empire::Money.format(quote.amount),
-                currency: quote.currency, status: quote.status, notes: quote.notes }
-            } if quotes
+                     seller_id: rfq.seller&.prefixed_id, expires_at: rfq.expires_at,
+                     closed_at: rfq.closed_at, status_reason: rfq.status_reason,
+                     # The buyer needs to know whether they can still expect
+                     # offers, and why a request they are looking at is shut.
+                     quoteable: rfq.quoteable?, expired: rfq.expired?,
+                     created_at: rfq.created_at }
+            if quotes
+              data[:quotes] = rfq.quotes.order(:created_at).map { |quote|
+                { id: quote.id, seller_id: quote.seller.prefixed_id, amount: ::Empire::Money.format(quote.amount),
+                  quantity: quote.quantity, unit: quote.unit, valid_until: quote.valid_until,
+                  total: ::Empire::Money.format(quote.total_amount),
+                  currency: quote.currency, status: quote.status, notes: quote.notes }
+              }
+              # The buyer is a party to every event (they raised the request, they
+              # accepted an offer), so the negotiation history is theirs to read.
+              data[:events] = rfq.events.order(:created_at).map do |event|
+                { id: event.id, event: event.event, from_status: event.from_status,
+                  to_status: event.to_status, note: event.note,
+                  quote_id: event.quote_id, created_at: event.created_at }
+              end
+            end
             data
           end
         end
