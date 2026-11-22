@@ -92,15 +92,21 @@ RSpec.describe 'Empire seller RFQ desk', type: :request do
     expect(Empire::Quote.count).to eq(0)
   end
 
-  it 'refuses a quote on an expired or foreign request' do
+  # An expired request the seller could legitimately see is not hidden from
+  # them — pretending it never existed would be a lie to someone who had the
+  # page open — so it answers 422 with the reason. A request addressed to a
+  # competitor answers 404, because its existence is not theirs to learn.
+  it 'refuses a quote on an expired request, and hides a foreign one entirely' do
     post '/api/v3/seller/empire/quotes',
          params: { rfq_id: expired_rfq.id, amount: '100.00' }.to_json, headers: headers
-    expect_status!(404)
+    expect_status!(422)
+    expect(body_json.dig('error', 'code')).to eq('quote_unavailable')
     expect(Empire::Quote.count).to eq(0)
 
     post '/api/v3/seller/empire/quotes',
          params: { rfq_id: foreign_rfq.id, amount: '100.00' }.to_json, headers: headers
     expect_status!(404)
+    expect(Empire::Quote.count).to eq(0)
   end
 
   it 'lets a seller correct and then withdraw a still-pending offer' do

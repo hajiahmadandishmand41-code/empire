@@ -83,6 +83,11 @@ module Empire
           store: @store,
           attributes: {
             name: application.shop_name,
+            # Spree derives a slug from the name and the slug is unique per
+            # store. A merchant re-applying under the same shop name — or one
+            # another seller already used — must not be refused for a URL they
+            # never chose, so a free one is asked for here.
+            slug: available_slug(application.shop_name),
             contact_email: email,
             registration_number: application.registration_number.presence
           }
@@ -127,6 +132,17 @@ module Empire
       @attributes.slice(:shop_name, :contact_name, :email, :phone, :address, :city,
                         :description, :registration_number, :categories)
                  .tap { |attrs| attrs[:store] = @store }
+    end
+
+    # A slug no seller in this store holds yet, or nil when the plain one is
+    # free (Spree then derives it itself).
+    def available_slug(name)
+      base = name.to_s.parameterize.presence || 'seller'
+      return nil unless Spree::Seller.where(store: @store, slug: base).exists?
+
+      suffix = 2
+      suffix += 1 while Spree::Seller.where(store: @store, slug: "#{base}-#{suffix}").exists?
+      "#{base}-#{suffix}"
     end
 
     def failure(key)

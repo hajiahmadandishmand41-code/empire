@@ -88,6 +88,9 @@ RSpec.describe 'Empire seller applications API', type: :request do
     first = Empire::SellerApplication.last
     first.reject!(reviewer: nil, reason: 'incomplete')
 
+    # A new shop name, because Spree's seller slug is unique within the store and
+    # a re-applying merchant may well want a different name — but re-using the
+    # old one is a legitimate case too, so both are covered below.
     expect { apply(email: 'applicant@example.com', shop_name: 'Second attempt') }
       .to change(Empire::SellerApplication, :count).by(1)
     expect_status!(201)
@@ -97,6 +100,17 @@ RSpec.describe 'Empire seller applications API', type: :request do
     expect(second.shop_name).to eq('Second attempt')
     expect(second.user_id).to eq(first.user_id)
     expect(second.seller_id).not_to eq(first.seller_id)
+  end
+
+  it 'reuses the shop name when a rejected merchant re-applies under it' do
+    apply
+    Empire::SellerApplication.last.reject!(reviewer: nil, reason: 'missing documents')
+    # Same name as before: it must still succeed. Spree's slug is unique per
+    # store, so the application has to ask for a free one rather than fail.
+    expect { apply(email: 'applicant@example.com') }
+      .to change(Empire::SellerApplication, :count).by(1)
+    expect_status!(201)
+    expect(Empire::SellerApplication.last.shop_name).to eq('فروشگاه کابل بازار')
   end
 
   it 'refuses to attach a seller to an address the password does not open' do
