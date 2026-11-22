@@ -7,7 +7,7 @@ Rails.application.routes.draw do
       namespace :store do
         namespace :empire do
           resources :provinces, only: %i[index show]
-          resources :seller_applications, only: :create
+          resources :seller_applications, only: %i[create show]
           resources :rfqs, only: %i[index show create] do
             post 'quotes/:quote_id/accept', action: :accept, on: :member
           end
@@ -15,13 +15,26 @@ Rails.application.routes.draw do
       end
       namespace :seller do
         namespace :empire do
-          resources :quotes, only: %i[index create]
+          # `rfqs` first so `/empire/rfqs/:id` is not captured by `quotes`.
+          resources :rfqs, only: %i[index show]
+          resources :quotes, only: %i[index show create update] do
+            patch :withdraw, on: :member
+          end
           resources :payout_requests, only: %i[index create]
         end
       end
       namespace :admin do
         namespace :empire do
-          resources :rfqs, only: :index
+          resources :rfqs, only: %i[index show] do
+            patch :close, on: :member
+            patch :cancel, on: :member
+            patch :reopen, on: :member
+            patch 'quotes/:quote_id/reject', action: :reject_quote, on: :member
+          end
+          resources :seller_applications, only: %i[index show] do
+            patch :approve, on: :member
+            patch :reject, on: :member
+          end
           resources :payout_requests, only: :index do
             patch :approve, on: :member
             patch :reject, on: :member

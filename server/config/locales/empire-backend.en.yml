@@ -1,7 +1,17 @@
 en:
   empire:
     application_invalid: The application could not be saved. Check the shop name, email and password.
+    application_already_submitted: An application for this email address is already under review. Watch for our reply instead of applying again.
+    application_password_too_short: The password must be at least 8 characters.
+    application_password_mismatch: The two passwords do not match.
+    application_not_pending: This application has already been reviewed.
+    seller_approval_failed: The seller could not be approved. Check the marketplace requirements.
+    rejection_reason_required: Give a short reason so the applicant knows what to fix.
+    invalid_phone: Enter a valid Afghan phone number, for example 0700123456 or +93700123456.
     quote_unavailable: This quotation request is no longer open for quotes.
+    quote_already_submitted: You have already quoted on this request. Edit that quote instead of adding a second one.
+    rfq_unavailable: This quotation request cannot be changed in its current state.
+    rfq_buyer_anonymous: Marketplace buyer
     request_already_reviewed: This payout request has already been reviewed.
     no_payable_balance: There is no payable balance available for settlement.
     payout_request_invalid: A valid open payout request could not be created. Check the balance and existing requests.

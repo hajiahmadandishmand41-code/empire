@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_13_000103) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_22_000003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -108,9 +108,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_000103) do
     t.datetime "responded_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "quantity", comment: "Volume this quote covers; nil means the requested quantity"
+    t.string "unit", limit: 32
+    t.datetime "valid_until", comment: "After this instant the offer is no longer binding"
     t.index ["rfq_id", "seller_id"], name: "index_empire_quotes_on_rfq_id_and_seller_id", unique: true
     t.index ["rfq_id"], name: "index_empire_quotes_on_rfq_id"
     t.index ["seller_id"], name: "index_empire_quotes_on_seller_id"
+  end
+
+  create_table "empire_rfq_events", force: :cascade do |t|
+    t.bigint "rfq_id", null: false
+    t.bigint "quote_id"
+    t.string "actor_type"
+    t.bigint "actor_id"
+    t.string "event", null: false, comment: "created, quoted, quote_updated, quote_withdrawn, accepted, closed, cancelled, reopened"
+    t.string "from_status"
+    t.string "to_status"
+    t.text "note", comment: "Operator-supplied reason; never contains secrets"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["actor_type", "actor_id"], name: "index_empire_rfq_events_on_actor"
+    t.index ["quote_id"], name: "index_empire_rfq_events_on_quote_id"
+    t.index ["rfq_id", "created_at"], name: "index_empire_rfq_events_on_rfq_id_and_created_at"
+    t.index ["rfq_id", "event"], name: "index_empire_rfq_events_on_rfq_id_and_event"
+    t.index ["rfq_id"], name: "index_empire_rfq_events_on_rfq_id"
   end
 
   create_table "empire_rfqs", force: :cascade do |t|
@@ -129,12 +150,45 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_000103) do
     t.datetime "expires_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "unit", limit: 32, comment: "Unit the quantity is counted in (carton, kg, piece …)"
+    t.datetime "closed_at"
+    t.text "status_reason", comment: "Why the request was closed or cancelled"
     t.index ["company_id"], name: "index_empire_rfqs_on_company_id"
     t.index ["customer_id"], name: "index_empire_rfqs_on_customer_id"
     t.index ["seller_id"], name: "index_empire_rfqs_on_seller_id"
+    t.index ["store_id", "status", "expires_at"], name: "index_empire_rfqs_on_store_status_expires"
     t.index ["store_id", "status"], name: "index_empire_rfqs_on_store_id_and_status"
     t.index ["store_id"], name: "index_empire_rfqs_on_store_id"
     t.index ["variant_id"], name: "index_empire_rfqs_on_variant_id"
+  end
+
+  create_table "empire_seller_applications", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "user_id"
+    t.bigint "seller_id"
+    t.bigint "reviewed_by_id"
+    t.string "email", null: false, comment: "Applicant sign-in address (stored lower-cased)"
+    t.string "shop_name", null: false
+    t.string "contact_name", comment: "Owner / representative name (دری)"
+    t.string "phone", comment: "Normalised E.164 Afghan number, e.g. +93700123456"
+    t.string "address"
+    t.string "city"
+    t.text "description"
+    t.string "registration_number"
+    t.jsonb "categories", default: [], null: false, comment: "Category names requested by the applicant"
+    t.jsonb "metadata", default: {}, null: false, comment: "Locale and review history"
+    t.integer "status", default: 0, null: false, comment: "0 pending, 1 approved, 2 rejected"
+    t.datetime "reviewed_at"
+    t.text "rejection_reason"
+    t.datetime "last_submitted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["reviewed_by_id"], name: "index_empire_seller_applications_on_reviewed_by_id"
+    t.index ["seller_id"], name: "index_empire_seller_applications_on_seller_id", unique: true
+    t.index ["store_id", "email"], name: "index_empire_seller_applications_live_email", unique: true, where: "(status = ANY (ARRAY[0, 1]))"
+    t.index ["store_id", "status"], name: "index_empire_seller_applications_on_store_id_and_status"
+    t.index ["store_id"], name: "index_empire_seller_applications_on_store_id"
+    t.index ["user_id"], name: "index_empire_seller_applications_on_user_id", unique: true
   end
 
   create_table "friendly_id_slugs", force: :cascade do |t|
@@ -3954,11 +4008,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_000103) do
   add_foreign_key "empire_payout_requests", "spree_sellers", column: "seller_id"
   add_foreign_key "empire_quotes", "empire_rfqs", column: "rfq_id"
   add_foreign_key "empire_quotes", "spree_sellers", column: "seller_id"
+  add_foreign_key "empire_rfq_events", "empire_quotes", column: "quote_id"
+  add_foreign_key "empire_rfq_events", "empire_rfqs", column: "rfq_id"
   add_foreign_key "empire_rfqs", "spree_companies", column: "company_id"
   add_foreign_key "empire_rfqs", "spree_customers", column: "customer_id"
   add_foreign_key "empire_rfqs", "spree_sellers", column: "seller_id"
   add_foreign_key "empire_rfqs", "spree_stores", column: "store_id"
   add_foreign_key "empire_rfqs", "spree_variants", column: "variant_id"
+  add_foreign_key "empire_seller_applications", "spree_admin_users", column: "reviewed_by_id"
+  add_foreign_key "empire_seller_applications", "spree_admin_users", column: "user_id"
+  add_foreign_key "empire_seller_applications", "spree_sellers", column: "seller_id"
+  add_foreign_key "empire_seller_applications", "spree_stores", column: "store_id"
   add_foreign_key "solid_queue_batch_executions", "solid_queue_batches", column: "batch_id", on_delete: :cascade
   add_foreign_key "solid_queue_batch_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

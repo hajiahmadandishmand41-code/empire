@@ -3,6 +3,12 @@
 # Spree 6.0.4 owns sellers, order splitting, commission lines, payout ledgers,
 # companies, catalogs, quantity rules and volume prices. Empire adds only the
 # pieces absent from that release: COD, geography, RFQs and payout review requests.
+#
+# Permission scopes. Staff roles hold their keys; a seller may hold the quote
+# keys so their own panel can be granted the RFQ desk without being granted the
+# store's back office. `rfqs` is deliberately staff-only: a seller reads the
+# requests addressed to them through `Empire::Rfq.visible_to_seller` in their own
+# branch, never through a key that could reach every buyer's request.
 Spree.permissions.register_scope(:rfqs, group: :customers, resources: -> { [Empire::Rfq] })
 Spree.permissions.register_scope(:quotes, group: :customers, audiences: %i[store seller],
                                  resources: -> { [Empire::Quote] })
