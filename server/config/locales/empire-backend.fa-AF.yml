@@ -3,6 +3,7 @@ fa-AF:
     application_invalid: درخواست ثبت نشد. نام فروشگاه، ایمیل و رمز عبور را بررسی کنید.
     application_already_submitted: برای این ایمیل قبلاً درخواستی ثبت شده و در حال بررسی است. منتظر پاسخ ما باشید و دوباره درخواست ندهید.
     application_password_too_short: رمز عبور باید دست‌کم ۸ نویسه باشد.
+    application_credentials_rejected: این ایمیل قبلاً ثبت شده است، اما رمزی که وارد کردید با آن حساب مطابقت ندارد.
     application_password_mismatch: دو رمز عبور یکسان نیستند.
     application_not_pending: این درخواست قبلاً بررسی شده است.
     seller_approval_failed: تأیید فروشنده انجام نشد. شرایط بازار را بررسی کنید.

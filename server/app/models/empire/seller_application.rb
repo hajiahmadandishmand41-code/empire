@@ -80,7 +80,11 @@ module Empire
       self.city = city.to_s.squish.presence
       self.address = address.to_s.squish.presence
       self.registration_number = registration_number.to_s.strip.presence
-      self.phone = Empire::AfghanPhone.normalize(phone).presence
+      # `phone` keeps the raw value when it is not an Afghan number, so the
+      # format validation below can reject it. Writing the normalised `nil`
+      # would turn a typed-but-wrong number into "no number given".
+      normalized_phone = Empire::AfghanPhone.normalize(phone)
+      self.phone = normalized_phone || phone.to_s.strip.presence
       # Bounded here rather than with a length validation: a category is free
       # text matching the store's taxonomy, and an over-long one is trimmed to
       # what the reviewer can read instead of rejecting an otherwise valid

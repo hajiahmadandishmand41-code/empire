@@ -55,7 +55,7 @@ RSpec.describe 'Empire admin RFQ management', type: :request do
     expect_status!(200)
     expect(mine.reload).to be_rejected
     # The seller's amount is untouched: staff decline, they do not re-price.
-    expect(mine.amount.to_s).to eq('500.00')
+    expect(mine.amount).to eq(BigDecimal('500'))
     expect(theirs.reload).to be_pending
   end
 

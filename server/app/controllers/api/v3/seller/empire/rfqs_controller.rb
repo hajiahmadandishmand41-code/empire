@@ -28,8 +28,12 @@ module Api
 
           private
 
+          # Visible *and* still quotable: a request whose deadline passed while it
+          # sat unanswered is not something a seller can act on, so it is not
+          # listed and `/rfqs/:id` answers 404 rather than showing a dead form.
+          # Submitting to it is also refused — see QuotesController#create.
           def visible
-            ::Empire::Rfq.visible_to_seller(current_seller)
+            ::Empire::Rfq.visible_to_seller(current_seller).quoteable
           end
 
           def serialize(rfq, detail: false)

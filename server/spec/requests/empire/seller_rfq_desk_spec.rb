@@ -25,11 +25,15 @@ RSpec.describe 'Empire seller RFQ desk', type: :request do
     seller_headers(seller_user, seller)
   end
 
+  # `expired_rfq` is stored as `open` with a past deadline — the state a request
+  # reaches simply by nobody answering it. Building it before the request is
+  # what makes "the list omits expired requests" a real assertion.
+  before { expired_rfq }
+
   it 'lists only requests this seller may quote on' do
     open_rfq
     targeted_rfq
     foreign_rfq
-    expired_rfq
 
     get '/api/v3/seller/empire/rfqs', headers: headers
     expect_status!(200)
@@ -46,6 +50,14 @@ RSpec.describe 'Empire seller RFQ desk', type: :request do
     expect_status!(200)
     expect(body_json).to include('title' => 'عمده پارچه', 'requested_quantity' => 50, 'unit' => 'carton',
                                  'quoteable' => true, 'buyer_name' => 'زلیخا احمدی')
+  end
+
+  it 'refuses a quote with a clear error once the deadline passes' do
+    open_rfq.update_column(:expires_at, 1.minute.ago)
+    post '/api/v3/seller/empire/quotes',
+         params: { rfq_id: open_rfq.id, amount: '100.00' }.to_json, headers: headers
+    expect_status!(422)
+    expect(body_json.dig('error', 'code')).to eq('quote_unavailable')
   end
 
   it "cannot read another seller's private request" do
@@ -84,6 +96,7 @@ RSpec.describe 'Empire seller RFQ desk', type: :request do
     post '/api/v3/seller/empire/quotes',
          params: { rfq_id: expired_rfq.id, amount: '100.00' }.to_json, headers: headers
     expect_status!(404)
+    expect(Empire::Quote.count).to eq(0)
 
     post '/api/v3/seller/empire/quotes',
          params: { rfq_id: foreign_rfq.id, amount: '100.00' }.to_json, headers: headers
@@ -98,7 +111,7 @@ RSpec.describe 'Empire seller RFQ desk', type: :request do
     patch "/api/v3/seller/empire/quotes/#{quote_id}",
           params: { amount: '1190.00', notes: 'تخفیف برای پرداخت نقدی' }.to_json, headers: headers
     expect_status!(200)
-    expect(Empire::Quote.find(quote_id).amount.to_s).to eq('1190.00')
+    expect(Empire::Quote.find(quote_id).amount).to eq(BigDecimal('1190'))
 
     patch "/api/v3/seller/empire/quotes/#{quote_id}/withdraw", headers: headers
     expect_status!(200)
@@ -125,7 +138,7 @@ RSpec.describe 'Empire seller RFQ desk', type: :request do
     expect_status!(404)
     patch "/api/v3/seller/empire/quotes/#{quote.id}", params: { amount: '1.00' }.to_json, headers: headers
     expect_status!(404)
-    expect(quote.reload.amount.to_s).to eq('950.00')
+    expect(quote.reload.amount).to eq(BigDecimal('950'))
   end
 
   it 'refuses an unauthenticated caller' do

@@ -18,7 +18,9 @@ module Empire
       return nil unless amount.respond_to?(:to_d)
 
       value = amount.to_d
-      format('%.2f', value)
+      # `Kernel.format` explicitly: inside a `module_function` named `format`,
+      # a bare `format(...)` resolves to this method and recurses.
+      Kernel.format('%.2f', value)
     rescue ArgumentError, TypeError
       nil
     end

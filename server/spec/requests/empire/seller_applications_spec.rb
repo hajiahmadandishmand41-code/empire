@@ -83,12 +83,31 @@ RSpec.describe 'Empire seller applications API', type: :request do
     expect(body_json.dig('error', 'message')).to eq(I18n.t('empire.application_already_submitted'))
   end
 
-  it 'lets a rejected applicant apply again' do
+  it 'lets a rejected applicant apply again, reusing their account' do
     apply
-    Empire::SellerApplication.last.reject!(reviewer: nil, reason: 'incomplete')
+    first = Empire::SellerApplication.last
+    first.reject!(reviewer: nil, reason: 'incomplete')
+
     expect { apply(email: 'applicant@example.com', shop_name: 'Second attempt') }
       .to change(Empire::SellerApplication, :count).by(1)
     expect_status!(201)
+
+    second = Empire::SellerApplication.last
+    expect(second.email).to eq('applicant@example.com')
+    expect(second.shop_name).to eq('Second attempt')
+    expect(second.user_id).to eq(first.user_id)
+    expect(second.seller_id).not_to eq(first.seller_id)
+  end
+
+  it 'refuses to attach a seller to an address the password does not open' do
+    apply
+    Empire::SellerApplication.last.reject!(reviewer: nil, reason: 'incomplete')
+
+    expect do
+      apply(email: 'applicant@example.com', password: 'SomeoneElses123!',
+            password_confirmation: 'SomeoneElses123!')
+    end.not_to change(Empire::SellerApplication, :count)
+    expect_status!(422)
   end
 
   it 'exposes the applicant status only to the matching email' do
@@ -106,8 +125,12 @@ RSpec.describe 'Empire seller applications API', type: :request do
 
   it 'does not create a customer account or a staff role for the applicant' do
     expect { apply }.not_to change(Spree.customer_class, :count)
-    user = Empire::SellerApplication.last.user
-    expect(user.roles.for_resource(empire_store)).to be_empty
+    application = Empire::SellerApplication.last
+    # The merchant's role belongs to their own seller, never to the store's back
+    # office: a store role would let an applicant into the operator's dashboard.
+    expect(Spree::RoleUser.joins(:role).where(user: application.user,
+                                              spree_roles: { resource: empire_store }).exists?).to be(false)
+    expect(application.user.sellers).to include(application.seller)
   end
 
   it 'requires the publishable key' do

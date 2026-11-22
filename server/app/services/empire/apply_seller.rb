@@ -16,6 +16,15 @@ module Empire
   class ApplySeller
     Result = Struct.new(:success?, :application, :errors, keyword_init: true)
 
+    # Raised inside the transaction when Spree's own seller workflow refuses.
+    # A real exception, not `ActiveRecord::Rollback`, because the rollback must
+    # propagate past the block for the caller to report anything at all.
+    SellerCreationFailed = Class.new(StandardError)
+
+    # Raised when the address already belongs to an account the supplied password
+    # does not open.
+    CredentialsRejected = Class.new(StandardError)
+
     MIN_PASSWORD_LENGTH = 8
 
     def self.call(store:, attributes:, locale: nil)
@@ -47,17 +56,28 @@ module Empire
       end
 
       application = nil
+      # A `return` written inside this block would return from `call` and *commit*
+      # everything the block had already written — a half-registered applicant
+      # with no seller. Failures therefore leave by raising: the transaction rolls
+      # back, and the `rescue` clauses below turn them into a Result.
       ActiveRecord::Base.transaction do
         application = SellerApplication.new(application_attributes)
-        unless application.save
-          return Result.new(success?: false, errors: application.errors)
-        end
+        application.save!
 
-        user = Spree.admin_user_class.create!(
-          email: email, password: password, password_confirmation: confirmation,
-          first_name: application.contact_name.presence || application.shop_name,
-          last_name: 'Empire'
-        )
+        # A merchant whose first application was rejected applies again with the
+        # same address, so the account is reused instead of colliding with the
+        # unique index. The password they supply must open it: without that
+        # check anyone could attach their own seller to a stranger's account.
+        user = Spree.admin_user_class.find_by(email: email)
+        if user
+          raise CredentialsRejected unless user.valid_password?(password)
+        else
+          user = Spree.admin_user_class.create!(
+            email: email, password: password, password_confirmation: confirmation,
+            first_name: application.contact_name.presence || application.shop_name,
+            last_name: 'Empire'
+          )
+        end
 
         seller_result = Spree.seller_create_workflow.call(
           store: @store,
@@ -68,7 +88,7 @@ module Empire
           }
         )
         unless seller_result.success? && seller_result.value.is_a?(Spree::Seller)
-          raise ActiveRecord::Rollback
+          raise SellerCreationFailed, seller_result.errors.inspect
         end
 
         seller = seller_result.value
@@ -80,11 +100,22 @@ module Empire
                             metadata: (application.metadata || {}).merge('locale' => @locale.to_s.presence || 'fa-AF'))
       end
 
-      return Result.new(success?: false, errors: nil) if application.nil? || application.seller_id.nil?
+      # A rolled-back transaction leaves these associations unset on an object
+      # whose row never committed; report it instead of returning a phantom.
+      if application.nil? || application.seller_id.nil?
+        return failure(:seller_approval_failed)
+      end
 
       Result.new(success?: true, application: application)
     rescue ActiveRecord::RecordInvalid => e
+      # Field-level problems (a malformed email, an under-length password on the
+      # user record) belong to the caller and are returned as validation errors.
       Result.new(success?: false, errors: e.record&.errors)
+    rescue SellerCreationFailed, ActiveRecord::RecordNotSaved, ActiveRecord::Rollback
+      # Nothing was written: the transaction rolled back.
+      failure(:seller_approval_failed)
+    rescue CredentialsRejected
+      failure(:application_credentials_rejected)
     rescue ActiveRecord::RecordNotUnique
       # Lost a race with a simultaneous submission: same rule, same message.
       failure(:application_already_submitted)

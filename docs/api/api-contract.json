@@ -195,6 +195,10 @@
     ],
     [
       "get",
+      "/api/v3/store/empire/variants/:variant_id/volume_pricing"
+    ],
+    [
+      "get",
       "/api/v3/store/empire/seller_applications/:id"
     ],
     [

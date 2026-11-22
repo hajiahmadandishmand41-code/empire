@@ -8,6 +8,9 @@ Rails.application.routes.draw do
         namespace :empire do
           resources :provinces, only: %i[index show]
           resources :seller_applications, only: %i[create show]
+          resources :variants, only: [] do
+            get :volume_pricing, on: :member
+          end
           resources :rfqs, only: %i[index show create] do
             post 'quotes/:quote_id/accept', action: :accept, on: :member
           end
