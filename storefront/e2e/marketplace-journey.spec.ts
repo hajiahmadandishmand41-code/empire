@@ -153,8 +153,10 @@ test("full marketplace and B2B journey against the live Backend", async () => {
   expect(ladder.currency).toBe("AFN");
   expect(ladder.price_list_applied).toBe(true);
   expect(ladder.resolved_amount).toBe("800.00");
+  // Ten cartons is the first band: -20% of the shop price.
   const bandAt10 = ladder.tiers.find((tier: any) => tier.min_quantity === 10);
   expect(bandAt10.amount).toBe("800.00");
+  expect(ladder.tiers.map((tier: any) => tier.min_quantity)).toEqual([1, 10]);
   expect(ladder.tiers.every((tier: any) => /^\d+\.\d{2}$/.test(tier.amount))).toBe(true);
 
   // And a guest — no agreement — is told one price, not someone else's ladder.
