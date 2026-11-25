@@ -8,9 +8,10 @@ Rails.application.routes.draw do
         namespace :empire do
           resources :provinces, only: %i[index show]
           resources :seller_applications, only: %i[create show]
-          resources :variants, only: [] do
-            get :volume_pricing, on: :member
-          end
+          # Points at its own controller, not a `VariantsController` member
+          # action: `resources ... do get :volume_pricing` would look for
+          # VariantsController and fail with an uninitialised constant.
+          get 'variants/:variant_id/volume_pricing', to: 'volume_pricing#show', as: :variant_volume_pricing
           resources :rfqs, only: %i[index show create] do
             post 'quotes/:quote_id/accept', action: :accept, on: :member
           end

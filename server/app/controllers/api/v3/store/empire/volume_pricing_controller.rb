@@ -14,8 +14,13 @@ module Api
 
           # GET /api/v3/store/empire/variants/:variant_id/volume_pricing?quantity=50
           def show
+            # Scoped to this store's catalogue *and* to a live product: a
+            # variant of a foreign store, or of a deleted product, is not priced
+            # for this buyer and answers 404 like any other unknown id.
             variant = Spree::Variant.joins(:product)
-                                    .where(spree_products: { store_id: current_store.id }, deleted_at: nil)
+                                    .where(spree_products: { store_id: current_store.id,
+                                                             deleted_at: nil })
+                                    .where(deleted_at: nil)
                                     .find_by_prefix_id!(params[:variant_id])
 
             render json: ::Empire::VolumePricing.call(
@@ -38,9 +43,12 @@ module Api
           end
 
           # The buyer's standing company for this store, if any. A guest has
-          # none, and `company_standing` is the same scoped lookup the RFQ API
-          # uses, so pricing and RFQ agree on which agreement applies.
+          # none — `current_user` is nil for one — and `company_standing` is the
+          # same scoped lookup the RFQ API uses, so pricing and RFQ agree on which
+          # agreement applies.
           def resolved_company
+            return nil if current_user.nil?
+
             current_user.company_standing(store: current_store).first&.company
           end
         end
