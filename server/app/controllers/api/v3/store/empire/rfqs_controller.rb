@@ -33,7 +33,7 @@ module Api
           def accept
             rfq = visible.find(params[:id])
             quote = rfq.quotes.find(params[:quote_id])
-            ::Empire::AcceptQuote.call(rfq: rfq, quote: quote)
+            ::Empire::AcceptQuote.call(rfq: rfq, quote: quote, actor: current_user)
             render json: serialize(rfq.reload, quotes: true)
           rescue ActiveRecord::RecordInvalid => e
             render_error(code: 'quote_unavailable', message: e.message, status: :unprocessable_content)

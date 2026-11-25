@@ -62,6 +62,42 @@ RSpec.describe 'Empire buyer RFQ API', type: :request do
     expect(body_json['events'].map { |event| event['event'] }).to include('closed')
   end
 
+  it 'records the award, and rejects the losing offers' do
+    create_rfq
+    rfq = Empire::Rfq.find(body_json['id'])
+    seller = create(:seller, :approved, store: empire_store)
+    other = create(:seller, :approved, store: empire_store)
+    winner = create(:empire_quote, rfq: rfq, seller: seller, amount: '900.00')
+    loser = create(:empire_quote, rfq: rfq, seller: other, amount: '950.00')
+
+    post "/api/v3/store/empire/rfqs/#{rfq.id}/quotes/#{winner.id}/accept", headers: headers
+    expect_status!(200)
+
+    expect(body_json['status']).to eq('accepted')
+    expect(body_json['events'].map { |event| event['event'] }).to include('accepted')
+    expect(body_json['events'].find { |event| event['event'] == 'accepted' }['quote_id']).to eq(winner.id)
+    expect(winner.reload).to be_accepted
+    expect(loser.reload).to be_rejected
+    # A decided request takes no more offers.
+    expect(rfq.reload).not_to be_quoteable
+  end
+
+  it 'refuses to award a second offer on a decided request' do
+    create_rfq
+    rfq = Empire::Rfq.find(body_json['id'])
+    seller = create(:seller, :approved, store: empire_store)
+    first = create(:empire_quote, rfq: rfq, seller: seller, amount: '900.00')
+    second = create(:empire_quote, rfq: rfq, seller: create(:seller, :approved, store: empire_store),
+                                   amount: '880.00')
+
+    post "/api/v3/store/empire/rfqs/#{rfq.id}/quotes/#{first.id}/accept", headers: headers
+    expect_status!(200)
+
+    post "/api/v3/store/empire/rfqs/#{rfq.id}/quotes/#{second.id}/accept", headers: headers
+    expect_status!(422)
+    expect(first.reload).to be_accepted
+  end
+
   it "does not show one buyer another buyer's request" do
     create_rfq
     rfq_id = body_json['id']
