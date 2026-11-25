@@ -55,29 +55,43 @@ module Empire
 
     private
 
-    # The rungs of the applicable list, in ascending quantity. A rung that
-    # resolves to the same amount as the one below it is a plateau, not an offer,
-    # so it is dropped rather than padding the ladder with a non-choice.
+    # The rungs of the applicable list, in ascending quantity.
     def tiers
       @tiers ||= applicable_price_list ? ladder_for(applicable_price_list) : []
     end
 
+    # Spree expresses a ladder in two shapes, and a list may use either:
+    #
+    # * explicit rows — a `spree_prices` row per `min_quantity` on the list, which
+    #   is a negotiated amount per volume band;
+    # * a derived percentage — the list's own `price_adjustment_percentage` plus
+    #   its `price_adjustment_tiers` bands, each a percentage *off the base
+    #   price*, which is how the admin API's `price_list` payload creates one.
+    #
+    # Both are read the same way: collect the quantity where the price changes,
+    # then ask the resolver what it would charge there. Nothing computes a
+    # discount here, so a derived percentage and a stored row cannot disagree
+    # with the cart.
     def ladder_for(list)
-      rungs = @variant.prices.where(currency: @currency, price_list_id: list.id)
-                      .where.not(amount: nil).order(:min_quantity).pluck(:min_quantity).uniq
-
       previous = nil
-      # `next` inside the block skips a rung; `filter_map` drops the nil it
-      # returns, so a plateau simply does not appear in the ladder.
-      rungs.first(MAX_TIERS).filter_map do |min_quantity|
+      candidate_quantities(list).first(MAX_TIERS).filter_map do |min_quantity|
         price = price_at(min_quantity)
         next if price.nil? || price.amount.nil?
+        # A band that changes nothing is a plateau, not a volume offer.
         next if price.amount == previous
 
         previous = price.amount
         { min_quantity: min_quantity, amount: Money.format(price.amount),
           compare_at_amount: Money.format(price.compare_at_amount) }
       end
+    end
+
+    def candidate_quantities(list)
+      quantities = [1]
+      quantities.concat(@variant.prices.where(currency: @currency, price_list_id: list.id)
+                                .where.not(amount: nil).pluck(:min_quantity))
+      quantities.concat(list.price_adjustment_tiers.pluck(:min_quantity))
+      quantities.compact.select(&:positive?).uniq.sort
     end
 
     # The list Spree's resolver picked for this caller, if it picked one at all.

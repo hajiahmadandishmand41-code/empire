@@ -17,9 +17,10 @@ RSpec.describe 'Empire volume pricing API', type: :request do
     create(:price, variant: variant, currency: 'AFN', amount: BigDecimal('1000'))
   end
 
-  # A negotiated ladder on a list reached through a company catalog — the same
-  # shape the admin API builds from `catalogs` + `price_list`, and the one the
-  # end-to-end journey asserts against.
+  # A negotiated ladder on a list reached through a company catalog, in the shape
+  # the admin API creates it: a percentage off the base price, plus bands that
+  # replace that percentage from a quantity up. This is the same payload the
+  # end-to-end journey sends.
   def company_catalog_ladder(customer)
     company = create(:company, store: empire_store)
     create(:company_membership, company: company, customer: customer)
@@ -30,15 +31,25 @@ RSpec.describe 'Empire volume pricing API', type: :request do
     create(:catalog_assignment, catalog: catalog, assignable: company)
 
     price_list = create(:price_list, store: empire_store, name: 'عمده', status: 'active',
-                                     catalog: catalog, match_policy: 'all')
-    create(:price, variant: variant, currency: 'AFN', amount: BigDecimal('1000'),
-                   min_quantity: 1, price_list: price_list)
-    create(:price, variant: variant, currency: 'AFN', amount: BigDecimal('900'),
-                   min_quantity: 10, price_list: price_list)
-    create(:price, variant: variant, currency: 'AFN', amount: BigDecimal('800'),
-                   min_quantity: 50, price_list: price_list)
+                                     catalog: catalog, match_policy: 'all',
+                                     price_adjustment_percentage: BigDecimal('-10'))
+    price_list.price_adjustment_tiers.create!(min_quantity: 10, percentage: BigDecimal('-20'))
 
     { company: company, catalog: catalog, price_list: price_list }
+  end
+
+  # A ladder written as explicit rows instead — a negotiated amount per band,
+  # which Spree reads through the same resolver.
+  def explicit_row_ladder(customer)
+    terms = company_catalog_ladder(customer)
+    list = terms[:price_list]
+    list.update!(price_adjustment_percentage: nil)
+    list.price_adjustment_tiers.destroy_all
+    create(:price, variant: variant, currency: 'AFN', amount: BigDecimal('1000'),
+                   min_quantity: 1, price_list: list)
+    create(:price, variant: variant, currency: 'AFN', amount: BigDecimal('850'),
+                   min_quantity: 25, price_list: list)
+    terms
   end
 
   it 'reports only the shop price to a guest, with no ladder' do
@@ -66,11 +77,40 @@ RSpec.describe 'Empire volume pricing API', type: :request do
     expect_status!(200)
 
     expect(body_json['price_list_applied']).to be(true)
+    # The quotient at fifty units is the deepest band: -20% off the shop price.
     expect(body_json['resolved_amount']).to eq('800.00')
     amounts = body_json['tiers'].to_h { |tier| [tier['min_quantity'], tier['amount']] }
-    expect(amounts[1]).to eq('1000.00')
-    expect(amounts[10]).to eq('900.00')
-    expect(amounts[50]).to eq('800.00')
+    # -10% for one unit, then -20% from ten.
+    expect(amounts[1]).to eq('900.00')
+    expect(amounts[10]).to eq('800.00')
+  end
+
+  it 'reads a ladder written as explicit rows on the list too' do
+    customer = create(:customer)
+    terms = explicit_row_ladder(customer)
+    cart = create(:cart, store: empire_store, customer: customer, company: terms[:company],
+                         currency: 'AFN')
+
+    get "/api/v3/store/empire/variants/#{variant.prefixed_id}/volume_pricing",
+        params: { quantity: 25, cart_id: cart.prefixed_id }, headers: store_headers(customer)
+    expect_status!(200)
+
+    expect(body_json['resolved_amount']).to eq('850.00')
+    expect(body_json['tiers'].map { |tier| tier['min_quantity'] }).to eq([1, 25])
+  end
+
+  it 'treats a band that changes nothing as no offer at all' do
+    customer = create(:customer)
+    terms = company_catalog_ladder(customer)
+    cart = create(:cart, store: empire_store, customer: customer, company: terms[:company],
+                         currency: 'AFN')
+    # A second band at the same percentage is a plateau, not a volume offer.
+    terms[:price_list].price_adjustment_tiers.create!(min_quantity: 100, percentage: BigDecimal('-20'))
+
+    get "/api/v3/store/empire/variants/#{variant.prefixed_id}/volume_pricing",
+        params: { cart_id: cart.prefixed_id }, headers: store_headers(customer)
+    expect_status!(200)
+    expect(body_json['tiers'].map { |tier| tier['min_quantity'] }).to eq([1, 10])
   end
 
   it 'never shows one company the ladder of another' do
