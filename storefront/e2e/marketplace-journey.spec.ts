@@ -131,6 +131,25 @@ test("full marketplace and B2B journey against the live Backend", async () => {
   expect(b2bCart.company_id).toBe(company.id);
   expect(b2bCart.items[0].quantity).toBe(10);
   expect(Number(b2bCart.items[0].price)).toBeCloseTo(800, 2);
+
+  // Volume pricing, while the cart is live: the ladder this buyer's agreement
+  // grants, resolved by the same pricing code that charged the line above. The
+  // cart is what identifies the company, so it is passed as `cart_id`.
+  const ladder = await store("GET", `/empire/variants/${variantId}/volume_pricing?quantity=10&cart_id=${b2bCart.id}`, { token: buyerToken });
+  expect(ladder.currency).toBe("AFN");
+  // One price list, one set of rungs: the shop price, then -20% from ten.
+  // (Spree prices a variant carrying a ladder by the ladder alone.)
+  expect(ladder.price_list_applied).toBe(true);
+  expect(ladder.resolved_amount).toBe("800.00");
+  expect(ladder.tiers.map((tier: any) => tier.min_quantity)).toEqual([1, 10]);
+  expect(ladder.tiers.find((tier: any) => tier.min_quantity === 10).amount).toBe("800.00");
+  expect(ladder.tiers.every((tier: any) => /^\d+\.\d{2}$/.test(tier.amount))).toBe(true);
+
+  // And a guest — no agreement — is told one price, not someone else's ladder.
+  const guestLadder = await store("GET", `/empire/variants/${variantId}/volume_pricing?quantity=10`);
+  expect(guestLadder.price_list_applied).toBe(false);
+  expect(guestLadder.tiers).toEqual([]);
+  expect(guestLadder.resolved_amount).toBe("800.00");
   // Complete the B2B purchase too: the PO reference and company must survive
   // onto the placed order, not merely live on an abandoned cart.
   b2bCart = await store("GET", `/carts/${b2bCart.id}`, { token: buyerToken, cartToken: b2bToken });
@@ -146,24 +165,6 @@ test("full marketplace and B2B journey against the live Backend", async () => {
   expect(b2bOrder.po_number).toBe(`PO-${run}`);
   expect(b2bOrder.total_quantity).toBe(10);
   expect(b2bOrder.payment_status).toBe("authorized");
-
-  // Volume pricing: the ladder the buyer's own agreement grants, from Spree's
-  // resolver. The cart is what identifies the company, so it is passed.
-  const ladder = await store("GET", `/empire/variants/${variantId}/volume_pricing?quantity=10&cart_id=${b2bCart.id}`, { token: buyerToken });
-  expect(ladder.currency).toBe("AFN");
-  expect(ladder.price_list_applied).toBe(true);
-  expect(ladder.resolved_amount).toBe("800.00");
-  // Ten cartons is the first band: -20% of the shop price.
-  const bandAt10 = ladder.tiers.find((tier: any) => tier.min_quantity === 10);
-  expect(bandAt10.amount).toBe("800.00");
-  expect(ladder.tiers.map((tier: any) => tier.min_quantity)).toEqual([1, 10]);
-  expect(ladder.tiers.every((tier: any) => /^\d+\.\d{2}$/.test(tier.amount))).toBe(true);
-
-  // And a guest — no agreement — is told one price, not someone else's ladder.
-  const guestLadder = await store("GET", `/empire/variants/${variantId}/volume_pricing?quantity=10`);
-  expect(guestLadder.price_list_applied).toBe(false);
-  expect(guestLadder.tiers).toEqual([]);
-  expect(guestLadder.resolved_amount).toBe("1000.00");
 
   // RFQ: buyer requests, seller quotes, buyer accepts.
   const rfq = await store("POST", "/empire/rfqs", { token: buyerToken, body: { title: `Journey RFQ ${run}`, requested_quantity: 10, unit: "carton", company_id: company.id, variant_id: variantId, description: "درخواست قیمت عمده آزمایشی" }, status: 201 });

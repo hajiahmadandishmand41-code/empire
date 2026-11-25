@@ -90,13 +90,22 @@ RSpec.describe 'Empire volume pricing API', type: :request do
 
   it "refuses another buyer's cart rather than pricing for them" do
     customer = create(:customer)
-    terms = company_catalog_ladder(customer)
+    company_catalog_ladder(customer)
     cart = create(:cart, store: empire_store, customer: customer, currency: 'AFN')
 
+    # 403, not 404: Spree's own cart authorization decides this, and its answer
+    # for a cart that exists but is not yours is "not for you" rather than "no
+    # such cart". Reusing that decision keeps this endpoint's leaks identical to
+    # every other cart read.
     get "/api/v3/store/empire/variants/#{variant.prefixed_id}/volume_pricing",
         params: { cart_id: cart.prefixed_id }, headers: store_headers(create(:customer))
+    expect_status!(403)
+  end
+
+  it 'refuses a cart id that does not exist' do
+    get "/api/v3/store/empire/variants/#{variant.prefixed_id}/volume_pricing",
+        params: { cart_id: 'cart_nope' }, headers: guest_headers
     expect_status!(404)
-    expect(terms[:company]).to be_present
   end
 
   it 'answers a guest cart and includes the ordering terms' do
