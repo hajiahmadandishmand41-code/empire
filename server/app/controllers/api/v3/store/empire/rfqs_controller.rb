@@ -20,6 +20,10 @@ module Api
             assign_reference(rfq, :seller, current_store.sellers)
             assign_reference(rfq, :variant, Spree::Variant.joins(:product).where(spree_products: { store_id: current_store.id }))
             if rfq.save
+              # The first entry of the history is the request itself, written
+              # with it so a buyer opening the page later sees the negotiation
+              # from its beginning rather than from the first quote.
+              rfq.record_event!(event: 'created', actor: current_user, from: nil, to: rfq.status)
               render json: serialize(rfq), status: :created
             else
               render_validation_error(rfq.errors)
