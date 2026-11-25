@@ -145,11 +145,12 @@ test("full marketplace and B2B journey against the live Backend", async () => {
   expect(ladder.tiers.find((tier: any) => tier.min_quantity === 10).amount).toBe("800.00");
   expect(ladder.tiers.every((tier: any) => /^\d+\.\d{2}$/.test(tier.amount))).toBe(true);
 
-  // And a guest — no agreement — is told one price, not someone else's ladder.
+  // And a guest — no agreement — is told the shop price and given no ladder,
+  // rather than a glimpse of the discount a member negotiated.
   const guestLadder = await store("GET", `/empire/variants/${variantId}/volume_pricing?quantity=10`);
   expect(guestLadder.price_list_applied).toBe(false);
   expect(guestLadder.tiers).toEqual([]);
-  expect(guestLadder.resolved_amount).toBe("800.00");
+  expect(guestLadder.resolved_amount).toBe("1000.00");
   // Complete the B2B purchase too: the PO reference and company must survive
   // onto the placed order, not merely live on an abandoned cart.
   b2bCart = await store("GET", `/carts/${b2bCart.id}`, { token: buyerToken, cartToken: b2bToken });
