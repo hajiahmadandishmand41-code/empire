@@ -147,12 +147,21 @@ test("full marketplace and B2B journey against the live Backend", async () => {
   expect(b2bOrder.total_quantity).toBe(10);
   expect(b2bOrder.payment_status).toBe("authorized");
 
-  // Volume pricing: the ladder a buyer would be charged, from Spree's resolver.
-  const ladder = await store("GET", `/empire/variants/${variantId}/volume_pricing?quantity=10`);
+  // Volume pricing: the ladder the buyer's own agreement grants, from Spree's
+  // resolver. The cart is what identifies the company, so it is passed.
+  const ladder = await store("GET", `/empire/variants/${variantId}/volume_pricing?quantity=10&cart_id=${b2bCart.id}`, { token: buyerToken });
   expect(ladder.currency).toBe("AFN");
+  expect(ladder.price_list_applied).toBe(true);
   expect(ladder.resolved_amount).toBe("800.00");
-  expect(ladder.tiers.length).toBeGreaterThan(0);
+  const bandAt10 = ladder.tiers.find((tier: any) => tier.min_quantity === 10);
+  expect(bandAt10.amount).toBe("800.00");
   expect(ladder.tiers.every((tier: any) => /^\d+\.\d{2}$/.test(tier.amount))).toBe(true);
+
+  // And a guest — no agreement — is told one price, not someone else's ladder.
+  const guestLadder = await store("GET", `/empire/variants/${variantId}/volume_pricing?quantity=10`);
+  expect(guestLadder.price_list_applied).toBe(false);
+  expect(guestLadder.tiers).toEqual([]);
+  expect(guestLadder.resolved_amount).toBe("1000.00");
 
   // RFQ: buyer requests, seller quotes, buyer accepts.
   const rfq = await store("POST", "/empire/rfqs", { token: buyerToken, body: { title: `Journey RFQ ${run}`, requested_quantity: 10, unit: "carton", company_id: company.id, variant_id: variantId, description: "درخواست قیمت عمده آزمایشی" }, status: 201 });

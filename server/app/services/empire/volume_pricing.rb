@@ -3,19 +3,22 @@
 module Empire
   # The volume price ladder a buyer would actually be charged.
   #
-  # Spree 6 keeps quantity tiers in `spree_prices.min_quantity` and resolves the
-  # applicable one through `Spree::Pricing::PriceResolution` — the same resolver
-  # the cart uses. The Store API's product payload exposes only the single price
-  # for the current context, so a wholesale buyer cannot see what 50 cartons
-  # would cost before filling a cart.
+  # Spree 6 has no per-variant quantity rows: a quantity break is a *band* on a
+  # price list (`spree_price_adjustment_tiers`, each a percentage off the base
+  # price from a minimum quantity), and a list only applies to a buyer it was
+  # written for — a company's catalog, a customer group, a channel. The Store
+  # API's product payload carries the single price for the current context, so a
+  # wholesale buyer cannot see what 50 cartons would cost before filling a cart.
   #
-  # This asks the real resolver for each tier quantity instead of reading the
-  # price rows directly: a price-list tier that does not apply to this buyer (a
-  # different company's agreement, another channel) is simply not returned, so
-  # the ladder never shows a price checkout would refuse to honour.
+  # Two rules keep this honest rather than optimistic:
+  #
+  # 1. Every number comes from `Spree::Pricing::PriceResolution` — the same
+  #    resolver checkout uses — asked once per band. A discount that does not
+  #    apply to this buyer is simply not shown, because it is not returned.
+  # 2. A ladder is only reported when a price list actually applies to this
+  #    buyer. Without one, a guest sees their own single price and no bands: this
+  #    endpoint is not a back door into another company's negotiated agreement.
   class VolumePricing
-    Tier = Struct.new(:min_quantity, :amount, :compare_at_amount, :currency, :price_list_id, keyword_init: true)
-
     MAX_TIERS = 20
 
     def self.call(variant:, currency:, user: nil, company: nil, quantity: nil)
@@ -30,45 +33,65 @@ module Empire
       @quantity = quantity
     end
 
-    # @return [Hash] the ladder plus the ordering rules a buyer must respect
+    # @return [Hash] the ladder, the buyer's own price, and the ordering rules a
+    #   buyer must respect when building a cart
     def call
+      ladder = bands.map { |band| band.merge(amount: Money.format(band[:amount])) }
       {
         variant_id: @variant.prefixed_id,
         currency: @currency,
+        # Volume terms are part of the same agreement as the price, so a buyer
+        # reading a ladder sees the case size and minimum in the same breath.
         minimum_order_quantity: @variant.minimum_order_quantity,
         order_multiple: @variant.order_multiple,
         units_per_carton: @variant.units_per_carton,
         purchase_unit: @variant.purchase_unit,
-        quantity_resolved: @quantity,
+        # What this buyer pays right now, whatever their quantity: the number
+        # checkout would charge, spelled as a decimal string.
         resolved_amount: Money.format(resolved_price&.amount),
-        tiers: tiers.map { |tier| { min_quantity: tier.min_quantity, amount: Money.format(tier.amount),
-                                    compare_at_amount: Money.format(tier.compare_at_amount),
-                                    currency: tier.currency } }
+        quantity_resolved: @quantity,
+        price_list_applied: applicable_price_list.present?,
+        tiers: ladder
       }
     end
 
     private
 
-    def tiers
-      @tiers ||= candidate_quantities.filter_map do |quantity|
-        price = price_at(quantity)
-        next if price.nil? || price.amount.nil?
+    # The bands of the list that prices this buyer, with the exact amount the
+    # resolver returns at each break point. A band whose quantity resolves to the
+    # same price as the one before it adds nothing a buyer can act on, so it is
+    # dropped rather than padding the ladder with a plateau.
+    def bands
+      @bands ||= begin
+        list = applicable_price_list
+        return [] if list.nil?
 
-        Tier.new(min_quantity: quantity, amount: price.amount,
-                 compare_at_amount: price.compare_at_amount,
-                 currency: price.currency, price_list_id: price.price_list_id)
+        quantities = list.price_adjustment_tiers.filter_map { |tier| tier.min_quantity }.uniq.sort
+        base = price_at(1)
+        seen = []
+        previous = base&.amount
+
+        quantities.first(MAX_TIERS).filter_map do |min_quantity|
+          price = price_at(min_quantity)
+          next if price.nil? || price.amount.nil?
+          next if price.amount == previous
+
+          previous = price.amount
+          seen << { min_quantity: min_quantity, amount: price.amount,
+                    percentage: list.adjustment_percentage_for(min_quantity)&.to_f,
+                    currency: price.currency }
+        end
       end
     end
 
-    # Base quantity plus every tier the variant defines in this currency. Rows
-    # that belong to a price list a guest cannot be entitled to are included in
-    # the candidate list because the resolver, not this list, decides whether
-    # they apply; a non-applicable tier resolves to the base price at that
-    # quantity, which is reported as-is.
-    def candidate_quantities
-      quantities = [1]
-      quantities.concat(@variant.prices.where(currency: @currency, deleted_at: nil).pluck(:min_quantity))
-      quantities.compact.select { |value| value.positive? }.uniq.sort.first(MAX_TIERS)
+    # The price list Spree's resolver picked for this buyer, if it picked one at
+    # all. Read off the resolved price rather than re-deriving eligibility: the
+    # resolver already decided, and a second opinion here could disagree with the
+    # amount charged.
+    def applicable_price_list
+      return @applicable_price_list if defined?(@applicable_price_list)
+
+      @applicable_price_list = resolved_price&.price_list
     end
 
     def price_at(quantity)
@@ -78,7 +101,9 @@ module Empire
     end
 
     def resolved_price
-      price_at(@quantity || 1)
+      return @resolved_price if defined?(@resolved_price)
+
+      @resolved_price = price_at(@quantity || 1)
     end
 
     def context(quantity)
