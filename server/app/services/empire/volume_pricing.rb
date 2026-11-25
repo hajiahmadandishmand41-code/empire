@@ -59,23 +59,24 @@ module Empire
     # resolves to the same amount as the one below it is a plateau, not an offer,
     # so it is dropped rather than padding the ladder with a non-choice.
     def tiers
-      @tiers ||= begin
-        list = applicable_price_list
-        next [] if list.nil?
+      @tiers ||= applicable_price_list ? ladder_for(applicable_price_list) : []
+    end
 
-        rungs = @variant.prices.where(currency: @currency, price_list_id: list.id)
-                        .where.not(amount: nil).order(:min_quantity).pluck(:min_quantity).uniq
+    def ladder_for(list)
+      rungs = @variant.prices.where(currency: @currency, price_list_id: list.id)
+                      .where.not(amount: nil).order(:min_quantity).pluck(:min_quantity).uniq
 
-        previous = nil
-        rungs.first(MAX_TIERS).filter_map do |min_quantity|
-          price = price_at(min_quantity)
-          next if price.nil? || price.amount.nil?
-          next if price.amount == previous
+      previous = nil
+      # `next` inside the block skips a rung; `filter_map` drops the nil it
+      # returns, so a plateau simply does not appear in the ladder.
+      rungs.first(MAX_TIERS).filter_map do |min_quantity|
+        price = price_at(min_quantity)
+        next if price.nil? || price.amount.nil?
+        next if price.amount == previous
 
-          previous = price.amount
-          { min_quantity: min_quantity, amount: Money.format(price.amount),
-            compare_at_amount: Money.format(price.compare_at_amount) }
-        end
+        previous = price.amount
+        { min_quantity: min_quantity, amount: Money.format(price.amount),
+          compare_at_amount: Money.format(price.compare_at_amount) }
       end
     end
 
