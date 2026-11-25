@@ -21,6 +21,8 @@ Honest status of what is **not implemented, not executed, or not operational**. 
 ## Implemented but not production-proven
 
 - COD, RFQ/quotes, payout review, seller application, geography seed: implemented and covered by specs/E2E in CI, but not exercised against real delivery, real banks, or real sellers.
+- Volume pricing is read-only and derived: the ladder shows what Spree's pricing resolver would charge this caller. Empire does not create price lists, catalogs or quote volume discounts automatically — an operator negotiates those through the native admin API.
+- An accepted RFQ does not create a cart or an order. The buyer places the order from the agreed terms; wiring the award into a pre-filled cart is not built.
 - Marketplace/B2B rely on native Spree behaviour; operators must configure commission rates, shipping zones/rates, catalogs and price lists for their business.
 
 ## Frontend / dashboards
