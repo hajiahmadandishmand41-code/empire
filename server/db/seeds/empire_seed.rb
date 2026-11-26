@@ -1,27 +1,35 @@
 # frozen_string_literal: true
 
+# `load`ed by db/seeds.rb, and the seeds spec loads it twice on purpose to prove
+# the seed is idempotent. A plain `PROVINCES = [...]` would warn (`already
+# initialized constant`) on the second load, so the data is only assigned when
+# it is not already there.
 module EmpireSeed
   module_function
 
-  PROVINCES = [
-    ['BDS', 'بدخشان', 'Badakhshan', 'فیض‌آباد'], ['BDG', 'بادغیس', 'Badghis', 'قلعه‌نو'],
-    ['BGL', 'بغلان', 'Baghlan', 'پل خمری'], ['BLK', 'بلخ', 'Balkh', 'مزارشریف'],
-    ['BAM', 'بامیان', 'Bamyan', 'بامیان'], ['DKU', 'دایکندی', 'Daykundi', 'نیلی'],
-    ['FRA', 'فراه', 'Farah', 'فراه'], ['FRY', 'فاریاب', 'Faryab', 'میمنه'],
-    ['GZN', 'غزنی', 'Ghazni', 'غزنی'], ['GHO', 'غور', 'Ghor', 'فیروزکوه'],
-    ['HEL', 'هلمند', 'Helmand', 'لشکرگاه'], ['HER', 'هرات', 'Herat', 'هرات'],
-    ['JAW', 'جوزجان', 'Jowzjan', 'شبرغان'], ['KAB', 'کابل', 'Kabul', 'کابل'],
-    ['KND', 'کندهار', 'Kandahar', 'کندهار'], ['KPS', 'کاپیسا', 'Kapisa', 'محمودراقی'],
-    ['KST', 'خوست', 'Khost', 'خوست'], ['KNR', 'کنر', 'Kunar', 'اسدآباد'],
-    ['KDZ', 'کندوز', 'Kunduz', 'کندوز'], ['LAG', 'لغمان', 'Laghman', 'مهترلام'],
-    ['LOG', 'لوگر', 'Logar', 'پل علم'], ['NAN', 'ننگرهار', 'Nangarhar', 'جلال‌آباد'],
-    ['NIM', 'نیمروز', 'Nimruz', 'زرنج'], ['NUR', 'نورستان', 'Nuristan', 'پرون'],
-    ['PIA', 'پکتیا', 'Paktia', 'گردیز'], ['PIK', 'پکتیکا', 'Paktika', 'شرن'],
-    ['PNS', 'پنجشیر', 'Panjshir', 'بازارک'], ['PNW', 'پروان', 'Parwan', 'چاریکار'],
-    ['SMN', 'سمنگان', 'Samangan', 'ایبک'], ['SPR', 'سرپل', 'Sar-e Pol', 'سرپل'],
-    ['TKR', 'تخار', 'Takhar', 'تالقان'], ['URZ', 'ارزگان', 'Uruzgan', 'ترین‌کوت'],
-    ['WRD', 'میدان‌وردک', 'Wardak', 'میدان‌شهر'], ['ZBL', 'زابل', 'Zabul', 'قلات']
-  ].freeze
+  # Freezing the list once keeps a second `load` from warning; the guard is
+  # what makes the seeds spec's double load silent.
+  PROVINCES = begin
+    [
+      ['BDS', 'بدخشان', 'Badakhshan', 'فیض‌آباد'], ['BDG', 'بادغیس', 'Badghis', 'قلعه‌نو'],
+      ['BGL', 'بغلان', 'Baghlan', 'پل خمری'], ['BLK', 'بلخ', 'Balkh', 'مزارشریف'],
+      ['BAM', 'بامیان', 'Bamyan', 'بامیان'], ['DKU', 'دایکندی', 'Daykundi', 'نیلی'],
+      ['FRA', 'فراه', 'Farah', 'فراه'], ['FRY', 'فاریاب', 'Faryab', 'میمنه'],
+      ['GZN', 'غزنی', 'Ghazni', 'غزنی'], ['GHO', 'غور', 'Ghor', 'فیروزکوه'],
+      ['HEL', 'هلمند', 'Helmand', 'لشکرگاه'], ['HER', 'هرات', 'Herat', 'هرات'],
+      ['JAW', 'جوزجان', 'Jowzjan', 'شبرغان'], ['KAB', 'کابل', 'Kabul', 'کابل'],
+      ['KND', 'کندهار', 'Kandahar', 'کندهار'], ['KPS', 'کاپیسا', 'Kapisa', 'محمودراقی'],
+      ['KST', 'خوست', 'Khost', 'خوست'], ['KNR', 'کنر', 'Kunar', 'اسدآباد'],
+      ['KDZ', 'کندوز', 'Kunduz', 'کندوز'], ['LAG', 'لغمان', 'Laghman', 'مهترلام'],
+      ['LOG', 'لوگر', 'Logar', 'پل علم'], ['NAN', 'ننگرهار', 'Nangarhar', 'جلال‌آباد'],
+      ['NIM', 'نیمروز', 'Nimruz', 'زرنج'], ['NUR', 'نورستان', 'Nuristan', 'پرون'],
+      ['PIA', 'پکتیا', 'Paktia', 'گردیز'], ['PIK', 'پکتیکا', 'Paktika', 'شرن'],
+      ['PNS', 'پنجشیر', 'Panjshir', 'بازارک'], ['PNW', 'پروان', 'Parwan', 'چاریکار'],
+      ['SMN', 'سمنگان', 'Samangan', 'ایبک'], ['SPR', 'سرپل', 'Sar-e Pol', 'سرپل'],
+      ['TKR', 'تخار', 'Takhar', 'تالقان'], ['URZ', 'ارزگان', 'Uruzgan', 'ترین‌کوت'],
+      ['WRD', 'میدان‌وردک', 'Wardak', 'میدان‌شهر'], ['ZBL', 'زابل', 'Zabul', 'قلات']
+    ].freeze
+  end unless const_defined?(:PROVINCES, false)
 
   def load!
     store = Spree::Store.default || raise('Spree store seed did not create a default store')

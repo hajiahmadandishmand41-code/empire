@@ -32,9 +32,12 @@ Classification used throughout `docs/`:
 | Localization | Dari (`fa-AF` UI, `fa` content) + English; Pashto **draft only** | `server/config/locales/`, `storefront/src/lib/i18n.ts` |
 | Localization | RTL/LTR layout, AFN formatting | `storefront/src/app/`, `storefront/src/lib/currency.ts` |
 | Afghanistan geo | 34 provinces + districts (Dari/English) | `empire_provinces`, `empire_districts`, `server/db/seeds/empire_seed.rb` |
-| Marketplace | Seller application → pending native seller; staff approves via native Admin API | `POST /api/v3/store/empire/seller_applications` |
+| Marketplace | Seller application stores the full form (contact, phone, city, address, description, categories); staff review queue approves/rejects through the native workflow | `POST /api/v3/store/empire/seller_applications`, `PATCH /api/v3/admin/empire/seller_applications/:id/{approve,reject}`, storefront `/admin/seller-applications` |
 | Marketplace | Payout **review** gate before native payout sweep | `empire_payout_requests`, `Empire::ReviewPayoutRequest` |
-| B2B | RFQ + seller quotes + buyer accept | `empire_rfqs`, `empire_quotes`, `Empire::AcceptQuote` |
+| B2B | RFQ + seller quotes + buyer accept, with an append-only history | `empire_rfqs`, `empire_quotes`, `empire_rfq_events`, `Empire::AcceptQuote` |
+| B2B | Seller RFQ desk: discover quotable requests, quote, edit, withdraw | `GET/POST /api/v3/seller/empire/rfqs`, `/quotes`, storefront `/seller/rfqs` |
+| B2B | Staff RFQ console: every offer, history, close / cancel / reopen, reject an offer | `/api/v3/admin/empire/rfqs`, storefront `/admin/rfqs` |
+| B2B | Volume pricing ladder read through Spree's own resolver, scoped to the buyer's agreement | `GET /api/v3/store/empire/variants/:id/volume_pricing`, `Empire::VolumePricing` |
 | Payments | Cash on Delivery (manual capture, never auto-paid) | `Empire::CashOnDelivery < Spree::PaymentMethod::Check` |
 | Staff UI | Admin/seller payout-request pages, staff login | `storefront/src/app/{admin,seller}/payout-requests`, `components/staff-login.tsx` |
 | Tooling | Static audit gate (locales, YAML, compose, API contract, gem pins) | `scripts/audit-static.mjs` |

@@ -9,7 +9,7 @@ node scripts/audit-static.mjs          # gate
 node scripts/audit-static.mjs --write  # regenerate server en/fa-AF YAML from storefront JSON
 ```
 
-Checks: storefront locale key parity (140 keys), Dari script / no stray Latin, Pashto draft marker, backend `empire.*` key coverage, YAML parse + unique keys (locales and all workflows), compose build source (`server/Dockerfile`), API contract vs vendored Spree specs (37 core + 14 Empire operations), and exact `= 6.0.4` pins in both `Gemfile` and `Gemfile.lock`.
+Checks: storefront locale key parity (618 keys), Dari script / no stray Latin, Pashto draft marker, backend `empire.*` key coverage, YAML parse + unique keys (locales and all workflows), compose build source (`server/Dockerfile`), API contract vs vendored Spree specs (37 core + 30 Empire operations), and exact `= 6.0.4` pins in both `Gemfile` and `Gemfile.lock`.
 
 ## Backend (RSpec) — CI / Docker only
 

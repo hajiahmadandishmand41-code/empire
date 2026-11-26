@@ -1,7 +1,18 @@
 fa-AF:
   empire:
     application_invalid: درخواست ثبت نشد. نام فروشگاه، ایمیل و رمز عبور را بررسی کنید.
+    application_already_submitted: برای این ایمیل قبلاً درخواستی ثبت شده و در حال بررسی است. منتظر پاسخ ما باشید و دوباره درخواست ندهید.
+    application_password_too_short: رمز عبور باید دست‌کم ۸ نویسه باشد.
+    application_credentials_rejected: این ایمیل قبلاً ثبت شده است، اما رمزی که وارد کردید با آن حساب مطابقت ندارد.
+    application_password_mismatch: دو رمز عبور یکسان نیستند.
+    application_not_pending: این درخواست قبلاً بررسی شده است.
+    seller_approval_failed: تأیید فروشنده انجام نشد. شرایط بازار را بررسی کنید.
+    rejection_reason_required: دلیل کوتاهی بنویسید تا متقاضی بداند چه چیزی را اصلاح کند.
+    invalid_phone: شماره تلفن افغانستان را درست وارد کنید؛ مثلاً ۰۷۰۰۱۲۳۴۵۶ یا ‎+۹۳۷۰۰۱۲۳۴۵۶.
     quote_unavailable: این درخواست قیمت دیگر برای ثبت پیشنهاد باز نیست.
+    quote_already_submitted: برای این درخواست پیشنهاد داده‌اید. همان پیشنهاد را ویرایش کنید و پیشنهاد دوم ثبت نکنید.
+    rfq_unavailable: این درخواست قیمت در وضعیت کنونی قابل تغییر نیست.
+    rfq_buyer_anonymous: خریدار بازار
     request_already_reviewed: این درخواست پرداخت قبلاً بررسی شده است.
     no_payable_balance: موجودی قابل پرداخت برای تسویه وجود ندارد.
     payout_request_invalid: درخواست پرداخت معتبر ایجاد نشد. موجودی و درخواست‌های قبلی را بررسی کنید.

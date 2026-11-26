@@ -20,6 +20,10 @@ module Api
             assign_reference(rfq, :seller, current_store.sellers)
             assign_reference(rfq, :variant, Spree::Variant.joins(:product).where(spree_products: { store_id: current_store.id }))
             if rfq.save
+              # The first entry of the history is the request itself, written
+              # with it so a buyer opening the page later sees the negotiation
+              # from its beginning rather than from the first quote.
+              rfq.record_event!(event: 'created', actor: current_user, from: nil, to: rfq.status)
               render json: serialize(rfq), status: :created
             else
               render_validation_error(rfq.errors)
@@ -29,7 +33,7 @@ module Api
           def accept
             rfq = visible.find(params[:id])
             quote = rfq.quotes.find(params[:quote_id])
-            ::Empire::AcceptQuote.call(rfq: rfq, quote: quote)
+            ::Empire::AcceptQuote.call(rfq: rfq, quote: quote, actor: current_user)
             render json: serialize(rfq.reload, quotes: true)
           rescue ActiveRecord::RecordInvalid => e
             render_error(code: 'quote_unavailable', message: e.message, status: :unprocessable_content)
@@ -50,20 +54,40 @@ module Api
             rfq.public_send("#{name}=", scope.find_by_prefix_id!(value))
           end
 
+          # `unit` was in the table but never permitted, so a buyer asking for
+          # "50 cartons" had the unit silently dropped and every seller quoted a
+          # bare number. It is part of the request, not a seller-side detail.
           def rfq_params
-            params.permit(:title, :description, :requested_quantity, :budget_min, :budget_max, :expires_at)
+            params.permit(:title, :description, :requested_quantity, :unit,
+                          :budget_min, :budget_max, :expires_at)
           end
 
           def serialize(rfq, quotes: false)
             data = { id: rfq.id, title: rfq.title, description: rfq.description, status: rfq.status,
-                     requested_quantity: rfq.requested_quantity, currency: rfq.currency,
-                     budget_min: rfq.budget_min&.to_s, budget_max: rfq.budget_max&.to_s,
+                     requested_quantity: rfq.requested_quantity, unit: rfq.unit, currency: rfq.currency,
+                     budget_min: ::Empire::Money.format(rfq.budget_min), budget_max: ::Empire::Money.format(rfq.budget_max),
                      company_id: rfq.company&.prefixed_id, variant_id: rfq.variant&.prefixed_id,
-                     seller_id: rfq.seller&.prefixed_id, expires_at: rfq.expires_at, created_at: rfq.created_at }
-            data[:quotes] = rfq.quotes.order(:created_at).map { |quote|
-              { id: quote.id, seller_id: quote.seller.prefixed_id, amount: quote.amount.to_s,
-                currency: quote.currency, status: quote.status, notes: quote.notes }
-            } if quotes
+                     seller_id: rfq.seller&.prefixed_id, expires_at: rfq.expires_at,
+                     closed_at: rfq.closed_at, status_reason: rfq.status_reason,
+                     # The buyer needs to know whether they can still expect
+                     # offers, and why a request they are looking at is shut.
+                     quoteable: rfq.quoteable?, expired: rfq.expired?,
+                     created_at: rfq.created_at }
+            if quotes
+              data[:quotes] = rfq.quotes.order(:created_at).map { |quote|
+                { id: quote.id, seller_id: quote.seller.prefixed_id, amount: ::Empire::Money.format(quote.amount),
+                  quantity: quote.quantity, unit: quote.unit, valid_until: quote.valid_until,
+                  total: ::Empire::Money.format(quote.total_amount),
+                  currency: quote.currency, status: quote.status, notes: quote.notes }
+              }
+              # The buyer is a party to every event (they raised the request, they
+              # accepted an offer), so the negotiation history is theirs to read.
+              data[:events] = rfq.events.order(:created_at).map do |event|
+                { id: event.id, event: event.event, from_status: event.from_status,
+                  to_status: event.to_status, note: event.note,
+                  quote_id: event.quote_id, created_at: event.created_at }
+              end
+            end
             data
           end
         end

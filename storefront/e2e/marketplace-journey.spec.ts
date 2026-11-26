@@ -29,11 +29,24 @@ test("full marketplace and B2B journey against the live Backend", async () => {
   const adminToken = adminLogin.token as string;
   expect(adminToken).toBeTruthy();
 
-  // Seller applies, only staff approves.
+  // Seller applies with a complete form, only staff approves.
   const sellerEmail = `journey.seller.${run}@empire.test`;
-  const application = await store("POST", "/empire/seller_applications", { body: { email: sellerEmail, password: "JourneySeller123!", password_confirmation: "JourneySeller123!", shop_name: `Empire Journey ${run}`, registration_number: `REG-${run}` }, status: 201 });
+  const application = await store("POST", "/empire/seller_applications", { body: { email: sellerEmail, password: "JourneySeller123!", password_confirmation: "JourneySeller123!", shop_name: `Empire Journey ${run}`, name: "احمد کریمی", phone: "0700 123 456", city: "کابل", address: "سرک ۱۵، ناحیه ۴", description: "فروشنده عمده پارچه", categories: ["پارچه", "پوشاک"], registration_number: `REG-${run}` }, status: 201 });
   expect(application.status).not.toBe("approved");
-  await admin("PATCH", `/sellers/${application.id}/approve`, adminToken, { override_requirements: true });
+  // The reviewer must see what the applicant typed — the defect this replaced
+  // stored only the shop name.
+  const reviewQueue = await admin("GET", "/empire/seller_applications?status=pending", adminToken);
+  const queued = reviewQueue.data.find((row: any) => row.id === application.id);
+  expect(queued).toBeTruthy();
+  expect(queued.phone).toBe("+93700123456");
+  expect(queued.city).toBe("کابل");
+  expect(queued.categories).toEqual(["پارچه", "پوشاک"]);
+  expect(queued.description).toBe("فروشنده عمده پارچه");
+  // Approval runs Spree's own workflow against the seller the application made,
+  // which is why the seller id — not the application id — is what it takes.
+  const approved = await admin("PATCH", `/empire/seller_applications/${application.id}/approve`, adminToken, { override_requirements: true });
+  expect(approved.status).toBe("approved");
+  expect(approved.seller_id).toBeTruthy();
   const sellerLogin = await seller("POST", "/auth/login", "", "", { email: sellerEmail, password: "JourneySeller123!" });
   const sellerToken = sellerLogin.token as string;
   const sellerId = sellerLogin.sellers[0].id as string;
@@ -118,6 +131,26 @@ test("full marketplace and B2B journey against the live Backend", async () => {
   expect(b2bCart.company_id).toBe(company.id);
   expect(b2bCart.items[0].quantity).toBe(10);
   expect(Number(b2bCart.items[0].price)).toBeCloseTo(800, 2);
+
+  // Volume pricing, while the cart is live: the ladder this buyer's agreement
+  // grants, resolved by the same pricing code that charged the line above. The
+  // cart is what identifies the company, so it is passed as `cart_id`.
+  const ladder = await store("GET", `/empire/variants/${variantId}/volume_pricing?quantity=10&cart_id=${b2bCart.id}`, { token: buyerToken });
+  expect(ladder.currency).toBe("AFN");
+  // One price list, one set of rungs: the shop price, then -20% from ten.
+  // (Spree prices a variant carrying a ladder by the ladder alone.)
+  expect(ladder.price_list_applied).toBe(true);
+  expect(ladder.resolved_amount).toBe("800.00");
+  expect(ladder.tiers.map((tier: any) => tier.min_quantity)).toEqual([1, 10]);
+  expect(ladder.tiers.find((tier: any) => tier.min_quantity === 10).amount).toBe("800.00");
+  expect(ladder.tiers.every((tier: any) => /^\d+\.\d{2}$/.test(tier.amount))).toBe(true);
+
+  // And a guest — no agreement — is told the shop price and given no ladder,
+  // rather than a glimpse of the discount a member negotiated.
+  const guestLadder = await store("GET", `/empire/variants/${variantId}/volume_pricing?quantity=10`);
+  expect(guestLadder.price_list_applied).toBe(false);
+  expect(guestLadder.tiers).toEqual([]);
+  expect(guestLadder.resolved_amount).toBe("1000.00");
   // Complete the B2B purchase too: the PO reference and company must survive
   // onto the placed order, not merely live on an abandoned cart.
   b2bCart = await store("GET", `/carts/${b2bCart.id}`, { token: buyerToken, cartToken: b2bToken });
@@ -135,9 +168,47 @@ test("full marketplace and B2B journey against the live Backend", async () => {
   expect(b2bOrder.payment_status).toBe("authorized");
 
   // RFQ: buyer requests, seller quotes, buyer accepts.
-  const rfq = await store("POST", "/empire/rfqs", { token: buyerToken, body: { title: `Journey RFQ ${run}`, requested_quantity: 10, company_id: company.id, variant_id: variantId, description: "درخواست قیمت عمده آزمایشی" }, status: 201 });
+  const rfq = await store("POST", "/empire/rfqs", { token: buyerToken, body: { title: `Journey RFQ ${run}`, requested_quantity: 10, unit: "carton", company_id: company.id, variant_id: variantId, description: "درخواست قیمت عمده آزمایشی" }, status: 201 });
+  // The unit is part of the request: "50" alone is not a specification.
+  expect(rfq.unit).toBe("carton");
+  expect(rfq.quoteable).toBe(true);
+
+  // The buyer sees the negotiation history on their own request.
+  const buyerView = await store("GET", `/empire/rfqs/${rfq.id}`, { token: buyerToken });
+  expect(buyerView.events.map((row: any) => row.event)).toContain("created");
+
+  // The seller's desk lists it — the endpoint that did not exist before, so a
+  // seller could quote but never discover what they were allowed to quote on.
+  const sellerDesk = await seller("GET", "/empire/rfqs", sellerToken, sellerId);
+  expect(sellerDesk.data.map((row: any) => row.id)).toContain(rfq.id);
+  const sellerView = await seller("GET", `/empire/rfqs/${rfq.id}`, sellerToken, sellerId);
+  expect(sellerView.title).toBe(`Journey RFQ ${run}`);
+  expect(sellerView.requested_quantity).toBe(10);
+
   const quote = await seller("POST", "/empire/quotes", sellerToken, sellerId, { rfq_id: rfq.id, amount: "900.00", notes: "Journey wholesale quote" }, 201);
+
+  // Correct it, then read it back: a seller had no way to do either before.
+  const corrected = await seller("PATCH", `/empire/quotes/${quote.id}`, sellerToken, sellerId, { amount: "880.00" });
+  expect(corrected.amount).toBe("880.00");
+  const ownQuote = await seller("GET", `/empire/quotes/${quote.id}`, sellerToken, sellerId);
+  expect(ownQuote.amount).toBe("880.00");
+
+  // Staff see both offers and the request history.
+  const staffView = await admin("GET", `/empire/rfqs/${rfq.id}`, adminToken);
+  expect(staffView.quotes.map((row: any) => row.id)).toContain(quote.id);
+  expect(staffView.events.map((row: any) => row.event)).toEqual(expect.arrayContaining(["created", "quoted", "quote_updated"]));
+
   const accepted = await store("POST", `/empire/rfqs/${rfq.id}/quotes/${quote.id}/accept`, { token: buyerToken });
   expect(accepted.status).toBe("accepted");
   expect(accepted.quotes.find((row: any) => row.id === quote.id).status).toBe("accepted");
+
+  // A closed negotiation is no longer quoteable, and the desk says so rather
+  // than offering a form that cannot succeed.
+  const afterAccept = await admin("GET", `/empire/rfqs/${rfq.id}`, adminToken);
+  expect(afterAccept.quoteable).toBe(false);
+  // The seller's desk no longer offers it, which is what makes the seller UI
+  // honest about a request they can no longer act on.
+  const deskAfter = await seller("GET", "/empire/rfqs", sellerToken, sellerId);
+  expect(deskAfter.data.map((row: any) => row.id)).not.toContain(rfq.id);
+  expect(afterAccept.events.map((row: any) => row.event)).toContain("accepted");
 });
